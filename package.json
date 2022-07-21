@@ -1,0 +1,19 @@
+{
+  "name": "homework-manager",
+  "version": "1.0.0",
+  "description": "A web-app to help you schedule your homework",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LeonardoTrapani/homework-manager.git"
+  },
+  "author": "Leonardo Trapani",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LeonardoTrapani/homework-manager/issues"
+  },
+  "homepage": "https://github.com/LeonardoTrapani/homework-manager#readme"
+}
