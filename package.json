@@ -2,11 +2,11 @@
   "name": "homework-manager",
   "version": "1.0.0",
   "description": "A web-app to help you schedule your homework",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start2": "ts-node src/index.ts",
-    "start": "nodemon dist/index.js",
+    "start2": "ts-node src/app.ts",
+    "start": "nodemon dist/app.js",
     "watch": "tsc -w",
     "migrate": "npx prisma migrate dev --name init"
   },
@@ -31,8 +31,12 @@
   },
   "dependencies": {
     "@prisma/client": "^4.1.0",
+    "@types/bcrypt": "^5.0.0",
+    "@types/jsonwebtoken": "^8.5.8",
+    "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
-    "express": "^4.18.1"
+    "express": "^4.18.1",
+    "jsonwebtoken": "^8.5.1"
   }
 }
