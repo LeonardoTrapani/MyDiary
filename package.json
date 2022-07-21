@@ -4,7 +4,10 @@
   "description": "A web-app to help you schedule your homework",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start2": "ts-node src/index.ts",
+    "start": "nodemon dist/index.js",
+    "watch": "tsc -w"
   },
   "repository": {
     "type": "git",
@@ -15,5 +18,17 @@
   "bugs": {
     "url": "https://github.com/LeonardoTrapani/homework-manager/issues"
   },
-  "homepage": "https://github.com/LeonardoTrapani/homework-manager#readme"
+  "homepage": "https://github.com/LeonardoTrapani/homework-manager#readme",
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/node": "^18.0.6",
+    "nodemon": "^2.0.19",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.1"
+  }
 }
