@@ -6,7 +6,7 @@ const app = express();
 app.use(cors());
 
 app.get('/', (req: Request, res: Response) => {
-  res.json('Express-ts working');
+  res.json('test');
 });
 
 app.listen(3000);
