@@ -11,8 +11,24 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  email String @unique
+  id             Int        @id @default(autoincrement())
+  email          String     @unique
   hashedPassword String
-  username String
+  username       String
+  updatedAt      DateTime   @updatedAt
+  createdAt      DateTime   @default(now())
+  homeworks      Homework[]
+}
+
+model Homework {
+  id         Int      @id @default(autoincrement())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     Int
+  name       String
+  subject    String
+  finishDate DateTime
+  duration   Int
+  completed  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
