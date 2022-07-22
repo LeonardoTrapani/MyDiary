@@ -1,28 +1,34 @@
 import { useDispatch, useSelector } from 'react-redux';
 import type { TypedUseSelectorHook } from 'react-redux';
 import type { RootState, AppDispatch } from './store';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
+
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
-// export const hook = () => {};
-// import { useState } from 'react';
-
-export const useInput = (checkToBeValid: (value: string) => boolean) => {
+export const useInput = (
+  checkToBeValidNotCallback: (value: string) => boolean
+) => {
   const [value, setValue] = useState('');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const checkToBeValid = useCallback(checkToBeValidNotCallback, [value]);
   const [isValid, setIsValid] = useState(false);
   const [hasBeenTouched, setHasBeenTouched] = useState(false);
-  const isFirstTime = false;
+  const isFirstTime = useRef(true);
   useEffect(() => {
     const timeout = setTimeout(() => {
-      if (isFirstTime) setHasBeenTouched(true);
-      setIsValid(checkToBeValid(value));
-    }, 1000);
+      if (!isFirstTime.current) {
+        setHasBeenTouched(true);
+        setIsValid(checkToBeValid(value));
+      } else {
+        isFirstTime.current = false;
+      }
+    }, 700);
     return () => {
       clearTimeout(timeout);
     };
-  }, [value, isFirstTime]);
+  }, [value, checkToBeValid]);
 
   const hasError = !isValid && hasBeenTouched;
   const onChangeValue = (event: React.ChangeEvent<HTMLInputElement>) => {
