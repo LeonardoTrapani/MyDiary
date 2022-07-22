@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import type { TypedUseSelectorHook } from 'react-redux';
 import type { RootState, AppDispatch } from './store';
-
+import React, { useEffect, useState } from 'react';
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
@@ -9,39 +9,31 @@ export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 // export const hook = () => {};
 // import { useState } from 'react';
 
-// export const useInput = (checkToBeValid: (value: string) => boolean) => {
-//   const [state, setState] = useState({
-//     value: '',
-//     isValid: false,
-//     hasBeenTouched: false,
-//   });
+export const useInput = (checkToBeValid: (value: string) => boolean) => {
+  const [value, setValue] = useState('');
+  const [isValid, setIsValid] = useState(false);
+  const [hasBeenTouched, setHasBeenTouched] = useState(false);
+  const isFirstTime = false;
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (isFirstTime) setHasBeenTouched(true);
+      setIsValid(checkToBeValid(value));
+    }, 1000);
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [value, isFirstTime]);
 
-//   const hasError = !state.isValid && state.hasBeenTouched;
-//   const onChangeValue = (event: ) => {
-//     let onEventValid = false;
-//     if (checkToBeValid(event.target.value)) {
-//       onEventValid = true;
-//     }
-//     setState({
-//       value: event.target.value,
-//       hasBeenTouched: true,
-//       isValid: onEventValid,
-//     });
-//   };
-//   const onBlur = () => {
-//     setState((prevState) => {
-//       const isValid = checkToBeValid(prevState.value);
-//       return {
-//         ...prevState,
-//         isValid,
-//         hasBeenTouched: true,
-//       };
-//     });
-//   };
-//   return [state.value, hasError, onChangeValue, onBlur];
-// };
-
-// export default useInput;
+  const hasError = !isValid && hasBeenTouched;
+  const onChangeValue = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(event.target.value);
+  };
+  const onBlur = () => {
+    setHasBeenTouched(true);
+    setIsValid(checkToBeValid(value));
+  };
+  return { value, hasError, onChangeValue, onBlur };
+};
 
 // // ------- EXAMPLE ----------
 // // const {

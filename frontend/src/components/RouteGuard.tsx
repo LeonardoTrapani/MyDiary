@@ -15,5 +15,3 @@ const RouteGuard: React.FC<{ children: JSX.Element }> = (props) => {
 };
 
 export default RouteGuard;
-
-//TEST
