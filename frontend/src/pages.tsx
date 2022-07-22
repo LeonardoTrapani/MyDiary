@@ -3,14 +3,13 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import Input from './components/Input';
 import { useInput } from './hooks';
+import React from 'react';
 
-export const HomePage = () => {
-  const navigate = useNavigate();
-
+export const HomePage: React.FC = () => {
   return <h1>Home page</h1>;
 };
 
-export const LoginPage = () => {
+export const LoginPage: React.FC = () => {
   const {
     value: emailValue,
     hasError: emailError,
@@ -39,11 +38,11 @@ export const LoginPage = () => {
   );
 };
 
-export const SignupPage = () => {
+export const SignupPage: React.FC = () => {
   return <Link to='/login'>Login instead</Link>;
 };
 
-export const NotFound = () => {
+export const NotFound: React.FC = () => {
   return <h1>Error 404: page not found</h1>;
 };
 

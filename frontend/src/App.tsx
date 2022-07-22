@@ -1,7 +1,8 @@
+import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import RouteGuard from './components/RouteGuard';
 import { HomePage, LoginPage, SignupPage, NotFound } from './pages';
-function App() {
+const App: React.FC = () => {
   return (
     <Routes>
       <Route
@@ -17,6 +18,6 @@ function App() {
       <Route path='*' element={<NotFound />} />
     </Routes>
   );
-}
+};
 
 export default App;

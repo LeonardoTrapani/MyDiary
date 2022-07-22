@@ -1,10 +1,11 @@
+import React from 'react';
 const Input: React.FC<{
   name: string;
   value: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur: () => void;
   hasError: boolean;
-  other?: {};
+  other?: Record<string, never>;
 }> = (props) => {
   const inputClasses =
     'border-2 ' + (props.hasError ? 'border-red-500' : 'border-black');
