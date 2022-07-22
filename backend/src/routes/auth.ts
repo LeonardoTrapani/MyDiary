@@ -23,7 +23,9 @@ router.post(
     body('username', 'please enter a username with at least 5 characters')
       .trim()
       .isLength({ min: 5 }),
-    body('password', 'please enter a password').trim().notEmpty(),
+    body('password', 'please enter a stronger password')
+      .trim()
+      .isStrongPassword(),
   ],
   signup
 );
