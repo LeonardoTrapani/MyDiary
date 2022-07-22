@@ -1,26 +1,29 @@
 import { useDispatch, useSelector } from 'react-redux';
 import type { TypedUseSelectorHook } from 'react-redux';
 import type { RootState, AppDispatch } from './store';
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 export const useInput = (
-  checkToBeValidNotCallback: (value: string) => boolean
+  checksToBeValid: { check: (value: string) => boolean; errorMessage: string }[]
 ) => {
   const [value, setValue] = useState('');
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const checkToBeValid = useCallback(checkToBeValidNotCallback, [value]);
   const [isValid, setIsValid] = useState(false);
   const [hasBeenTouched, setHasBeenTouched] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
   const isFirstTime = useRef(true);
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (!isFirstTime.current) {
         setHasBeenTouched(true);
-        setIsValid(checkToBeValid(value));
+        const checksValidResult = areAllChecksValid(checksToBeValid, value);
+        setErrorMessage(checksValidResult.errorMessage);
+        setIsValid(checksValidResult.isValid);
       } else {
         isFirstTime.current = false;
       }
@@ -28,7 +31,8 @@ export const useInput = (
     return () => {
       clearTimeout(timeout);
     };
-  }, [value, checkToBeValid]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
 
   const hasError = !isValid && hasBeenTouched;
   const onChangeValue = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,9 +40,33 @@ export const useInput = (
   };
   const onBlur = () => {
     setHasBeenTouched(true);
-    setIsValid(checkToBeValid(value));
+    const checksValidResult = areAllChecksValid(checksToBeValid, value);
+    setErrorMessage(checksValidResult.errorMessage);
+    setIsValid(checksValidResult.isValid);
   };
-  return { value, hasError, onChangeValue, onBlur };
+  return { value, hasError, onChangeValue, onBlur, errorMessage };
+};
+
+const areAllChecksValid = (
+  checksToBeValid: {
+    check: (value: string) => boolean;
+    errorMessage: string;
+  }[],
+  value: string
+) => {
+  let isValid = true;
+  let errorMessage = '';
+  checksToBeValid.forEach((checkToBeValid) => {
+    if (!checkToBeValid.check(value)) {
+      errorMessage = checkToBeValid.errorMessage;
+      isValid = false;
+      return;
+    }
+  });
+  return {
+    isValid,
+    errorMessage,
+  };
 };
 
 // // ------- EXAMPLE ----------

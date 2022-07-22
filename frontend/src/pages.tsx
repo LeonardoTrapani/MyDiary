@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Input from './components/Input';
 import { useInput } from './hooks';
@@ -14,25 +13,79 @@ export const LoginPage: React.FC = () => {
     hasError: emailError,
     onChangeValue: emailChangeHandler,
     onBlur: emailBlurHandler,
-  } = useInput(emailValidCheck);
-  useEffect(() => {
-    console.log(emailError);
-  }, [emailError]);
+    errorMessage: emailErrorMessage,
+  } = useInput([
+    { check: emailValidCheck, errorMessage: 'Please enter a valid email' },
+  ]);
 
+  const {
+    value: passwordValue,
+    hasError: passwordError,
+    onChangeValue: passwordChangeHandler,
+    onBlur: passwordBlurHandler,
+    errorMessage: passwordErrorMessage,
+  } = useInput([
+    {
+      check: (value) => {
+        return value.length >= 8;
+      },
+      errorMessage: 'The password be at least 8 characters long',
+    },
+    {
+      check: (value) => {
+        const format = /\W/;
+        if (format.test(value)) {
+          return true;
+        } else {
+          return false;
+        }
+      },
+      errorMessage: 'The password should have one special character',
+    },
+    {
+      check: (value) => {
+        return /[A-Z]/.test(value);
+      },
+      errorMessage: 'The password should have one uppercase letter',
+    },
+    {
+      check: (value) => {
+        const regexp = /\d/;
+        return regexp.test(value);
+      },
+      errorMessage: 'The password should have at least one number',
+    },
+    {
+      check: (value) => {
+        const regexp = /[a-z]/;
+        return regexp.test(value);
+      },
+      errorMessage: 'The password should have at least one lowercase letter ',
+    },
+  ]);
   return (
     <>
-      <form>
+      <form className='p-5 w-min m-auto flex flex-col gap-8'>
         <Input
           value={emailValue}
           onChange={emailChangeHandler}
           onBlur={emailBlurHandler}
           name='Email'
           hasError={emailError}
+          errorMessage={emailErrorMessage}
+        />
+        <Input
+          value={passwordValue}
+          onChange={passwordChangeHandler}
+          onBlur={passwordBlurHandler}
+          name='Password'
+          hasError={passwordError}
+          errorMessage={passwordErrorMessage}
         />
       </form>
-      <Link className='' to='/signup'>
+      {/* <Link className='' to='/signup'>
         Signup instead
-      </Link>
+      </Link> */}
     </>
   );
 };
