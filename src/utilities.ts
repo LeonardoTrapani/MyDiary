@@ -24,3 +24,13 @@ export const areThereExpressValidatorErrors = (req: Request, res: Response) => {
   }
   return false;
 };
+
+export const validatorDateHandler = (value: any) => {
+  return dateIsValid(new Date(value));
+};
+
+function dateIsValid(date: any) {
+  return (
+    Object.prototype.toString.call(date) === '[object Date]' && !isNaN(date)
+  );
+}

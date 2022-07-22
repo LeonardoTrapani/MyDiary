@@ -1,5 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { throwResponseError } from '../utilities';
+import {
+  areThereExpressValidatorErrors,
+  throwResponseError,
+} from '../utilities';
 
 import { prisma } from '../app';
 
@@ -8,6 +11,9 @@ export const createHomework = async (
   res: Response,
   next: NextFunction
 ) => {
+  if (areThereExpressValidatorErrors(req, res)) {
+    return;
+  }
   const { userId } = req;
   let { name, subject, finishDate, plannedDate, duration } = req.body;
   finishDate = new Date();
@@ -36,8 +42,24 @@ export const createHomework = async (
   }
 };
 
-export const getHomework = (
+export const getAllHomework = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {};
+) => {
+  const userId = +req.userId!;
+  const homework = await prisma.homework.findMany({
+    where: {
+      userId,
+    },
+    select: {
+      name: true,
+      subject: true,
+      finishDate: true,
+      plannedDate: true,
+      duration: true,
+      completed: true,
+    },
+  });
+  res.json(homework);
+};

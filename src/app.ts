@@ -29,7 +29,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use(authRoutes);
-app.use(homeworkRoutes);
+app.use('/homework', homeworkRoutes);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   const response: ErrorResponse = {
