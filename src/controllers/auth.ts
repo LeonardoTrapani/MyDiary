@@ -4,7 +4,10 @@ import bcrypt from 'bcrypt';
 
 import { prisma } from '../app';
 import { CustomRequest } from '../models';
-import { throwResponseError } from '../utilities';
+import {
+  throwResponseError,
+  areThereExpressValidatorErrors,
+} from '../utilities';
 
 export const signup = async (
   req: CustomRequest<{
@@ -15,10 +18,14 @@ export const signup = async (
   res: Response,
   next: NextFunction
 ) => {
+  if (areThereExpressValidatorErrors(req, res)) {
+    return;
+  }
   try {
     const email = req.body.email;
     const username = req.body.username;
     const password = req.body.password;
+
     const hashedPassword = await bcrypt.hash(password, 12);
     if (await mailAlreadyExists(email)) {
       throw new Error();
@@ -60,6 +67,9 @@ export const login = async (
   }>,
   res: Response
 ) => {
+  if (areThereExpressValidatorErrors(req, res)) {
+    return;
+  }
   try {
     const { email, password } = req.body;
     const user = await prisma.user.findUnique({
@@ -73,7 +83,7 @@ export const login = async (
     const passwordIsValid = await bcrypt.compare(password, user.hashedPassword);
 
     if (!passwordIsValid) {
-      throw new Error();
+      throw new Error('password is invalid');
     }
     const token = jwt.sign(
       { email: user.email, userId: user.id },
@@ -83,6 +93,6 @@ export const login = async (
 
     return res.status(200).json({ token, userId: user.id });
   } catch (err) {
-    return throwResponseError('unable to signup', 400, res);
+    return throwResponseError('unable to login', 400, res);
   }
 };

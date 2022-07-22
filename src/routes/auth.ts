@@ -8,8 +8,10 @@ import { signup, login } from '../controllers/auth';
 router.post(
   '/login',
   [
-    body('email').trim().isEmail().notEmpty(),
-    body('password').trim().isStrongPassword(),
+    body('email', 'please enter a valid email').trim().isEmail().notEmpty(),
+    body('password', 'please enter a stronger password')
+      .trim()
+      .isStrongPassword(),
   ],
   login
 );
@@ -17,9 +19,11 @@ router.post(
 router.post(
   '/signup',
   [
-    body('email').trim().isEmail(),
-    body('username').trim().isLength({ min: 5 }),
-    body('password').trim().notEmpty(),
+    body('email', 'please enter a valid email').trim().isEmail(),
+    body('username', 'please enter a username with at least 5 characters')
+      .trim()
+      .isLength({ min: 5 }),
+    body('password', 'please enter a password').trim().notEmpty(),
   ],
   signup
 );
