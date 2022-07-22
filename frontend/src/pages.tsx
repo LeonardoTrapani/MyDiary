@@ -29,6 +29,7 @@ export const LoginPage = () => {
           onChange={emailChangeHandler}
           onBlur={emailBlurHandler}
           name='Email'
+          hasError={emailError}
         />
       </form>
       <Link className='' to='/signup'>
