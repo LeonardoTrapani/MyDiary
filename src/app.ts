@@ -10,6 +10,7 @@ import dotenv from 'dotenv';
 //Routes
 import authRoutes from './routes/auth';
 import homeworkRoutes from './routes/homework';
+import dayRoutes from './routes/day';
 
 import { ErrorResponse } from './models';
 
@@ -30,6 +31,7 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use(authRoutes);
 app.use('/homework', homeworkRoutes);
+app.use('/day', dayRoutes);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   const response: ErrorResponse = {
