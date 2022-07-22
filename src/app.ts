@@ -9,10 +9,11 @@ import dotenv from 'dotenv';
 
 //Routes
 import authRoutes from './routes/auth';
+import homeworkRoutes from './routes/homework';
 
-import { PrismaClient } from '@prisma/client';
 import { ErrorResponse } from './models';
 
+import { PrismaClient } from '@prisma/client';
 export const prisma = new PrismaClient();
 
 //Configuring dotenv package to use env variables form .env
@@ -28,6 +29,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use(authRoutes);
+app.use(homeworkRoutes);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   const response: ErrorResponse = {
