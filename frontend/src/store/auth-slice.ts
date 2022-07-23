@@ -4,7 +4,7 @@ interface AuthState {
   isAuthenticated: boolean;
   jwt?: string;
   username?: string;
-  password?: string;
+  email?: string;
   userId?: string;
 }
 
@@ -15,7 +15,7 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    authenticate(
+    login(
       state,
       action: PayloadAction<{
         userId: string;
@@ -24,7 +24,12 @@ const authSlice = createSlice({
         jwt: string;
       }>
     ) {
-      state.isAuthenticated = !state.isAuthenticated;
+      const { jwt, email, userId, username } = action.payload;
+      state.isAuthenticated = true;
+      state.jwt = jwt;
+      state.email = email;
+      state.userId = userId;
+      state.username = username;
     },
   },
 });

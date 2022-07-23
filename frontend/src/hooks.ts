@@ -37,7 +37,6 @@ export const useInput = (
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (!isFirstTime.current) {
-        console.log('validating');
         setHasBeenTouched(true);
         const checksValidResult = areAllChecksValid(checksToBeValid, value);
         setErrorMessage(checksValidResult.errorMessage);
@@ -108,6 +107,10 @@ const areAllChecksValid = (
 // } = useFetch();
 // =================================
 
+interface CustomRequestInit extends RequestInit {
+  requestBody: Record<string, unknown>;
+}
+
 export const useFetch = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
@@ -116,24 +119,33 @@ export const useFetch = () => {
     undefined
   );
 
-  const fetchNow = useCallback(async (url: string, options?: RequestInit) => {
-    setLoading(true);
-    try {
-      console.log('FETCHING DATA');
-      const result = await fetch(url, {
-        ...options,
-      });
-      const data = await result.json();
-      if (!result.ok) {
-        setError(data.message);
+  const fetchNow = useCallback(
+    async (url: string, options?: CustomRequestInit) => {
+      setLoading(true);
+      try {
+        if (options) {
+          options.body = JSON.stringify(options.requestBody);
+          options.headers = {
+            ...options.headers,
+            'Content-Type': 'application/json',
+          };
+        }
+        const result = await fetch(url, {
+          ...options,
+        });
+        const data = await result.json();
+        if (!result.ok) {
+          setError(data.message);
+        }
+        setLoading(false);
+        setData(data);
+      } catch (err) {
+        setLoading(false);
+        setError('an error has occurred');
       }
-      setLoading(false);
-      setData(data);
-    } catch (err) {
-      setLoading(false);
-      setError('an error has occurred');
-    }
-  }, []);
+    },
+    []
+  );
 
   return { loading, error, data, fetchNow };
 };
