@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import Button from './UI/Button';
 import Input from './UI/Input';
 import { useInput } from '../hooks';
-
+import { useAppSelector } from '../hooks';
 const LoginForm: React.FC<{
   onSubmit: (emailValue: string, passwordValue: string) => void;
 }> = ({ onSubmit }) => {
@@ -26,6 +26,7 @@ const LoginForm: React.FC<{
     isValid: isPasswordValid,
   } = useInput(passwordInputChecks);
 
+  const isLoginLoading = useAppSelector((state) => state.auth.isLoginLoading);
   const isFormValid = useMemo(
     () => isEmailValid && isPasswordValid,
     [isEmailValid, isPasswordValid]
@@ -62,7 +63,7 @@ const LoginForm: React.FC<{
           hasError={passwordError}
           errorMessage={passwordErrorMessage}
         />
-        <Button isValid={isFormValid} type='submit'>
+        <Button isValid={isFormValid} type='submit' isLoading={isLoginLoading}>
           Login
         </Button>
       </form>
@@ -121,7 +122,7 @@ const passwordInputChecks = [
       const regexp = /[a-z]/;
       return regexp.test(value);
     },
-    errorMessage: 'The password should have at least one lowercase letter ',
+    errorMessage: 'The password should have at least one lowercase letter',
   },
   {
     check: (value: string) => {

@@ -11,15 +11,20 @@ interface AuthState {
   };
   isAuthenticated: boolean;
   loginError?: string;
+  isLoginLoading: boolean;
 }
 
 const initialState: AuthState = {
   isAuthenticated: false,
+  isLoginLoading: false,
 };
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    toggleLoading(state) {
+      state.isLoginLoading = !state.isLoginLoading;
+    },
     login(
       state,
       action: PayloadAction<{
@@ -57,6 +62,7 @@ export const authActions = authSlice.actions;
 
 export const login = (email: string, password: string) => {
   return async (dispatch: Dispatch) => {
+    dispatch(authActions.toggleLoading());
     try {
       const data = await myFetch(BACKEND_URL + '/login', {
         method: 'POST',
@@ -68,6 +74,8 @@ export const login = (email: string, password: string) => {
       dispatch(authActions.login({ ...data }));
     } catch ({ message }) {
       dispatch(authActions.failedLogin({ errorMessage: message as string }));
+    } finally {
+      dispatch(authActions.toggleLoading());
     }
   };
 };
