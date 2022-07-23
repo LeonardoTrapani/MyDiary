@@ -91,7 +91,12 @@ export const login = async (
       { expiresIn: '1h' }
     );
 
-    return res.status(200).json({ token, userId: user.id });
+    return res.status(200).json({
+      token,
+      userId: user.id,
+      username: user.username,
+      email: user.email,
+    });
   } catch (err) {
     return throwResponseError('unable to login', 400, res);
   }

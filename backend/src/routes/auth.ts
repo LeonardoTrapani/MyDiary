@@ -8,7 +8,7 @@ import { signup, login } from '../controllers/auth';
 router.post(
   '/login',
   [
-    body('email', 'please enter a valid email').trim().isEmail().notEmpty(),
+    body('email', 'please enter a valid email').trim().isEmail(),
     body('password', 'please enter a stronger password')
       .trim()
       .isStrongPassword(),
