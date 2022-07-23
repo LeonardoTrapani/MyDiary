@@ -11,7 +11,6 @@ export const useInput = (
   checksToBeValid: { check: (value: string) => boolean; errorMessage: string }[]
 ) => {
   const [value, setValue] = useState('');
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const [isValid, setIsValid] = useState(false);
   const [hasBeenTouched, setHasBeenTouched] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -20,6 +19,7 @@ export const useInput = (
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (!isFirstTime.current) {
+        console.log('validating');
         setHasBeenTouched(true);
         const checksValidResult = areAllChecksValid(checksToBeValid, value);
         setErrorMessage(checksValidResult.errorMessage);
@@ -39,12 +39,16 @@ export const useInput = (
     setValue(event.target.value);
   };
   const onBlur = () => {
+    validate();
+  };
+  const validate = () => {
     setHasBeenTouched(true);
     const checksValidResult = areAllChecksValid(checksToBeValid, value);
     setErrorMessage(checksValidResult.errorMessage);
     setIsValid(checksValidResult.isValid);
+    return checksValidResult.isValid;
   };
-  return { value, hasError, onChangeValue, onBlur, errorMessage };
+  return { value, onChangeValue, onBlur, errorMessage, hasError, validate };
 };
 
 const areAllChecksValid = (
@@ -56,13 +60,13 @@ const areAllChecksValid = (
 ) => {
   let isValid = true;
   let errorMessage = '';
-  checksToBeValid.forEach((checkToBeValid) => {
-    if (!checkToBeValid.check(value)) {
-      errorMessage = checkToBeValid.errorMessage;
+  for (let i = 0; i < checksToBeValid.length; i++) {
+    if (!checksToBeValid[i].check(value)) {
+      errorMessage = checksToBeValid[i].errorMessage;
       isValid = false;
-      return;
+      break;
     }
-  });
+  }
   return {
     isValid,
     errorMessage,

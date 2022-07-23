@@ -1,7 +1,8 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import RouteGuard from './components/RouteGuard';
-import { HomePage, LoginPage, SignupPage, NotFound } from './pages';
+import { LoginPage } from './pages/Login';
+import { HomePage, SignupPage, NotFound } from './pages/pages';
 const App: React.FC = () => {
   return (
     <Routes>
