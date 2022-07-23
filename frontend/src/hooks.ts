@@ -1,7 +1,13 @@
 import { useDispatch, useSelector } from 'react-redux';
 import type { TypedUseSelectorHook } from 'react-redux';
 import type { RootState, AppDispatch } from './store';
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  useCallback,
+} from 'react';
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch: () => AppDispatch = useDispatch;
@@ -93,55 +99,41 @@ const areAllChecksValid = (
   };
 };
 
-// // ========== EXAMPLE =============
-// // const {
-// //   fetchNow: sendCart,
-// //   data: sendCartData,
-// //   error: sendCartError,
-// //   loading: sendCartLoading,
-// // } = useFetch();
-// // =================================
+// ========== EXAMPLE =============
+// const {
+//   fetchNow: sendCart,
+//   data: sendCartData,
+//   error: sendCartError,
+//   loading: sendCartLoading,
+// } = useFetch();
+// =================================
 
-// export const useFetch = () => {
-//   const [status, setStatus] = useState({
-//     loading: false,
-//     error: false,
-//     data: undefined,
-//   });
-//   const fetchNow = useCallback(async (url, options) => {
-//     if (options) {
-//       options.body = JSON.stringify(options.body);
-//     }
+export const useFetch = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | undefined>(undefined);
 
-//     setStatus({ loading: true, error: false, data: undefined });
+  const [data, setData] = useState<Record<string, never> | undefined>(
+    undefined
+  );
 
-//     try {
-//       console.log('FETCHING DATA');
-//       const result = await fetch(url, {
-//         ...options,
-//       });
-//       if (!result.ok) {
-//         return setStatus((previousStatus) => {
-//           return {
-//             ...previousStatus,
-//             error: new Error('Unable to fetch'),
-//           };
-//         });
-//       }
-//       const data = await result.json();
-//       setStatus({
-//         loading: false,
-//         error: false,
-//         data: data,
-//       });
-//     } catch (err) {
-//       setStatus({
-//         loading: false,
-//         error: err,
-//         data: null,
-//       });
-//     }
-//   }, []);
+  const fetchNow = useCallback(async (url: string, options?: RequestInit) => {
+    setLoading(true);
+    try {
+      console.log('FETCHING DATA');
+      const result = await fetch(url, {
+        ...options,
+      });
+      const data = await result.json();
+      if (!result.ok) {
+        setError(data.message);
+      }
+      setLoading(false);
+      setData(data);
+    } catch (err) {
+      setLoading(false);
+      setError('an error has occurred');
+    }
+  }, []);
 
-//   return { ...status, fetchNow };
-// };
+  return { loading, error, data, fetchNow };
+};

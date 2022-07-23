@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import Button from '../components/UI/Button';
-import Input from '../components/UI/Input';
+import Button from './UI/Button';
+import Input from './UI/Input';
 import { useInput } from '../hooks';
 
 const LoginForm: React.FC<{
