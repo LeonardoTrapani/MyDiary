@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import type { TypedUseSelectorHook } from 'react-redux';
 import type { RootState, AppDispatch } from './store';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch: () => AppDispatch = useDispatch;
@@ -34,12 +34,13 @@ export const useInput = (
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
-  const hasError = !isValid && hasBeenTouched;
+  const hasError = useMemo(
+    () => !isValid && hasBeenTouched,
+    [isValid, hasBeenTouched]
+  );
+
   const onChangeValue = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
-  };
-  const onBlur = () => {
-    validate();
   };
   const validate = () => {
     setHasBeenTouched(true);
@@ -48,7 +49,14 @@ export const useInput = (
     setIsValid(checksValidResult.isValid);
     return checksValidResult.isValid;
   };
-  return { value, onChangeValue, onBlur, errorMessage, hasError, validate };
+  return {
+    value,
+    onChangeValue,
+    errorMessage,
+    hasError,
+    validate,
+    isValid,
+  };
 };
 
 const areAllChecksValid = (

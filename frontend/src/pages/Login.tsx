@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import { useInput } from '../hooks';
@@ -10,6 +10,7 @@ export const LoginPage: React.FC = () => {
     hasError: emailError,
     errorMessage: emailErrorMessage,
     validate: validateEmail,
+    isValid: isEmailValid,
   } = useInput([
     { check: emailValidCheck, errorMessage: 'Please enter a valid email' },
   ]);
@@ -20,16 +21,20 @@ export const LoginPage: React.FC = () => {
     onChangeValue: passwordChangeHandler,
     errorMessage: passwordErrorMessage,
     validate: validatePassword,
+    isValid: isPasswordValid,
   } = useInput(passwordInputChecks);
+
+  const isFormValid = useMemo(
+    () => isEmailValid && isPasswordValid,
+    [isEmailValid, isPasswordValid]
+  );
 
   const loginSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const emailValid = validateEmail();
-    const passwordValid = validatePassword();
-    if (!emailValid || !passwordValid) {
-      console.log('not valid');
+    if (!isFormValid) {
       return;
     }
+    console.log(emailValue, passwordValue, 'VALID!!!');
     //SEND HTTP REQUEST
   };
 
@@ -55,11 +60,14 @@ export const LoginPage: React.FC = () => {
           hasError={passwordError}
           errorMessage={passwordErrorMessage}
         />
-        <Button isValid={true}>Login</Button>
+        <Button isValid={isFormValid} type='submit'>
+          Login
+        </Button>
       </form>
     </>
   );
 };
+
 const emailValidCheck = (email: string) => {
   const validateEmail = (email: string) => {
     return String(email)
