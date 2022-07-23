@@ -7,6 +7,18 @@ import React, { useEffect, useState, useRef, useMemo } from 'react';
 export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
+// =========== EXAMPLE ==============
+// const {
+//   value: emailValue,
+//   onChangeValue: emailChangeHandler,
+//   hasError: emailError,
+//   errorMessage: emailErrorMessage,
+//   validate: validateEmail,
+//   isValid: isEmailValid,
+// } = useInput([
+//   { check: emailValidCheck, errorMessage: 'Please enter a valid email' },
+// ]);
+// ===================================
 export const useInput = (
   checksToBeValid: { check: (value: string) => boolean; errorMessage: string }[]
 ) => {
@@ -81,13 +93,14 @@ const areAllChecksValid = (
   };
 };
 
-// // ------- EXAMPLE ----------
+// // ========== EXAMPLE =============
 // // const {
 // //   fetchNow: sendCart,
 // //   data: sendCartData,
 // //   error: sendCartError,
 // //   loading: sendCartLoading,
 // // } = useFetch();
+// // =================================
 
 // export const useFetch = () => {
 //   const [status, setStatus] = useState({
