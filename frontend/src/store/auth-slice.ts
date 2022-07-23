@@ -1,11 +1,16 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
+import { myFetch } from '../utilities';
+import { BACKEND_URL } from '../contants';
 
 interface AuthState {
+  userDetails?: {
+    token: string;
+    username: string;
+    email: string;
+    userId: string;
+  };
   isAuthenticated: boolean;
-  jwt?: string;
-  username?: string;
-  email?: string;
-  userId?: string;
+  loginError?: string;
 }
 
 const initialState: AuthState = {
@@ -21,15 +26,27 @@ const authSlice = createSlice({
         userId: string;
         username: string;
         email: string;
-        jwt: string;
+        token: string;
       }>
     ) {
-      const { jwt, email, userId, username } = action.payload;
+      const { token, email, userId, username } = action.payload;
+      const userDetails = {
+        token,
+        email,
+        userId,
+        username,
+      };
       state.isAuthenticated = true;
-      state.jwt = jwt;
-      state.email = email;
-      state.userId = userId;
-      state.username = username;
+      state.loginError = undefined;
+      state.userDetails = userDetails;
+    },
+    failedLogin(
+      state,
+      action: PayloadAction<{
+        errorMessage: string;
+      }>
+    ) {
+      state.loginError = action.payload.errorMessage;
     },
   },
 });
@@ -37,3 +54,20 @@ const authSlice = createSlice({
 export default authSlice;
 
 export const authActions = authSlice.actions;
+
+export const login = (email: string, password: string) => {
+  return async (dispatch: Dispatch) => {
+    try {
+      const data = await myFetch(BACKEND_URL + '/login', {
+        method: 'POST',
+        requestBody: {
+          email,
+          password,
+        },
+      });
+      dispatch(authActions.login({ ...data }));
+    } catch ({ message }) {
+      dispatch(authActions.failedLogin({ errorMessage: message as string }));
+    }
+  };
+};
