@@ -6,7 +6,7 @@ import { SignupPage } from './pages/SignupPage';
 import { HomePage, NotFound } from './pages/pages';
 import NavBar from './components/UI/NavBar';
 import { useShowBurger, useAppSelector } from './hooks';
-import BurgerMenu from './components/UI/BurgerMenu';
+import BurgerMenu from './components/UI/BurgerMenu/BurgerMenu';
 const App: React.FC = () => {
   const showBurger = useAppSelector((state) => state.ui.showBurgerMenu);
   useShowBurger();

@@ -160,7 +160,7 @@ export const useShowBurger = () => {
     const handleResize = () => {
       const showBurger = calculateShowBurger(window.innerWidth, showBurgerMenu);
       if (typeof showBurger !== 'undefined') {
-        dispatch(uiActions.toggleBurgerMenu(showBurger));
+        dispatch(uiActions.toggleBurgerMenuShown(showBurger));
       }
     };
     window.addEventListener('resize', handleResize);

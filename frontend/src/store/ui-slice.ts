@@ -8,7 +8,7 @@ interface UiState {
 
 const initialState: UiState = {
   burgerMenuOpen: false,
-  showBurgerMenu: window.innerWidth >= SHOW_BURGER_MENU_PX,
+  showBurgerMenu: window.innerWidth <= SHOW_BURGER_MENU_PX,
 };
 
 // 'sm': '640px',
@@ -30,9 +30,15 @@ const uiSlice = createSlice({
   name: 'ui',
   initialState,
   reducers: {
-    toggleBurgerMenu(state, action: PayloadAction<boolean>) {
+    toggleBurgerMenuShown(state, action: PayloadAction<boolean>) {
       console.log('SHOW:', action.payload);
       state.showBurgerMenu = action.payload;
+    },
+    openBurgerMenu(state) {
+      state.burgerMenuOpen = true;
+    },
+    closeBurgerMenu(state) {
+      state.burgerMenuOpen = false;
     },
   },
 });
