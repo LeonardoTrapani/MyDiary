@@ -10,10 +10,15 @@ const Input: React.FC<{
 }> = (props) => {
   return (
     <div>
-      <label htmlFor={props.name} className='text-black' />
+      <label
+        htmlFor={props.name}
+        className={'text-black' + (props.hasError ? ' text-red-500' : '')}
+      >
+        {props.name}
+      </label>
       <input
         className={
-          'border rounded p-1 w-96 focus: focus:outline-none min-w-full md:min-w-0 m-b-0' +
+          'border rounded p-1 w-96 focus: focus:outline-none min-w-full md:min-w-0' +
           (props.hasError ? ' border-red-500' : ' border-black')
         }
         id={props.name}
@@ -22,7 +27,9 @@ const Input: React.FC<{
         onBlur={props.onBlur}
         {...props.other}
       />
-      {props.hasError && <p className='text-red-500'>{props.errorMessage}</p>}
+      {props.hasError && (
+        <p className='text-red-500 mt-3'>{props.errorMessage}</p>
+      )}
     </div>
   );
 };

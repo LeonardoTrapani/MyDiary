@@ -2,6 +2,7 @@ import React from 'react';
 import LoginForm from '../components/loginForm';
 import { login } from '../store/auth-slice';
 import { useAppDispatch } from '../hooks';
+import { Link } from 'react-router-dom';
 
 export const LoginPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -12,5 +13,10 @@ export const LoginPage: React.FC = () => {
     dispatch(login(emailValue, passwordValue));
   };
 
-  return <LoginForm onSubmit={loginFormSubmitHandler} />;
+  return (
+    <div className='w-screen flex items-center justify-center flex-col gap-10'>
+      <LoginForm onSubmit={loginFormSubmitHandler} />
+      <Link to='/signup'>Signup insted</Link>
+    </div>
+  );
 };

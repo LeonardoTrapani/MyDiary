@@ -140,8 +140,9 @@ export const useFetch = () => {
         setLoading(false);
         setData(data);
       } catch (err) {
+        const error = err as Error;
         setLoading(false);
-        setError('an error has occurred');
+        setError(error.message);
       }
     },
     []

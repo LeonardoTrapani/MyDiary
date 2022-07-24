@@ -48,7 +48,6 @@ app.use(
     res: Response,
     next: NextFunction
   ) => {
-    console.log(err);
     res.status(500).json('An error has occurred');
   }
 );

@@ -3,6 +3,7 @@ import Button from './UI/Button';
 import Input from './UI/Input';
 import { useInput } from '../hooks';
 import { useAppSelector } from '../hooks';
+import { emailValidCheck, passwordInputChecks } from '../utilities';
 const LoginForm: React.FC<{
   onSubmit: (emailValue: string, passwordValue: string) => void;
 }> = ({ onSubmit }) => {
@@ -38,7 +39,6 @@ const LoginForm: React.FC<{
       return;
     }
     onSubmit(emailValue, passwordValue);
-    //SEND HTTP REQUEST
   };
 
   return (
@@ -70,66 +70,5 @@ const LoginForm: React.FC<{
     </>
   );
 };
-
-const emailValidCheck = (email: string) => {
-  const validateEmail = (email: string) => {
-    return String(email)
-      .toLowerCase()
-      .match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      );
-  };
-  if (validateEmail(email)) {
-    return true;
-  }
-  return false;
-};
-
-const passwordInputChecks = [
-  {
-    check: (value: string) => {
-      return value.length > 0;
-    },
-    errorMessage: 'Please provide a password',
-  },
-
-  {
-    check: (value: string) => {
-      const format = /\W/;
-      if (format.test(value)) {
-        return true;
-      } else {
-        return false;
-      }
-    },
-    errorMessage: 'The password should have one special character',
-  },
-  {
-    check: (value: string) => {
-      return /[A-Z]/.test(value);
-    },
-    errorMessage: 'The password should have one uppercase letter',
-  },
-  {
-    check: (value: string) => {
-      const regexp = /\d/;
-      return regexp.test(value);
-    },
-    errorMessage: 'The password should have at least one number',
-  },
-  {
-    check: (value: string) => {
-      const regexp = /[a-z]/;
-      return regexp.test(value);
-    },
-    errorMessage: 'The password should have at least one lowercase letter',
-  },
-  {
-    check: (value: string) => {
-      return value.length >= 8;
-    },
-    errorMessage: 'The password be at least 8 characters long',
-  },
-];
 
 export default LoginForm;
