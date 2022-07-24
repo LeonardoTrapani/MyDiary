@@ -9,6 +9,7 @@ import React, {
   useCallback,
 } from 'react';
 import { uiActions } from './store/ui-slice';
+import { calculateShowBurger } from './utilities';
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch: () => AppDispatch = useDispatch;
@@ -157,11 +158,9 @@ export const useShowBurger = () => {
   const showBurgerMenu = useAppSelector((state) => state.ui.showBurgerMenu);
   useEffect(() => {
     const handleResize = () => {
-      const width = window.innerWidth;
-      if (width > 768 && showBurgerMenu === false) {
-        dispatch(uiActions.toggleBurgerMenu(true));
-      } else if (width <= 768 && showBurgerMenu === true) {
-        dispatch(uiActions.toggleBurgerMenu(false));
+      const showBurger = calculateShowBurger(window.innerWidth, showBurgerMenu);
+      if (typeof showBurger !== 'undefined') {
+        dispatch(uiActions.toggleBurgerMenu(showBurger));
       }
     };
     window.addEventListener('resize', handleResize);

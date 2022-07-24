@@ -1,3 +1,5 @@
+import { SHOW_BURGER_MENU_PX } from './contants';
+
 interface CustomRequestInit extends RequestInit {
   requestBody: Record<string, unknown>;
 }
@@ -82,3 +84,11 @@ export const passwordInputChecks = [
     errorMessage: 'The password be at least 8 characters long',
   },
 ];
+
+export const calculateShowBurger = (width: number, previousShow: boolean) => {
+  if (width > SHOW_BURGER_MENU_PX && previousShow === true) {
+    return false;
+  } else if (width <= SHOW_BURGER_MENU_PX && previousShow === false) {
+    return true;
+  }
+};

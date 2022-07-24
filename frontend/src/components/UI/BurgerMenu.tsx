@@ -2,8 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { slide as Menu } from 'react-burger-menu';
 
-import { AcademicCapIcon } from '@heroicons/react/outline';
-const NavBar: React.FC = () => {
+const BurgerMenu: React.FC = () => {
   return (
     <Menu>
       <Link to='/login'>Login</Link>
@@ -13,4 +12,4 @@ const NavBar: React.FC = () => {
   );
 };
 
-export default NavBar;
+export default BurgerMenu;

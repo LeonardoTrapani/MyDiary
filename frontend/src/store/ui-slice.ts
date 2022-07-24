@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { SHOW_BURGER_MENU_PX } from '../contants';
 
 interface UiState {
   burgerMenuOpen: boolean;
@@ -7,7 +8,7 @@ interface UiState {
 
 const initialState: UiState = {
   burgerMenuOpen: false,
-  showBurgerMenu: false,
+  showBurgerMenu: window.innerWidth >= SHOW_BURGER_MENU_PX,
 };
 
 // 'sm': '640px',
@@ -30,7 +31,7 @@ const uiSlice = createSlice({
   initialState,
   reducers: {
     toggleBurgerMenu(state, action: PayloadAction<boolean>) {
-      console.log(action.payload);
+      console.log('SHOW:', action.payload);
       state.showBurgerMenu = action.payload;
     },
   },

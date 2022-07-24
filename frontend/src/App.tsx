@@ -5,13 +5,15 @@ import { LoginPage } from './pages/LoginPage';
 import { SignupPage } from './pages/SignupPage';
 import { HomePage, NotFound } from './pages/pages';
 import NavBar from './components/UI/NavBar';
-import { useShowBurger } from './hooks';
-
+import { useShowBurger, useAppSelector } from './hooks';
+import BurgerMenu from './components/UI/BurgerMenu';
 const App: React.FC = () => {
+  const showBurger = useAppSelector((state) => state.ui.showBurgerMenu);
   useShowBurger();
   return (
     <>
-      <NavBar />
+      {showBurger && <BurgerMenu />}
+      {!showBurger && <NavBar />}
       <Routes>
         <Route
           path='/'
