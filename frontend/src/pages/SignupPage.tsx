@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import SignupForm from '../components/SignupForm';
 import { useFetch } from '../hooks';
 import { Link } from 'react-router-dom';
