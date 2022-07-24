@@ -49,7 +49,7 @@ model Day {
 model Week {
   id             Int      @id @default(autoincrement())
   userId         Int      @unique
-  user           User?    @relation(fields: [userId], references: [id])
+  user           User     @relation(fields: [userId], references: [id])
   mondayHours    Int      @db.SmallInt
   tuesdayHours   Int      @db.SmallInt
   wednesdayHours Int      @db.SmallInt
