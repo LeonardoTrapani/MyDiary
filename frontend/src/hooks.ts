@@ -8,6 +8,7 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
+import { uiActions } from './store/ui-slice';
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch: () => AppDispatch = useDispatch;
@@ -149,4 +150,21 @@ export const useFetch = () => {
   );
 
   return { loading, error, data, fetchNow };
+};
+
+export const useShowBurger = () => {
+  const dispatch = useAppDispatch();
+  const showBurgerMenu = useAppSelector((state) => state.ui.showBurgerMenu);
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width > 768 && showBurgerMenu === false) {
+        dispatch(uiActions.toggleBurgerMenu(true));
+      } else if (width <= 768 && showBurgerMenu === true) {
+        dispatch(uiActions.toggleBurgerMenu(false));
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [dispatch, showBurgerMenu]);
 };

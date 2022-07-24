@@ -13,10 +13,5 @@ export const LoginPage: React.FC = () => {
     dispatch(login(emailValue, passwordValue));
   };
 
-  return (
-    <div className='w-screen flex items-center justify-center flex-col gap-10'>
-      <LoginForm onSubmit={loginFormSubmitHandler} />
-      <Link to='/signup'>Signup insted</Link>
-    </div>
-  );
+  return <h1>Login page</h1>;
 };
