@@ -15,6 +15,7 @@ import dayRoutes from './routes/day';
 import { ErrorResponse } from './models';
 
 import { PrismaClient } from '@prisma/client';
+import weekRouter from './routes/week';
 export const prisma = new PrismaClient();
 
 //Configuring dotenv package to use env variables form .env
@@ -32,6 +33,7 @@ app.get('/', (req: Request, res: Response) => {
 app.use(authRoutes);
 app.use('/homework', homeworkRoutes);
 app.use('/day', dayRoutes);
+app.use('/week', weekRouter);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   const response: ErrorResponse = {
