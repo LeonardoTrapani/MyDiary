@@ -56,10 +56,7 @@ const SignupForm: React.FC<{
     onSubmit(usernameValue, emailValue, passwordValue);
   };
   return (
-    <form
-      onSubmit={formSubmitHandler}
-      className='p-5 w-min m-auto flex flex-col gap-8'
-    >
+    <form onSubmit={formSubmitHandler} className=''>
       <Input
         errorMessage={usernameErrorMessage}
         hasError={usernameHasError}

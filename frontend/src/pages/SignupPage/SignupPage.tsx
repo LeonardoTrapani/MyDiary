@@ -34,11 +34,7 @@ export const SignupPage: React.FC = () => {
         isLoading={isSignupLoading}
       />
       <Link to='/login'>Login instead</Link>
-      {signupError && (
-        <p className='text-black border-8 border-red-700 bg-red-500 p-4 rounded'>
-          {signupError}
-        </p>
-      )}
+      {signupError && <p className=''>{signupError}</p>}
       {!signupError && signupData && <p>Signed up succesfully</p>}
     </Card>
   );

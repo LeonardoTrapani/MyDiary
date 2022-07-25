@@ -11,7 +11,7 @@ const App: React.FC = () => {
   const showBurger = useAppSelector((state) => state.ui.showBurgerMenu);
   useShowBurger();
   return (
-    <div className='bg-zinc-100 text-zinc-800'>
+    <>
       {showBurger && <BurgerMenu />}
       {!showBurger && <NavBar />}
       <Routes>
@@ -27,7 +27,7 @@ const App: React.FC = () => {
         <Route path='/signup' element={<SignupPage />} />
         <Route path='*' element={<NotFound />} />
       </Routes>
-    </div>
+    </>
   );
 };
 
