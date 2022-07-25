@@ -1,8 +1,8 @@
 import React from 'react';
 import { slide as Menu } from 'react-burger-menu';
 
-import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { uiActions } from '../../../store/ui-slice';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import { uiActions } from '../../store/ui-slice';
 import { BiCalendarStar, BiChip, BiAccessibility } from 'react-icons/bi';
 
 import BurgerItem from './BurgerItem';
@@ -18,33 +18,26 @@ const BurgerMenu = () => {
       top: '36px',
     },
     bmBurgerBars: {
-      background: '#373a47',
-    },
-    bmBurgerBarsHover: {
-      background: '#a90000',
+      background: '#1f2937',
     },
     bmCrossButton: {
       height: '24px',
       width: '24px',
     },
     bmCross: {
-      background: '#bdc3c7',
+      background: '#1f2937',
     },
     bmMenuWrap: {
       position: 'fixed',
       height: '100%',
     },
     bmMenu: {
-      background: '#373a47',
+      background: '#f4f4f5',
       padding: '2.5em 1.5em 0',
       fontSize: '1.15em',
     },
     bmMorphShape: {
-      fill: '#373a47',
-    },
-    bmItemList: {
-      color: '#b8b7ad',
-      padding: '0.8em',
+      fill: '#f4f4f5',
     },
     bmItem: {
       display: 'block',
@@ -60,7 +53,7 @@ const BurgerMenu = () => {
   const closeHamburgerHandler = () => {
     dispatch(uiActions.closeBurgerMenu());
   };
-  const ICON_SIZE = 20;
+  const ICON_SIZE = 22;
   return (
     <Menu
       styles={styles}

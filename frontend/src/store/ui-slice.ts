@@ -31,7 +31,6 @@ const uiSlice = createSlice({
   initialState,
   reducers: {
     toggleBurgerMenuShown(state, action: PayloadAction<boolean>) {
-      console.log('SHOW:', action.payload);
       state.showBurgerMenu = action.payload;
     },
     openBurgerMenu(state) {

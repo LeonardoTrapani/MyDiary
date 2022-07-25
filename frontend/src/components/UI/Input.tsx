@@ -18,7 +18,7 @@ const Input: React.FC<{
       </label>
       <input
         className={
-          'border rounded p-1 w-96 focus: focus:outline-none min-w-full md:min-w-0' +
+          'border rounded p-1 focus: focus:outline-none min-w-full' +
           (props.hasError ? ' border-red-500' : ' border-black')
         }
         id={props.name}

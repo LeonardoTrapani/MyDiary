@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
-import Button from './UI/Button';
-import Input from './UI/Input';
-import { useInput } from '../hooks';
-import { useAppSelector } from '../hooks';
-import { emailValidCheck, passwordInputChecks } from '../utilities';
+import Button from '../../components/UI/Button';
+import Input from '../../components/UI/Input';
+import { useInput } from '../../hooks';
+import { useAppSelector } from '../../hooks';
+import { emailValidCheck, passwordInputChecks } from '../../utilities';
 const LoginForm: React.FC<{
   onSubmit: (emailValue: string, passwordValue: string) => void;
 }> = ({ onSubmit }) => {
@@ -43,10 +43,7 @@ const LoginForm: React.FC<{
 
   return (
     <>
-      <form
-        className='p-5 w-min m-auto flex flex-col gap-8'
-        onSubmit={loginSubmitHandler}
-      >
+      <form className='' onSubmit={loginSubmitHandler}>
         <Input
           value={emailValue}
           onChange={emailChangeHandler}

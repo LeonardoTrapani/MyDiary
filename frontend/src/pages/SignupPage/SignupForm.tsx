@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
-import { useInput } from '../hooks';
-import Input from './UI/Input';
-import Button from './UI/Button';
-import { emailValidCheck, passwordInputChecks } from '../utilities';
+import { useInput } from '../../hooks';
+import Input from '../../components/UI/Input';
+import Button from '../../components/UI/Button';
+import { emailValidCheck, passwordInputChecks } from '../../utilities';
 
 const SignupForm: React.FC<{
   onSubmit: (username: string, emailValue: string, password: string) => void;
