@@ -12,8 +12,8 @@ export const HomePage: React.FC = () => {
   const {
     fetchNow: fetchHomework,
     data: homework,
-    error: homeworkError,
-    loading: isHomeworkLoading,
+    // error: homeworkError,
+    // loading: isHomeworkLoading,
   } = useFetch();
   useEffect(() => {
     fetchHomework(BACKEND_URL + '/homework/all', {

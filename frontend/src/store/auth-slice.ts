@@ -1,6 +1,7 @@
 import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
 import { myFetch } from '../utilities/utilities';
 import { BACKEND_URL } from '../utilities/contants';
+import { uiActions } from './ui-slice';
 
 interface AuthState {
   userDetails?: {
@@ -12,11 +13,15 @@ interface AuthState {
   isAuthenticated: boolean;
   loginError?: string;
   isLoginLoading: boolean;
+  tokenLoginError: boolean;
+  tokenLoginSuccess: boolean;
 }
 
 const initialState: AuthState = {
   isAuthenticated: false,
   isLoginLoading: false,
+  tokenLoginError: false,
+  tokenLoginSuccess: false,
 };
 const authSlice = createSlice({
   name: 'auth',
@@ -56,6 +61,22 @@ const authSlice = createSlice({
     setToken(state, action: PayloadAction<string>) {
       state.token = action.payload;
     },
+    authorizeByTokenSuccess(
+      state,
+      action: PayloadAction<{
+        username: string;
+        email: string;
+        userId: string;
+        token: string;
+      }>
+    ) {
+      state.isAuthenticated = true;
+      state.userDetails = action.payload;
+      state.tokenLoginSuccess = true;
+    },
+    setTokenHasError(state, action: PayloadAction<boolean>) {
+      state.tokenLoginError = action.payload;
+    },
   },
 });
 
@@ -80,6 +101,24 @@ export const login = (email: string, password: string) => {
       dispatch(authActions.failedLogin({ errorMessage: message as string }));
     } finally {
       dispatch(authActions.toggleLoading());
+    }
+  };
+};
+
+export const authenticateByToken = (token: string) => {
+  return async (dispatch: Dispatch) => {
+    dispatch(uiActions.toggleLoading());
+    try {
+      const user = await myFetch(BACKEND_URL + '/userInfo', {
+        headers: {
+          authorization: token,
+        },
+      });
+      dispatch(authActions.authorizeByTokenSuccess({ ...user, token }));
+    } catch (err) {
+      dispatch(authActions.setTokenHasError(true));
+    } finally {
+      dispatch(uiActions.toggleLoading());
     }
   };
 };

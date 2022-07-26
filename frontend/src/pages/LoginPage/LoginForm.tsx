@@ -8,6 +8,7 @@ import {
 } from '../../utilities/utilities';
 import AuthForm, { InputInformations } from '../../components/AuthForm';
 import { login } from '../../store/auth-slice';
+import { useNavigate } from 'react-router-dom';
 const LoginForm: React.FC = () => {
   const {
     value: emailValue,
@@ -29,12 +30,14 @@ const LoginForm: React.FC = () => {
     isValid: isPasswordValid,
   } = useInput(passwordInputChecks);
 
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const loginFormSubmitHandler = (
     emailValue: string,
     passwordValue: string
   ) => {
     dispatch(login(emailValue, passwordValue));
+    navigate('/');
   };
 
   const isLoginLoading = useAppSelector((state) => state.auth.isLoginLoading);

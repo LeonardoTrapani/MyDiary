@@ -1,12 +1,14 @@
 import { SHOW_BURGER_MENU_PX } from './contants';
 
 interface CustomRequestInit extends RequestInit {
-  requestBody: Record<string, unknown>;
+  requestBody?: Record<string, unknown>;
 }
 
 export const myFetch = async (url: string, options?: CustomRequestInit) => {
   if (options) {
-    options.body = JSON.stringify(options.requestBody);
+    if (options.requestBody) {
+      options.body = JSON.stringify(options.requestBody);
+    }
     options.headers = {
       ...options.headers,
       'Content-Type': 'application/json',
@@ -19,7 +21,6 @@ export const myFetch = async (url: string, options?: CustomRequestInit) => {
   if (!result.ok) {
     throw new Error(data.message);
   }
-  console.log(data);
   return data;
 };
 
