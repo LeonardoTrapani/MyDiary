@@ -27,6 +27,7 @@ model Homework {
   user        User     @relation(fields: [userId], references: [id])
   userId      Int
   name        String
+  description String
   subject     String
   finishDate  DateTime @db.Date
   plannedDate DateTime @db.Date

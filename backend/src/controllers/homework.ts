@@ -15,7 +15,8 @@ export const createHomework = async (
     return;
   }
   const { userId } = req;
-  let { name, subject, finishDate, plannedDate, duration } = req.body;
+  let { name, subject, finishDate, plannedDate, duration, description } =
+    req.body;
   finishDate = new Date();
   plannedDate = new Date();
   try {
@@ -25,6 +26,7 @@ export const createHomework = async (
         duration,
         finishDate,
         name,
+        description,
         subject,
         plannedDate,
       },

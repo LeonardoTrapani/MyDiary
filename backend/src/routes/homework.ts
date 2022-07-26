@@ -15,6 +15,10 @@ router.post(
       .isString()
       .notEmpty()
       .isLength({ min: 3 }),
+    body('description', 'please enter a description with at least 5 characters')
+      .trim()
+      .isLength({ min: 5 })
+      .notEmpty(),
     body('subject', 'please enter a subject').trim().isString().notEmpty(),
     body('finishDate', 'plase enter a valid date')
       .custom((value) => validatorDateHandler(value))
