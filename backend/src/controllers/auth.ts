@@ -77,6 +77,7 @@ export const login = async (
         email,
       },
     });
+
     if (!user) {
       throw new Error();
     }
@@ -90,7 +91,6 @@ export const login = async (
       process.env.JWT_SECRET!,
       { expiresIn: '1h' }
     );
-
     return res.status(200).json({
       token,
       userId: user.id,
