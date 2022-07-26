@@ -7,6 +7,7 @@ const Input: React.FC<{
   onBlur: () => void;
   hasError: boolean;
   errorMessage: string;
+  type: string;
   other?: Record<string, never>;
 }> = (props) => {
   return (
@@ -30,6 +31,7 @@ const Input: React.FC<{
         onChange={props.onChange}
         onBlur={props.onBlur}
         placeholder='&nbsp;'
+        type={props.type}
         {...props.other}
       />
     </div>

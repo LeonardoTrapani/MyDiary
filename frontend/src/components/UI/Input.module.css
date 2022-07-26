@@ -41,5 +41,6 @@
 }
 .error input {
   border: 2px solid #dd4848;
+  padding: calc(0.5rem - 1px);
 }
 /* ef4444 */

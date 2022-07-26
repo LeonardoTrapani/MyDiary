@@ -1,16 +1,43 @@
-import React, { useMemo } from 'react';
-import { useInput } from '../../utilities/hooks';
-import Input from '../../components/UI/Input';
-import Button from '../../components/UI/Button';
+import React, { useEffect, useMemo } from 'react';
+import { useFetch, useInput } from '../../utilities/hooks';
 import {
   emailValidCheck,
   passwordInputChecks,
 } from '../../utilities/utilities';
+import AuthForm, { InputInformations } from '../../components/AuthForm';
+import { BACKEND_URL } from '../../utilities/contants';
+import { useNavigate } from 'react-router-dom';
 
-const SignupForm: React.FC<{
-  onSubmit: (username: string, emailValue: string, password: string) => void;
-  isLoading: boolean;
-}> = ({ onSubmit, isLoading }) => {
+const SignupForm: React.FC = () => {
+  const {
+    data: signupData,
+    error: signupError,
+    fetchNow: fetchSignup,
+    loading: isSignupLoading,
+  } = useFetch();
+
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (signupData) {
+      navigate('/login');
+    }
+  }, [signupData, navigate]);
+
+  const signupFormSubmitHandler = async (
+    username: string,
+    email: string,
+    password: string
+  ) => {
+    fetchSignup(BACKEND_URL + '/signup', {
+      requestBody: {
+        username,
+        email,
+        password,
+      },
+      method: 'POST',
+    });
+  };
+
   const {
     value: usernameValue,
     errorMessage: usernameErrorMessage,
@@ -25,7 +52,7 @@ const SignupForm: React.FC<{
     },
     {
       check: (value) => value.length >= 5,
-      errorMessage: 'please enter a username with at least 5 characters',
+      errorMessage: 'insert at least 5 characters',
     },
   ]);
   const {
@@ -56,38 +83,50 @@ const SignupForm: React.FC<{
   }, [isPasswordValid, isEmailValid, isUsernameValid]);
   const formSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onSubmit(usernameValue, emailValue, passwordValue);
+    signupFormSubmitHandler(usernameValue, emailValue, passwordValue);
   };
+
+  const inputs = [
+    {
+      errorMessage: usernameErrorMessage,
+      hasError: usernameHasError,
+      name: 'Username',
+      onChange: onChangeUsername,
+      validate: validateUsername,
+      value: usernameValue,
+      type: 'text',
+    },
+    {
+      errorMessage: emailErrorMessage,
+      hasError: emailHasError,
+      name: 'Email',
+      onChange: onChangeEmail,
+      validate: validateEmail,
+      value: emailValue,
+      type: 'email',
+    },
+    {
+      errorMessage: passwordErrorMessage,
+      hasError: passwordHasError,
+      name: 'Password',
+      onChange: onChangePassword,
+      validate: validatePassword,
+      value: passwordValue,
+      type: 'password',
+    },
+  ] as InputInformations[];
   return (
-    <form onSubmit={formSubmitHandler} className=''>
-      <Input
-        errorMessage={usernameErrorMessage}
-        hasError={usernameHasError}
-        name='Username'
-        onBlur={validateUsername}
-        onChange={onChangeUsername}
-        value={usernameValue}
-      />{' '}
-      <Input
-        errorMessage={emailErrorMessage}
-        hasError={emailHasError}
-        name='Email'
-        onBlur={validateEmail}
-        onChange={onChangeEmail}
-        value={emailValue}
-      />
-      <Input
-        errorMessage={passwordErrorMessage}
-        hasError={passwordHasError}
-        name='Password'
-        onBlur={validatePassword}
-        onChange={onChangePassword}
-        value={passwordValue}
-      />
-      <Button isValid={isFormValid} type='submit' isLoading={isLoading}>
-        Signup
-      </Button>
-    </form>
+    <AuthForm
+      formSubmitHandler={formSubmitHandler}
+      inputs={inputs}
+      insteadToName='Login'
+      insteadToPath='/login'
+      isLoading={isSignupLoading}
+      isValid={isFormValid}
+      name='Signup'
+      errorMessage={signupError}
+      hasFetchError={signupError ? true : false}
+    />
   );
 };
 

@@ -1,18 +1,14 @@
 import React, { useMemo } from 'react';
-import Button from '../../components/UI/Button';
-import Input from '../../components/UI/Input';
-import { useInput } from '../../utilities/hooks';
+import { useAppDispatch, useInput } from '../../utilities/hooks';
 import { useAppSelector } from '../../utilities/hooks';
-import styles from './Login.module.css';
 
 import {
   emailValidCheck,
   passwordInputChecks,
 } from '../../utilities/utilities';
-import AuthForm from '../../components/AuthForm';
-const LoginForm: React.FC<{
-  onSubmit: (emailValue: string, passwordValue: string) => void;
-}> = ({ onSubmit }) => {
+import AuthForm, { InputInformations } from '../../components/AuthForm';
+import { login } from '../../store/auth-slice';
+const LoginForm: React.FC = () => {
   const {
     value: emailValue,
     onChangeValue: emailChangeHandler,
@@ -33,6 +29,14 @@ const LoginForm: React.FC<{
     isValid: isPasswordValid,
   } = useInput(passwordInputChecks);
 
+  const dispatch = useAppDispatch();
+  const loginFormSubmitHandler = (
+    emailValue: string,
+    passwordValue: string
+  ) => {
+    dispatch(login(emailValue, passwordValue));
+  };
+
   const isLoginLoading = useAppSelector((state) => state.auth.isLoginLoading);
 
   const isFormValid = useMemo(
@@ -45,32 +49,29 @@ const LoginForm: React.FC<{
     if (!isFormValid) {
       return;
     }
-    onSubmit(emailValue, passwordValue);
+    loginFormSubmitHandler(emailValue, passwordValue);
   };
 
-  interface InputInformations {
-    value: string;
-    name: string;
-    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    validate: () => boolean;
-    errorMessage: string;
-    hasError: boolean;
-    onBlur: () => void;
-  }
+  const loginErrorMessage = useAppSelector((state) => state.auth.loginError);
+
   const inputs = [
     {
       value: emailValue,
-      name: 'email',
+      name: 'Email',
       onChange: emailChangeHandler,
       validate: validateEmail,
+      hasError: emailError,
       errorMessage: emailErrorMessage,
+      type: 'email',
     },
     {
       value: passwordValue,
-      name: 'password',
+      name: 'Password',
       onChange: passwordChangeHandler,
       validate: validatePassword,
+      hasError: passwordError,
       errorMessage: passwordErrorMessage,
+      type: 'password',
     },
   ] as InputInformations[];
   return (
@@ -79,52 +80,13 @@ const LoginForm: React.FC<{
       inputs={inputs}
       isLoading={isLoginLoading}
       isValid={isFormValid}
+      insteadToName='Signup'
+      insteadToPath='/signup'
+      name='Login'
+      errorMessage={loginErrorMessage}
+      hasFetchError={loginErrorMessage ? true : false}
     />
   );
-  // return (
-  //   <div
-  //     className={`${styles['center-flex']} ${
-  //       !showHamburgerMenu ? styles['rem-header-height'] : ''
-  //     }`}
-  //   >
-  //     <div className={styles['form-container']}>
-  //       <div className={styles['form-img']} />
-  //       <form className={styles.form} onSubmit={loginSubmitHandler}>
-  //         <h2>Login</h2>
-  //         <div className={styles['input-wrap']}>
-  //           <Input
-  //             value={emailValue}
-  //             onChange={emailChangeHandler}
-  //             onBlur={validateEmail}
-  //             name='Email'
-  //             hasError={emailError}
-  //             errorMessage={emailErrorMessage}
-  //           />
-  //           <Input
-  //             value={passwordValue}
-  //             onChange={passwordChangeHandler}
-  //             onBlur={validatePassword}
-  //             name='Password'
-  //             hasError={passwordError}
-  //             errorMessage={passwordErrorMessage}
-  //           />
-  //         </div>
-  //         <div className={styles['btn-wrap']}>
-  //           <Button
-  //             isValid={isFormValid}
-  //             type='submit'
-  //             isLoading={isLoginLoading}
-  //           >
-  //             Login
-  //           </Button>
-  //           <Link to='/signup' className={styles.instead}>
-  //             Signup Instead
-  //           </Link>
-  //         </div>
-  //       </form>
-  //     </div>
-  //   </div>
-  // );
 };
 
 export default LoginForm;

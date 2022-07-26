@@ -12,7 +12,6 @@ export const myFetch = async (url: string, options?: CustomRequestInit) => {
       'Content-Type': 'application/json',
     };
   }
-  console.log('GOING TO FETCH');
   const result = await fetch(url, {
     ...options,
   });
