@@ -71,6 +71,7 @@ export const login = (email: string, password: string) => {
           password,
         },
       });
+      localStorage.setItem('token', `bearer ${data.token}`);
       dispatch(authActions.login({ ...data }));
     } catch ({ message }) {
       dispatch(authActions.failedLogin({ errorMessage: message as string }));

@@ -1,9 +1,10 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
+import { isAuthenticated } from '../middlewares';
 
 const router = Router();
 
-import { signup, login } from '../controllers/auth';
+import { signup, login, getUserInfo } from '../controllers/auth';
 
 router.post(
   '/login',
@@ -30,4 +31,5 @@ router.post(
   signup
 );
 
+router.get('/userInfo', isAuthenticated, getUserInfo);
 export default router;

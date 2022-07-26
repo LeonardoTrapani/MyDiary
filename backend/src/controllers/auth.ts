@@ -1,4 +1,4 @@
-import { Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
@@ -79,12 +79,12 @@ export const login = async (
     });
 
     if (!user) {
-      throw new Error();
+      return throwResponseError('email or password are wrong', 400, res);
     }
     const passwordIsValid = await bcrypt.compare(password, user.hashedPassword);
 
     if (!passwordIsValid) {
-      throw new Error('password is invalid');
+      return throwResponseError('email or password are wrong', 400, res);
     }
     const token = jwt.sign(
       { email: user.email, userId: user.id },
@@ -99,5 +99,27 @@ export const login = async (
     });
   } catch (err) {
     return throwResponseError('unable to login', 400, res);
+  }
+};
+
+export const getUserInfo = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: +req.userId!,
+      },
+      select: {
+        email: true,
+        username: true,
+        id: true,
+      },
+    });
+    res.json(user);
+  } catch (err) {
+    throwResponseError('unable to find the user', 400, res);
   }
 };
