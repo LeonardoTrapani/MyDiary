@@ -65,7 +65,7 @@ const AuthForm: React.FC<{
           <div className={styles['input-wrap']}>{InputsJsx}</div>
           <div className={styles['btn-wrap']}>
             <Button isValid={isValid} type='submit' isLoading={isLoading}>
-              Login
+              {name}
             </Button>
             <Link to={insteadToPath} className={styles.instead}>
               {`${insteadToName} Instead`}
