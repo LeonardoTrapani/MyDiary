@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
-
+import styles from './Card.module.css';
 const Card: React.FC<{ children?: ReactNode }> = (props) => {
-  return <div className='drop-shadow-lg p-3 min-w-min'>{props.children}</div>;
+  return <div className={styles.card}>{props.children}</div>;
 };
 export default Card;

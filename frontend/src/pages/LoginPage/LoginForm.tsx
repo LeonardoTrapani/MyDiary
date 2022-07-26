@@ -1,9 +1,14 @@
 import React, { useMemo } from 'react';
 import Button from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
-import { useInput } from '../../hooks';
-import { useAppSelector } from '../../hooks';
-import { emailValidCheck, passwordInputChecks } from '../../utilities';
+import { useInput } from '../../utilities/hooks';
+import { useAppSelector } from '../../utilities/hooks';
+import styles from './Login.module.css';
+
+import {
+  emailValidCheck,
+  passwordInputChecks,
+} from '../../utilities/utilities';
 const LoginForm: React.FC<{
   onSubmit: (emailValue: string, passwordValue: string) => void;
 }> = ({ onSubmit }) => {
@@ -28,6 +33,8 @@ const LoginForm: React.FC<{
   } = useInput(passwordInputChecks);
 
   const isLoginLoading = useAppSelector((state) => state.auth.isLoginLoading);
+  const showHamburgerMenu = useAppSelector((state) => state.ui.showBurgerMenu);
+
   const isFormValid = useMemo(
     () => isEmailValid && isPasswordValid,
     [isEmailValid, isPasswordValid]
@@ -42,29 +49,40 @@ const LoginForm: React.FC<{
   };
 
   return (
-    <>
-      <form className='' onSubmit={loginSubmitHandler}>
-        <Input
-          value={emailValue}
-          onChange={emailChangeHandler}
-          onBlur={validateEmail}
-          name='Email'
-          hasError={emailError}
-          errorMessage={emailErrorMessage}
-        />
-        <Input
-          value={passwordValue}
-          onChange={passwordChangeHandler}
-          onBlur={validatePassword}
-          name='Password'
-          hasError={passwordError}
-          errorMessage={passwordErrorMessage}
-        />
-        <Button isValid={isFormValid} type='submit' isLoading={isLoginLoading}>
-          Login
-        </Button>
-      </form>
-    </>
+    <div
+      className={`${styles['center-flex']} ${
+        !showHamburgerMenu ? styles['rem-header-height'] : ''
+      }`}
+    >
+      <div className={styles['form-container']}>
+        <div className={styles['form-img']} />
+        <form className={styles.form} onSubmit={loginSubmitHandler}>
+          <Input
+            value={emailValue}
+            onChange={emailChangeHandler}
+            onBlur={validateEmail}
+            name='Email'
+            hasError={emailError}
+            errorMessage={emailErrorMessage}
+          />
+          <Input
+            value={passwordValue}
+            onChange={passwordChangeHandler}
+            onBlur={validatePassword}
+            name='Password'
+            hasError={passwordError}
+            errorMessage={passwordErrorMessage}
+          />
+          <Button
+            isValid={isFormValid}
+            type='submit'
+            isLoading={isLoginLoading}
+          >
+            Login
+          </Button>
+        </form>
+      </div>
+    </div>
   );
 };
 

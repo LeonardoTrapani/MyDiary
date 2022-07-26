@@ -1,7 +1,7 @@
 import React from 'react';
 import LoginForm from './LoginForm';
 import { login } from '../../store/auth-slice';
-import { useAppDispatch } from '../../hooks';
+import { useAppDispatch } from '../../utilities/hooks';
 
 export const LoginPage: React.FC = () => {
   const dispatch = useAppDispatch();

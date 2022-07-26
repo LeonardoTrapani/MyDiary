@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { useAppDispatch } from '../../hooks';
+import { useAppDispatch } from '../../utilities/hooks';
 import { uiActions } from '../../store/ui-slice';
 
 const BurgerItem: React.FC<{

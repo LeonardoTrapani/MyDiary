@@ -1,7 +1,7 @@
 import React from 'react';
 import { slide as Menu } from 'react-burger-menu';
 
-import { useAppDispatch, useAppSelector } from '../../hooks';
+import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
 import { uiActions } from '../../store/ui-slice';
 import { BiCalendarStar, BiChip, BiAccessibility } from 'react-icons/bi';
 

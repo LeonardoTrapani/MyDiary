@@ -1,6 +1,6 @@
 import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
-import { myFetch } from '../utilities';
-import { BACKEND_URL } from '../contants';
+import { myFetch } from '../utilities/utilities';
+import { BACKEND_URL } from '../utilities/contants';
 
 interface AuthState {
   userDetails?: {

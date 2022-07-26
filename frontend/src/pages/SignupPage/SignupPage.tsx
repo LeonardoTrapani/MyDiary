@@ -1,8 +1,8 @@
 import React from 'react';
 import SignupForm from './SignupForm';
-import { useFetch } from '../../hooks';
+import { useFetch } from '../../utilities/hooks';
 import { Link } from 'react-router-dom';
-import { BACKEND_URL } from '../../contants';
+import { BACKEND_URL } from '../../utilities/contants';
 import Card from '../../components/UI/Card';
 export const SignupPage: React.FC = () => {
   const {

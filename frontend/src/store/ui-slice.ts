@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { SHOW_BURGER_MENU_PX } from '../contants';
+import { SHOW_BURGER_MENU_PX } from '../utilities/contants';
 
 interface UiState {
   burgerMenuOpen: boolean;

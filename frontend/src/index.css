@@ -21,7 +21,7 @@ body {
 }
 
 .shadow {
-  box-shadow: 0 2.4rem 4.8rem rgba(0, 0, 0, 0.1);
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 /*
 - Spacing system (px)
@@ -60,8 +60,9 @@ Large: 1.8
 #ffffff
 
 --- 05 SHADOWS
-BIG: filter: drop-shadow(0 4px 3px rgb(0 0 0 / 0.07)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06));
-SMALL: filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.1)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.06));
+SMALL: box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+MEDIUM: box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+BIG: box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
 
 --- 06 BORDER-RADIUS
 Default: 9px
