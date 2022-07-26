@@ -1,6 +1,31 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { BACKEND_URL } from '../utilities/contants';
+import { useAppSelector, useFetch } from '../utilities/hooks';
 
 export const HomePage: React.FC = () => {
+  const token = useAppSelector((state) => state.auth?.token);
+  const navigate = useNavigate();
+  if (!token) {
+    navigate('/login');
+  }
+  const {
+    fetchNow: fetchHomework,
+    data: homework,
+    error: homeworkError,
+    loading: isHomeworkLoading,
+  } = useFetch();
+  useEffect(() => {
+    fetchHomework(BACKEND_URL + '/homework/all', {
+      headers: {
+        Authorization: token as string,
+      },
+    });
+  }, [token, fetchHomework]);
+
+  useEffect(() => {
+    console.log(homework);
+  }, [homework]);
   return <h1>Home page</h1>;
 };
 

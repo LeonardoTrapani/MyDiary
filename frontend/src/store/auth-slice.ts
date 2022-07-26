@@ -4,11 +4,11 @@ import { BACKEND_URL } from '../utilities/contants';
 
 interface AuthState {
   userDetails?: {
-    token: string;
     username: string;
     email: string;
     userId: string;
   };
+  token?: string;
   isAuthenticated: boolean;
   loginError?: string;
   isLoginLoading: boolean;
@@ -52,6 +52,9 @@ const authSlice = createSlice({
       }>
     ) {
       state.loginError = action.payload.errorMessage;
+    },
+    setToken(state, action: PayloadAction<string>) {
+      state.token = action.payload;
     },
   },
 });
