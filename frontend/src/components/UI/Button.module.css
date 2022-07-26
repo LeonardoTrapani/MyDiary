@@ -1,0 +1,20 @@
+.button {
+  border: none;
+  height: 2.5rem;
+  font-size: larger;
+  text-transform: uppercase;
+  font-weight: 700;
+  background-color: #2563eb;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #3e73e6;
+}
+
+.btn--invalid {
+  cursor: not-allowed;
+  background-color: rgba(141, 141, 141, 0.7) !important;
+}

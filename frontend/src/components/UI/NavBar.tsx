@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './NavBar.module.css';
 import { AcademicCapIcon } from '@heroicons/react/outline';
 import { NavLink } from 'react-router-dom';
+
 const NavBar: React.FC = () => {
   return (
     <header>

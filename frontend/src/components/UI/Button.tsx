@@ -1,5 +1,6 @@
 import React from 'react';
 import LoadingSpinner from './LoadingSpinner';
+import styles from './Button.module.css';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isValid: boolean;
@@ -20,13 +21,10 @@ const Button: React.FC<ButtonProps> = ({
     <button
       {...props}
       onClick={buttonClickHandler}
-      className={
-        'h-10 bg-blue-500 min-w-full rounded-md flex justify-center gap-2 items-center' +
-        (isValid ? '' : ' opacity-60 hover:cursor-not-allowed')
-      }
+      className={styles.button + ' ' + (isValid ? '' : styles['btn--invalid'])}
     >
       {isLoading && <LoadingSpinner />}
-      {<p>{children}</p>}
+      {children}
     </button>
   );
 };
