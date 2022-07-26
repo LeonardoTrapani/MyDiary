@@ -9,6 +9,7 @@ import {
   emailValidCheck,
   passwordInputChecks,
 } from '../../utilities/utilities';
+import { Link } from 'react-router-dom';
 const LoginForm: React.FC<{
   onSubmit: (emailValue: string, passwordValue: string) => void;
 }> = ({ onSubmit }) => {
@@ -57,6 +58,7 @@ const LoginForm: React.FC<{
       <div className={styles['form-container']}>
         <div className={styles['form-img']} />
         <form className={styles.form} onSubmit={loginSubmitHandler}>
+          <h2>Login</h2>
           <Input
             value={emailValue}
             onChange={emailChangeHandler}
@@ -80,6 +82,7 @@ const LoginForm: React.FC<{
           >
             Login
           </Button>
+          <Link to='/signup'>Signup Instead</Link>
         </form>
       </div>
     </div>

@@ -3,16 +3,25 @@
   gap: 2rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   width: 100%;
-  max-width: 50rem;
+  max-width: 60rem;
   overflow: hidden;
-  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-  border-radius: 12px;
-  background: linear-gradient(rgb(59, 131, 246), rgb(37, 100, 235));
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
+    rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+  border-radius: 6px;
+  background: #8bb6ef;
   height: 70vh;
 }
 
 .form-img {
-  background: linear-gradient(rgba(59, 131, 246, 0.5), rgba(37, 100, 235, 0.5)),
+  background: linear-gradient(
+      to right,
+      rgba(59, 131, 246, 0.5),
+      rgba(59, 131, 246, 0.5),
+      rgba(59, 131, 246, 0.5),
+      rgba(59, 131, 246, 0.5),
+      rgba(59, 131, 246, 0.5),
+      #8bb6ef
+    ),
     url(../../assets/school-students.jpeg);
   background-repeat: no-repeat;
   background-size: cover;
@@ -28,4 +37,17 @@
 
 .rem-header-height {
   height: calc(100vh - 3.2rem) !important;
+}
+
+.form {
+  height: 100%;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem 2rem 2rem 0;
+}
+
+.form h2 {
+  font-size: 3rem;
 }

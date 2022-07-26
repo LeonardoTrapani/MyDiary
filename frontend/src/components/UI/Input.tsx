@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from './Input.module.css';
 const Input: React.FC<{
   name: string;
   value: string;
@@ -9,27 +10,28 @@ const Input: React.FC<{
   other?: Record<string, never>;
 }> = (props) => {
   return (
-    <div>
-      <label
-        htmlFor={props.name}
-        className={'text-black' + (props.hasError ? ' text-red-500' : '')}
-      >
-        {props.name}
-      </label>
+    <div
+      className={
+        styles['input-container'] + ' ' + (props.hasError ? styles.error : '')
+      }
+    >
+      <div className={styles['title-container']}>
+        <label htmlFor={props.name} className={styles.label}>
+          {props.name}
+        </label>
+        {props.hasError && (
+          <p className={styles['error-text']}>{props.errorMessage}</p>
+        )}
+      </div>
       <input
-        className={
-          'border rounded p-1 focus: focus:outline-none min-w-full' +
-          (props.hasError ? ' border-red-500' : ' border-black')
-        }
+        className={styles.input}
         id={props.name}
         value={props.value}
         onChange={props.onChange}
         onBlur={props.onBlur}
+        placeholder='&nbsp;'
         {...props.other}
       />
-      {props.hasError && (
-        <p className='text-red-500 mt-3'>{props.errorMessage}</p>
-      )}
     </div>
   );
 };

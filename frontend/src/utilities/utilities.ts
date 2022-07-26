@@ -55,33 +55,33 @@ export const passwordInputChecks = [
         return false;
       }
     },
-    errorMessage: 'The password should have one special character',
+    errorMessage: 'Insert one special character',
   },
   {
     check: (value: string) => {
       return /[A-Z]/.test(value);
     },
-    errorMessage: 'The password should have one uppercase letter',
+    errorMessage: 'Insert one uppercase letter',
   },
   {
     check: (value: string) => {
       const regexp = /\d/;
       return regexp.test(value);
     },
-    errorMessage: 'The password should have at least one number',
+    errorMessage: 'Insert at least one number',
   },
   {
     check: (value: string) => {
       const regexp = /[a-z]/;
       return regexp.test(value);
     },
-    errorMessage: 'The password should have at least one lowercase letter',
+    errorMessage: 'Insert one lowercase letter',
   },
   {
     check: (value: string) => {
       return value.length >= 8;
     },
-    errorMessage: 'The password be at least 8 characters long',
+    errorMessage: 'Insert at least 8 characters',
   },
 ];
 
