@@ -10,8 +10,6 @@ import React, {
 } from 'react';
 import { uiActions } from '../store/ui-slice';
 import { calculateShowBurger } from './utilities';
-import { useNavigate } from 'react-router-dom';
-import { authenticateByToken } from '../store/auth-slice';
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch: () => AppDispatch = useDispatch;
@@ -168,28 +166,4 @@ export const useShowBurger = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [dispatch, showBurgerMenu]);
-};
-
-export const useCheckAuthenticated = () => {
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const tokenLoginSuccess = useAppSelector(
-    (state) => state.auth.tokenLoginSuccess
-  );
-  const tokenLoginError = useAppSelector((state) => state.auth.tokenLoginError);
-  useEffect(() => {
-    if (tokenLoginError) {
-      navigate('/login');
-    }
-  }, [tokenLoginError, navigate, tokenLoginSuccess]);
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      dispatch(authenticateByToken(token));
-    } else {
-      navigate('/login');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 };

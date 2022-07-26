@@ -5,21 +5,18 @@ import { LoginPage } from './pages/LoginPage/LoginPage';
 import { SignupPage } from './pages/SignupPage/SignupPage';
 import { HomePage, NotFound } from './pages/pages';
 import NavBar from './components/UI/NavBar';
-import {
-  useShowBurger,
-  useAppSelector,
-  useCheckAuthenticated,
-} from './utilities/hooks';
+import { useShowBurger, useAppSelector } from './utilities/hooks';
 import BurgerMenu from './components/BurgerMenu/BurgerMenu';
+import LoadingSpinner from './components/UI/LoadingSpinner';
 
 const App: React.FC = () => {
   const showBurger = useAppSelector((state) => state.ui.showBurgerMenu);
+  const isLoading = useAppSelector((state) => state.ui.isLoading);
   useShowBurger();
+
   const { pathname } = useLocation();
 
-  const showNav = pathname === '/';
-
-  useCheckAuthenticated();
+  const hideNav = pathname === '/login' || pathname === '/signup';
 
   const navigation = (
     <>
@@ -27,9 +24,13 @@ const App: React.FC = () => {
       {!showBurger && <NavBar />}
     </>
   );
+
+  if (isLoading) {
+    return <LoadingSpinner center />;
+  }
   return (
     <>
-      {showNav && navigation}
+      {!hideNav && navigation}
       <Routes>
         <Route
           path='/'
