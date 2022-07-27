@@ -80,8 +80,10 @@ export const calculateFreeDays = async (
   const { weekNumber } = req.params;
   const expirationDateDate = new Date(expirationDate);
 
-  const starterDate = addDaysFromToday(+weekNumber * 7 - 7);
-  const finishDate = addDaysFromToday(+weekNumber * 7 - 1);
+  const constantStarterDate = addDaysFromToday(+weekNumber * 7 - 7);
+  const constantFinishDate = addDaysFromToday(+weekNumber * 7 - 1);
+  let starterDate = addDaysFromToday(+weekNumber * 7 - 7);
+  let finishDate = addDaysFromToday(+weekNumber * 7 - 1);
 
   const { userId } = req;
   try {
@@ -107,6 +109,31 @@ export const calculateFreeDays = async (
         res
       );
     }
+
+    const finalFreeDays: {
+      date: Date;
+      freeMinutes: number;
+    }[] = [];
+
+    let counter = 0;
+    while (
+      finalFreeDays.length < 7 &&
+      finishDate.getDate() < expirationDateDate.getDate() &&
+      counter < 100
+    ) {
+      const freeMinutes = findfreeMinutesInDay(starterDate, week);
+
+      if (freeMinutes > duration) {
+        finalFreeDays.push({
+          date: starterDate,
+          freeMinutes,
+        });
+      }
+      starterDate = addDays(starterDate, 1);
+      finishDate = addDays(finishDate, 1);
+      counter++;
+    }
+
     const freeDays = await prisma.user.findUnique({
       where: {
         id: +userId!,
@@ -126,33 +153,29 @@ export const calculateFreeDays = async (
                 gte: +duration,
               },
               date: {
-                lte: finishDate,
-                gte: starterDate,
+                lte: constantFinishDate,
+                gte: constantStarterDate,
               },
             },
           },
         },
       },
     });
+
     if (!freeDays) {
       return throwResponseError('error finding free days', 400, res);
     }
-    const finalFreeDays: {
-      date: Date;
-      freeMinutes: number;
-    }[] = [];
-    for (let i = 0; i < 7; i++) {
-      const currentDate = addDays(starterDate, i);
-      finalFreeDays.push({
-        date: currentDate,
-        freeMinutes: findfreeMinutesInDay(currentDate, week),
-      });
-    }
+
     freeDays.days.forEach((day) => {
       const dayToReplace = finalFreeDays.find((d) => {
-        return (d.date = day.date);
+        return d.date.getDate() === day.date.getDate();
       });
-      dayToReplace!.freeMinutes = day.freeMinutes;
+
+      if (dayToReplace) {
+        dayToReplace.freeMinutes = day.freeMinutes;
+      } else {
+        //If there are no days but there is a special day
+      }
     });
     return res.json(finalFreeDays);
   } catch (err) {
