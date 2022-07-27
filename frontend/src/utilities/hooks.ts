@@ -10,7 +10,6 @@ import React, {
 } from 'react';
 import { uiActions } from '../store/ui-slice';
 import { calculateShowBurger } from './utilities';
-import { authActions } from '../store/auth-slice';
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch: () => AppDispatch = useDispatch;
@@ -167,11 +166,4 @@ export const useShowBurger = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [dispatch, showBurgerMenu]);
-};
-
-export const useInitialAuthentication = () => {
-  const dispatch = useAppDispatch();
-  useEffect(() => {
-    dispatch(authActions.initialLogin());
-  }, [dispatch]);
 };

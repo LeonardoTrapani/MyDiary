@@ -5,11 +5,7 @@ import { LoginPage } from './pages/LoginPage/LoginPage';
 import { SignupPage } from './pages/SignupPage/SignupPage';
 import { HomePage, NotFound } from './pages/pages';
 import NavBar from './components/UI/NavBar';
-import {
-  useShowBurger,
-  useAppSelector,
-  useInitialAuthentication,
-} from './utilities/hooks';
+import { useShowBurger, useAppSelector } from './utilities/hooks';
 import BurgerMenu from './components/BurgerMenu/BurgerMenu';
 import LoadingSpinner from './components/UI/LoadingSpinner';
 import AuthenticatedRouteGuard from './components/UI/AuthenticatedRouteGuard';
@@ -18,7 +14,6 @@ const App: React.FC = () => {
   const showBurger = useAppSelector((state) => state.ui.showBurgerMenu);
   const isLoading = useAppSelector((state) => state.ui.isLoading);
   useShowBurger();
-  useInitialAuthentication();
 
   const { pathname } = useLocation();
 

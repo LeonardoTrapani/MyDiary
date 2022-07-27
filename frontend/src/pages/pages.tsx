@@ -1,27 +1,14 @@
 import React, { useEffect } from 'react';
-import { BACKEND_URL } from '../utilities/contants';
-import { useAppSelector, useFetch } from '../utilities/hooks';
+import { fetchHomework } from '../store/homework-slice';
+
+import { useAppSelector } from '../utilities/hooks';
 
 export const HomePage: React.FC = () => {
-  const token = useAppSelector((state) => state.auth.token);
-  const {
-    fetchNow: fetchHomework,
-    data: homework,
-    // error: homeworkError,
-    // loading: isHomeworkLoading,
-  } = useFetch();
+  const token = useAppSelector((state) => state.auth.token) as string;
 
   useEffect(() => {
-    fetchHomework(BACKEND_URL + '/homework/all', {
-      headers: {
-        Authorization: token as string,
-      },
-    });
-  }, [token, fetchHomework]);
-
-  useEffect(() => {
-    console.log(homework);
-  }, [homework]);
+    fetchHomework(token);
+  }, [token]);
   return <h1>Home page</h1>;
 };
 

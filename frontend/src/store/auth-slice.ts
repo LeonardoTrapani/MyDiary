@@ -8,15 +8,16 @@ interface AuthState {
     email: string;
     userId: string;
   };
-  token?: string;
+  token: string | null;
   isAuthenticated: boolean;
   loginError?: string;
   isLoginLoading: boolean;
 }
 
 const initialState: AuthState = {
-  isAuthenticated: false,
+  token: localStorage.getItem('token'),
   isLoginLoading: false,
+  isAuthenticated: !!localStorage.getItem('token'),
 };
 const authSlice = createSlice({
   name: 'auth',
@@ -55,13 +56,6 @@ const authSlice = createSlice({
     },
     setToken(state, action: PayloadAction<string>) {
       state.token = action.payload;
-    },
-    initialLogin(state) {
-      const token = localStorage.getItem('token');
-      if (token) {
-        state.isAuthenticated = true;
-        state.token = token;
-      }
     },
   },
 });
