@@ -143,9 +143,10 @@ export const calculateFreeDays = async (
       freeHours: number;
     }[] = [];
     for (let i = 0; i < 7; i++) {
+      const currentDate = addDays(starterDate, i);
       finalFreeDays.push({
-        date: addDays(starterDate, i),
-        freeHours: findFreeHoursInDay(addDays(starterDate, i), week),
+        date: currentDate,
+        freeHours: findFreeHoursInDay(currentDate, week),
       });
     }
     freeDays.days.forEach((day) => {
@@ -175,30 +176,29 @@ const findFreeHoursInDay = (
     sundayFreeMinutes: number;
   }
 ) => {
-  console.log(week);
   const dayOfTheWeek = date.getDay();
-  console.log(dayOfTheWeek);
+  console.log(dayOfTheWeek, date.getDay());
   switch (dayOfTheWeek) {
     case 0: {
-      return week.mondayFreeMinutes;
+      return week.sundayFreeMinutes;
     }
     case 1: {
-      return week.tuesdayFreeMinutes;
+      return week.mondayFreeMinutes;
     }
     case 2: {
-      return week.wednesdayFreeMinutes;
+      return week.tuesdayFreeMinutes;
     }
     case 3: {
-      return week.thursdayFreeMinutes;
+      return week.wednesdayFreeMinutes;
     }
     case 4: {
-      return week.fridayFreeMinutes;
+      return week.thursdayFreeMinutes;
     }
     case 5: {
-      return week.saturdayFreeMinutes;
+      return week.fridayFreeMinutes;
     }
     case 6: {
-      return week.sundayFreeMinutes;
+      return week.saturdayFreeMinutes;
     }
   }
   return 0;
