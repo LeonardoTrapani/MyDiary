@@ -15,25 +15,25 @@ export const createHomework = async (
     return;
   }
   const { userId } = req;
-  let { name, subject, finishDate, plannedDate, duration, description } =
+  let { name, subject, duration, description, finishDate, plannedDate } =
     req.body;
-  finishDate = new Date();
-  plannedDate = new Date();
   try {
     const homework = await prisma.homework.create({
       data: {
-        userId: +userId!, //TODO: validate and remove excalmation mark
         duration,
         finishDate,
         name,
         description,
         subject,
         plannedDate,
+        userId: +userId!,
       },
       select: {
         name: true,
         completed: true,
         duration: true,
+        plannedDate: true,
+        description: true,
         finishDate: true,
         subject: true,
       },
@@ -55,7 +55,9 @@ export const getAllHomework = async (
       userId,
     },
     select: {
+      id: true,
       name: true,
+      description: true,
       subject: true,
       finishDate: true,
       plannedDate: true,
