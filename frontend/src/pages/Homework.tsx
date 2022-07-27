@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react';
+import Form from '../components/BurgerMenu/Form';
+import styles from './Homework.module.css';
+import Input from '../components/UI/Input';
 import { fetchHomework } from '../store/homework-slice';
-import { useAppDispatch, useAppSelector } from '../utilities/hooks';
+import { useAppDispatch, useAppSelector, useInput } from '../utilities/hooks';
 
 export const HomePage: React.FC = () => {
   const token = useAppSelector((state) => state.auth.token) as string;
@@ -30,7 +33,192 @@ export const HomePage: React.FC = () => {
 };
 
 export const AddHomeworkPage: React.FC = () => {
-  return <div>Add homework</div>;
+  const {
+    errorMessage: nameErrorMessage,
+    hasError: nameHasError,
+    isValid: isNameValid,
+    onChangeValue: onNameChange,
+    validate: validateName,
+    value: nameValue,
+  } = useInput([
+    {
+      check: (value) => !!value,
+      errorMessage: 'please insert a name',
+    },
+    {
+      check: (value) => value.length >= 3,
+      errorMessage: 'insert at least 3 characters',
+    },
+  ]);
+  const {
+    errorMessage: descriptionErrorMessage,
+    hasError: descriptionHasError,
+    isValid: isDescriptionValid,
+    onChangeTextAreaValue: onDescriptionChange,
+    validate: validateDescription,
+    value: descriptionValue,
+  } = useInput([
+    {
+      check: (value) => !!value,
+      errorMessage: 'please insert a description',
+    },
+    {
+      check: (value) => value.length >= 3,
+      errorMessage: 'insert at least 5 characters',
+    },
+    {
+      check: (value) => value.length <= 200,
+      errorMessage: 'insert maximum 200 character',
+    },
+  ]);
+  const {
+    errorMessage: subjectErrorMessage,
+    hasError: subjectHasError,
+    isValid: isSubjectValid,
+    onChangeValue: onChangeSubject,
+    validate: validateSubject,
+    value: subjectValue,
+  } = useInput([
+    {
+      check: (value) => !!value,
+      errorMessage: 'please insert a description',
+    },
+  ]);
+
+  const {
+    errorMessage: durationErrorMessage,
+    hasError: durationHasError,
+    isValid: isDurationValid,
+    onChangeValue: onChangeDuration,
+    validate: validateDuration,
+    value: durationValue,
+  } = useInput([
+    {
+      check: (value) => !!value,
+      errorMessage: 'please enter a duration',
+    },
+    {
+      check: (value) => {
+        try {
+          +value;
+        } catch {
+          return false;
+        }
+        return true;
+      },
+      errorMessage: 'please enter a number',
+    },
+  ]);
+  const {
+    errorMessage: expirationDateErrorMessage,
+    hasError: expirationDateHasError,
+    isValid: isExpirationDateValid,
+    onChangeValue: onChangeExpirationDate,
+    validate: validateExpirationDate,
+    value: expirationDateValue,
+  } = useInput([
+    {
+      check: (value) => !!value,
+      errorMessage: 'please enter an expiration date',
+    },
+  ]);
+  const {
+    errorMessage: plannedDateErrorMessage,
+    hasError: plannedDateHasError,
+    isValid: isPlannedDateValid,
+    onChangeValue: onChangePlannedDate,
+    validate: validatePlannedDate,
+    value: plannedDateValue,
+  } = useInput([
+    {
+      check: (value) => !!value,
+      errorMessage: 'please enter the planned date',
+    },
+  ]);
+
+  const isFormValid =
+    isNameValid &&
+    isDescriptionValid &&
+    isSubjectValid &&
+    isDurationValid &&
+    isPlannedDateValid &&
+    isExpirationDateValid;
+
+  const addHomeworkSubmitHandler = (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
+  };
+
+  return (
+    <Form
+      onSubmit={addHomeworkSubmitHandler}
+      buttonName='Add Homework'
+      isFormValid={isFormValid}
+      isFormLoading={false}
+    >
+      <Input
+        errorMessage={nameErrorMessage}
+        hasError={nameHasError}
+        name='Name'
+        onBlur={validateName}
+        onChange={onNameChange}
+        type='text'
+        value={nameValue}
+        className={styles['name-input']}
+      />
+      <Input
+        errorMessage={descriptionErrorMessage}
+        hasError={descriptionHasError}
+        name='Description'
+        onBlur={validateDescription}
+        onChangeTextArea={onDescriptionChange}
+        type='textarea'
+        value={descriptionValue}
+        className={styles['description-input']}
+      />
+      <Input
+        errorMessage={subjectErrorMessage}
+        hasError={subjectHasError}
+        name='Subject'
+        onBlur={validateSubject}
+        onChange={onChangeSubject}
+        type='text'
+        value={subjectValue}
+        className={styles['subject-input']}
+      />
+      <Input
+        errorMessage={durationErrorMessage}
+        hasError={durationHasError}
+        name='Duration (minutes)'
+        onBlur={validateDuration}
+        onChange={onChangeDuration}
+        type='number'
+        value={durationValue}
+        className={styles['duration-input']}
+      />
+      <Input
+        errorMessage={expirationDateErrorMessage}
+        hasError={expirationDateHasError}
+        name='Expiration Date'
+        onBlur={validateExpirationDate}
+        onChange={onChangeExpirationDate}
+        type='date'
+        value={expirationDateValue}
+        className={styles['expiration-input']}
+      />
+      <Input
+        errorMessage={plannedDateErrorMessage}
+        hasError={plannedDateHasError}
+        name='Planned Date'
+        onBlur={validatePlannedDate}
+        onChange={onChangePlannedDate}
+        type='date'
+        value={plannedDateValue}
+        className={styles['planned-input']}
+      />
+    </Form>
+  );
 };
 
 export const EditHomeworkPage: React.FC = () => {

@@ -3,17 +3,23 @@ import styles from './Input.module.css';
 const Input: React.FC<{
   name: string;
   value: string;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChangeTextArea?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onBlur: () => void;
   hasError: boolean;
   errorMessage: string;
   type: string;
   other?: Record<string, never>;
+  className?: string;
 }> = (props) => {
   return (
     <div
       className={
-        styles['input-container'] + ' ' + (props.hasError ? styles.error : '')
+        styles['input-container'] +
+        ' ' +
+        (props.hasError ? styles.error : '') +
+        ' ' +
+        props.className
       }
     >
       <div className={styles['title-container']}>
@@ -24,16 +30,28 @@ const Input: React.FC<{
           <p className={styles['error-text']}>{props.errorMessage}</p>
         )}
       </div>
-      <input
-        className={styles.input}
-        id={props.name}
-        value={props.value}
-        onChange={props.onChange}
-        onBlur={props.onBlur}
-        placeholder='&nbsp;'
-        type={props.type}
-        {...props.other}
-      />
+      {props.type === 'textarea' ? (
+        <textarea
+          value={props.value}
+          className={styles['text-area']}
+          id={props.name}
+          onChange={props.onChangeTextArea}
+          onBlur={props.onBlur}
+          placeholder='&nbsp;'
+          {...props.other}
+        ></textarea>
+      ) : (
+        <input
+          className={styles.input}
+          id={props.name}
+          value={props.value} // TODO: MAX: 200
+          onChange={props.onChange}
+          onBlur={props.onBlur}
+          placeholder='&nbsp;'
+          type={props.type}
+          {...props.other}
+        />
+      )}
     </div>
   );
 };

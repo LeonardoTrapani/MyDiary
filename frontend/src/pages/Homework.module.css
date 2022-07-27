@@ -1,0 +1,15 @@
+.name-input {
+  grid-column: 1 / -1;
+}
+
+.description-input {
+  grid-column: 1 / -1;
+}
+
+.subject-input {
+  grid-row: 2 / 3;
+}
+
+.duration-input {
+  grid-row: 2 / 3;
+}

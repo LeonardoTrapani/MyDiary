@@ -28,7 +28,10 @@ export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 // ]);
 // ===================================
 export const useInput = (
-  checksToBeValid: { check: (value: string) => boolean; errorMessage: string }[]
+  checksToBeValid: {
+    check: (value: string) => boolean;
+    errorMessage: string;
+  }[]
 ) => {
   const [value, setValue] = useState('');
   const [isValid, setIsValid] = useState(false);
@@ -61,6 +64,12 @@ export const useInput = (
   const onChangeValue = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
   };
+  const onChangeTextAreaValue = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setValue(event.target.value);
+  };
+
   const validate = () => {
     setHasBeenTouched(true);
     const checksValidResult = areAllChecksValid(checksToBeValid, value);
@@ -71,6 +80,7 @@ export const useInput = (
   return {
     value,
     onChangeValue,
+    onChangeTextAreaValue,
     errorMessage,
     hasError,
     validate,
