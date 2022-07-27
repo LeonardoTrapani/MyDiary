@@ -56,6 +56,13 @@ const authSlice = createSlice({
     setToken(state, action: PayloadAction<string>) {
       state.token = action.payload;
     },
+    initialLogin(state) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        state.isAuthenticated = true;
+        state.token = token;
+      }
+    },
   },
 });
 

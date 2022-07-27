@@ -7,9 +7,10 @@ export const HomePage: React.FC = () => {
   const {
     fetchNow: fetchHomework,
     data: homework,
-    error: homeworkError,
+    // error: homeworkError,
     // loading: isHomeworkLoading,
   } = useFetch();
+
   useEffect(() => {
     fetchHomework(BACKEND_URL + '/homework/all', {
       headers: {
@@ -20,7 +21,7 @@ export const HomePage: React.FC = () => {
 
   useEffect(() => {
     console.log(homework);
-  }, [homework, homeworkError]);
+  }, [homework]);
   return <h1>Home page</h1>;
 };
 
