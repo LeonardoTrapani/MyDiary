@@ -10,13 +10,13 @@ export const createWeek = async (
   next: NextFunction
 ) => {
   const {
-    mondayHours,
-    tuesdayHours,
-    wednesdayHours,
-    thursdayHours,
-    fridayHours,
-    saturdayHours,
-    sundayHours,
+    mondayFreeMinutes,
+    tuesdayFreeMinutes,
+    wednesdayFreeMinutes,
+    thursdayFreeMinutes,
+    fridayFreeMinutes,
+    saturdayFreeMinutes,
+    sundayFreeMinutes,
   } = req.body;
   const userId = +req.userId!;
   if (areThereExpressValidatorErrors(req, res)) {
@@ -40,23 +40,23 @@ export const createWeek = async (
     }
     const week = await prisma.week.create({
       data: {
-        mondayHours,
-        tuesdayHours,
-        wednesdayHours,
-        thursdayHours,
-        fridayHours,
-        saturdayHours,
-        sundayHours,
+        mondayFreeMinutes,
+        tuesdayFreeMinutes,
+        wednesdayFreeMinutes,
+        thursdayFreeMinutes,
+        fridayFreeMinutes,
+        saturdayFreeMinutes,
+        sundayFreeMinutes,
         userId,
       },
       select: {
-        mondayHours: true,
-        tuesdayHours: true,
-        wednesdayHours: true,
-        thursdayHours: true,
-        fridayHours: true,
-        saturdayHours: true,
-        sundayHours: true,
+        mondayFreeMinutes: true,
+        tuesdayFreeMinutes: true,
+        wednesdayFreeMinutes: true,
+        thursdayFreeMinutes: true,
+        fridayFreeMinutes: true,
+        saturdayFreeMinutes: true,
+        sundayFreeMinutes: true,
       },
     });
     return res.json(week);
