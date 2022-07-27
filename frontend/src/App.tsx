@@ -8,6 +8,7 @@ import NavBar from './components/UI/NavBar';
 import { useShowBurger, useAppSelector } from './utilities/hooks';
 import BurgerMenu from './components/BurgerMenu/BurgerMenu';
 import LoadingSpinner from './components/UI/LoadingSpinner';
+import AuthenticatedRouteGuard from './components/UI/AuthenticatedRouteGuard';
 
 const App: React.FC = () => {
   const showBurger = useAppSelector((state) => state.ui.showBurgerMenu);
@@ -40,8 +41,22 @@ const App: React.FC = () => {
             </RouteGuard>
           }
         />
-        <Route path='/login' element={<LoginPage />} />
-        <Route path='/signup' element={<SignupPage />} />
+        <Route
+          path='/login'
+          element={
+            <AuthenticatedRouteGuard>
+              <LoginPage />
+            </AuthenticatedRouteGuard>
+          }
+        />
+        <Route
+          path='/signup'
+          element={
+            <AuthenticatedRouteGuard>
+              <SignupPage />
+            </AuthenticatedRouteGuard>
+          }
+        />
         <Route path='*' element={<NotFound />} />
       </Routes>
     </>

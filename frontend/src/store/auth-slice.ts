@@ -56,18 +56,6 @@ const authSlice = createSlice({
     setToken(state, action: PayloadAction<string>) {
       state.token = action.payload;
     },
-    authorizeByTokenSuccess(
-      state,
-      action: PayloadAction<{
-        username: string;
-        email: string;
-        userId: string;
-        token: string;
-      }>
-    ) {
-      state.isAuthenticated = true;
-      state.userDetails = action.payload;
-    },
   },
 });
 

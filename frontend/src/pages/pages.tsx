@@ -1,18 +1,13 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { BACKEND_URL } from '../utilities/contants';
 import { useAppSelector, useFetch } from '../utilities/hooks';
 
 export const HomePage: React.FC = () => {
-  const token = useAppSelector((state) => state.auth?.token);
-  const navigate = useNavigate();
-  if (!token) {
-    navigate('/login');
-  }
+  const token = useAppSelector((state) => state.auth.token);
   const {
     fetchNow: fetchHomework,
     data: homework,
-    // error: homeworkError,
+    error: homeworkError,
     // loading: isHomeworkLoading,
   } = useFetch();
   useEffect(() => {
@@ -25,7 +20,7 @@ export const HomePage: React.FC = () => {
 
   useEffect(() => {
     console.log(homework);
-  }, [homework]);
+  }, [homework, homeworkError]);
   return <h1>Home page</h1>;
 };
 
