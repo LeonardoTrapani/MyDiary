@@ -15,13 +15,13 @@ export const createHomework = async (
     return;
   }
   const { userId } = req;
-  let { name, subject, duration, description, finishDate, plannedDate } =
+  let { name, subject, duration, description, expirationDate, plannedDate } =
     req.body;
   try {
     const homework = await prisma.homework.create({
       data: {
         duration,
-        finishDate,
+        expirationDate,
         name,
         description,
         subject,

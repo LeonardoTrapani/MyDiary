@@ -15,18 +15,21 @@ router.post(
       .isString()
       .notEmpty()
       .isLength({ min: 3 }),
-    body('description', 'please enter a description with at least 5 characters')
+    body(
+      'description',
+      'please enter a description between 5 and 200 characters'
+    )
       .trim()
-      .isLength({ min: 5 })
+      .isLength({ min: 5, max: 200 })
       .notEmpty(),
     body('subject', 'please enter a subject').trim().isString().notEmpty(),
-    body('finishDate', 'plase enter a valid date')
+    body('expirationDate', 'plase enter a valid date')
       .custom((value) => validatorDateHandler(value))
       .toDate(),
     body('plannedDate', 'please enter a valid date')
       .custom((value) => validatorDateHandler(value))
       .toDate(),
-    body('duration', 'please enter a valid duration').isNumeric(),
+    body('duration', 'please enter a valid duration').isNumeric(), //TODO: the date needs to be in the future
   ],
   createHomework
 );
