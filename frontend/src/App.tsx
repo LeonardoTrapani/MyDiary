@@ -4,7 +4,7 @@ import RouteGuard from './components/UI/RouteGuard';
 import { LoginPage } from './pages/LoginPage/LoginPage';
 import { SignupPage } from './pages/SignupPage/SignupPage';
 import { NotFound } from './pages/pages';
-import HomePage from './pages/HomePage';
+import { HomePage, AddHomeworkPage, EditHomeworkPage } from './pages/Homework';
 import NavBar from './components/UI/NavBar';
 import { useShowBurger, useAppSelector } from './utilities/hooks';
 import BurgerMenu from './components/BurgerMenu/BurgerMenu';
@@ -56,6 +56,22 @@ const App: React.FC = () => {
             <AuthenticatedRouteGuard>
               <SignupPage />
             </AuthenticatedRouteGuard>
+          }
+        />
+        <Route
+          path='/create-homework'
+          element={
+            <RouteGuard>
+              <AddHomeworkPage />
+            </RouteGuard>
+          }
+        />
+        <Route
+          path='/edit-homework/:homeworkId'
+          element={
+            <RouteGuard>
+              <EditHomeworkPage />
+            </RouteGuard>
           }
         />
         <Route path='*' element={<NotFound />} />

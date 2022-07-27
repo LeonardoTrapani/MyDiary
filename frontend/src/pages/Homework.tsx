@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { fetchHomework } from '../store/homework-slice';
 import { useAppDispatch, useAppSelector } from '../utilities/hooks';
 
-const HomePage: React.FC = () => {
+export const HomePage: React.FC = () => {
   const token = useAppSelector((state) => state.auth.token) as string;
   const homework = useAppSelector((state) => state.homework.homework);
   const dispatch = useAppDispatch();
@@ -28,4 +28,11 @@ const HomePage: React.FC = () => {
   });
   return <ul>{homeworkJSX}</ul>;
 };
-export default HomePage;
+
+export const AddHomeworkPage: React.FC = () => {
+  return <div>Add homework</div>;
+};
+
+export const EditHomeworkPage: React.FC = () => {
+  return <div>Edit homework</div>;
+};

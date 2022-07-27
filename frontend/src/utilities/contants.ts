@@ -15,8 +15,4 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     name: 'Add homework',
     to: '/create-homework',
   },
-  {
-    name: 'Edit homework',
-    to: '/edit-homework',
-  },
 ];
