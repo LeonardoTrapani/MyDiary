@@ -18,6 +18,7 @@ const Form: React.FC<{
           isLoading={props.isFormLoading}
           isValid={props.isFormValid}
           type='submit'
+          className={styles['form-btn']}
         >
           {props.buttonName}
         </Button>

@@ -10,6 +10,7 @@ const Button: React.FC<ButtonProps> = ({
   children,
   isValid,
   isLoading,
+  className,
   ...props
 }) => {
   const buttonClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -21,7 +22,13 @@ const Button: React.FC<ButtonProps> = ({
     <button
       {...props}
       onClick={buttonClickHandler}
-      className={styles.button + ' ' + (isValid ? '' : styles['btn--invalid'])}
+      className={
+        styles.button +
+        ' ' +
+        (isValid ? '' : styles['btn--invalid']) +
+        ' ' +
+        className
+      }
     >
       {isLoading && <LoadingSpinner />}
       {children}

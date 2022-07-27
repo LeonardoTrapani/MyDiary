@@ -95,7 +95,7 @@ export const AddHomeworkPage: React.FC = () => {
   } = useInput([
     {
       check: (value) => !!value,
-      errorMessage: 'please enter a duration',
+      errorMessage: 'insert a duration',
     },
     {
       check: (value) => {
@@ -106,7 +106,7 @@ export const AddHomeworkPage: React.FC = () => {
         }
         return true;
       },
-      errorMessage: 'please enter a number',
+      errorMessage: 'insert a number',
     },
   ]);
   const {
@@ -119,20 +119,7 @@ export const AddHomeworkPage: React.FC = () => {
   } = useInput([
     {
       check: (value) => !!value,
-      errorMessage: 'please enter an expiration date',
-    },
-  ]);
-  const {
-    errorMessage: plannedDateErrorMessage,
-    hasError: plannedDateHasError,
-    isValid: isPlannedDateValid,
-    onChangeValue: onChangePlannedDate,
-    validate: validatePlannedDate,
-    value: plannedDateValue,
-  } = useInput([
-    {
-      check: (value) => !!value,
-      errorMessage: 'please enter the planned date',
+      errorMessage: 'insert an expiration date',
     },
   ]);
 
@@ -141,7 +128,6 @@ export const AddHomeworkPage: React.FC = () => {
     isDescriptionValid &&
     isSubjectValid &&
     isDurationValid &&
-    isPlannedDateValid &&
     isExpirationDateValid;
 
   const addHomeworkSubmitHandler = (
@@ -206,16 +192,6 @@ export const AddHomeworkPage: React.FC = () => {
         type='date'
         value={expirationDateValue}
         className={styles['expiration-input']}
-      />
-      <Input
-        errorMessage={plannedDateErrorMessage}
-        hasError={plannedDateHasError}
-        name='Planned Date'
-        onBlur={validatePlannedDate}
-        onChange={onChangePlannedDate}
-        type='date'
-        value={plannedDateValue}
-        className={styles['planned-input']}
       />
     </Form>
   );
