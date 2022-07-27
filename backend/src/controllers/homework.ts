@@ -80,8 +80,8 @@ export const calculateFreeDays = async (
   const { weekNumber } = req.params;
   const expirationDateDate = new Date(expirationDate);
 
-  let starterDay = addDaysFromToday(+weekNumber * 7 - 7).getDate();
-  let finishDay = addDaysFromToday(+weekNumber * 7 - 1).getDate();
+  const starterDate = addDaysFromToday(+weekNumber * 7 - 7);
+  const finishDate = addDaysFromToday(+weekNumber * 7 - 1);
 
   const { userId } = req;
   try {
@@ -126,8 +126,8 @@ export const calculateFreeDays = async (
                 gte: +duration,
               },
               date: {
-                lte: addDaysFromToday(finishDay),
-                gte: addDaysFromToday(starterDay),
+                lte: finishDate,
+                gte: starterDate,
               },
             },
           },
@@ -144,8 +144,8 @@ export const calculateFreeDays = async (
     }[] = [];
     for (let i = 0; i < 7; i++) {
       finalFreeDays.push({
-        date: addDaysFromToday(starterDay + i),
-        freeHours: findFreeHoursInDay(addDaysFromToday(starterDay + i), week),
+        date: addDays(starterDate, i),
+        freeHours: findFreeHoursInDay(addDays(starterDate, i), week),
       });
     }
     freeDays.days.forEach((day) => {
@@ -175,7 +175,9 @@ const findFreeHoursInDay = (
     sundayFreeMinutes: number;
   }
 ) => {
+  console.log(week);
   const dayOfTheWeek = date.getDay();
+  console.log(dayOfTheWeek);
   switch (dayOfTheWeek) {
     case 0: {
       return week.mondayFreeMinutes;
@@ -203,8 +205,11 @@ const findFreeHoursInDay = (
 };
 
 const addDaysFromToday = (daysToAdd: number) => {
-  const date = new Date(Date.now());
-  const result = new Date(date);
+  return addDays(new Date(Date.now()), daysToAdd);
+};
+
+const addDays = (from: Date, daysToAdd: number) => {
+  let result = new Date(from);
   result.setDate(result.getDate() + daysToAdd);
   return result;
 };

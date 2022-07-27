@@ -148,7 +148,7 @@ export const AddHomeworkPage: React.FC = () => {
     event.preventDefault();
     //FETCH AND SAVE IN STATE
     try {
-      const res = await fetchAuthorized(BACKEND_URL + '/homework/freeDays/2', {
+      const res = await fetchAuthorized(BACKEND_URL + '/homework/freeDays/1', {
         method: 'POST',
         requestBody: {
           expirationDate: expirationDateValue,
