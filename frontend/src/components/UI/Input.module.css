@@ -44,3 +44,11 @@
   padding: calc(0.5rem - 1px);
 }
 /* ef4444 */
+.text-area {
+  font-family: inherit;
+  resize: none;
+  padding: 0.5rem;
+  font-size: large;
+  border: 1px solid #000;
+  height: 6rem;
+}

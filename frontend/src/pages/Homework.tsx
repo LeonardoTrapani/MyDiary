@@ -63,12 +63,12 @@ export const AddHomeworkPage: React.FC = () => {
       errorMessage: 'please insert a description',
     },
     {
-      check: (value) => value.length >= 3,
+      check: (value) => value.length >= 5,
       errorMessage: 'insert at least 5 characters',
     },
     {
-      check: (value) => value.length <= 200,
-      errorMessage: 'insert maximum 200 character',
+      check: (value) => value.length <= 400,
+      errorMessage: 'insert maximum 400 character',
     },
   ]);
   const {

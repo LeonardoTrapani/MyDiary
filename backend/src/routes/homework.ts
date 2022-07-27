@@ -17,10 +17,10 @@ router.post(
       .isLength({ min: 3 }),
     body(
       'description',
-      'please enter a description between 5 and 200 characters'
+      'please enter a description between 5 and 400 characters'
     )
       .trim()
-      .isLength({ min: 5, max: 200 })
+      .isLength({ min: 5, max: 400 })
       .notEmpty(),
     body('subject', 'please enter a subject').trim().isString().notEmpty(),
     body('expirationDate', 'plase enter a valid date')
