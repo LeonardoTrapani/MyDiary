@@ -34,7 +34,7 @@ export const createHomework = async (
         duration: true,
         plannedDate: true,
         description: true,
-        finishDate: true,
+        expirationDate: true,
         subject: true,
       },
     });
@@ -59,7 +59,7 @@ export const getAllHomework = async (
       name: true,
       description: true,
       subject: true,
-      finishDate: true,
+      expirationDate: true,
       plannedDate: true,
       duration: true,
       completed: true,
