@@ -6,7 +6,7 @@ import {
 } from '../controllers/homework';
 import { isAuthenticated } from '../middlewares';
 import { validatorDateHandler } from '../utilities';
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 
 const router = Router();
 
@@ -41,7 +41,7 @@ router.post(
 router.get('/all', isAuthenticated, getAllHomework);
 
 router.post(
-  '/freeDays',
+  '/freeDays/:weekNumber',
   isAuthenticated,
   [
     body('expirationDate', 'please insert a valid date')
@@ -51,6 +51,7 @@ router.post(
       .trim()
       .isNumeric()
       .custom((value) => +value >= 5),
+    param('weekNumber', 'week number not provided').isNumeric(),
   ],
   calculateFreeDays
 );

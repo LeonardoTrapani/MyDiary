@@ -9,34 +9,42 @@ router.post(
   '/create',
   isAuthenticated,
   [
-    body('mondayHours', 'please enter monday hours')
+    body('mondayFreeMinutes', 'please enter monday free minutes')
       .notEmpty()
       .isNumeric()
-      .withMessage('please enter a numeric value for the monday hours'),
-    body('tuesdayHours', 'please enter tuesday hours')
+      .withMessage('please enter a numeric value for the monday free minutes'),
+    body('tuesdayFreeMinutes', 'please enter tuesday free minutes')
       .notEmpty()
       .isNumeric()
-      .withMessage('please enter a numeric value for the tuesday hours'),
-    body('wednesdayHours', 'please enter wednesday hours')
+      .withMessage('please enter a numeric value for the tuesday free minutes'),
+    body('wednesdayFreeMinutes', 'please enter wednesday free minutes')
       .notEmpty()
       .isNumeric()
-      .withMessage('please enter a numeric value for the wednesday hours'),
-    body('thursdayHours', 'please enter thursday hours')
+      .withMessage(
+        'please enter a numeric value for the wednesday free minutes'
+      ),
+    body('thursdayFreeMinutes', 'please enter thursday free minutes')
       .notEmpty()
       .isNumeric()
-      .withMessage('please enter a numeric value for the thursday hours'),
-    body('fridayHours', 'please enter friday hours')
+      .withMessage(
+        'please enter a numeric value for the thursday free minutes'
+      ),
+    body('fridayFreeMinutes', 'please enter friday free minutes')
       .notEmpty()
       .isNumeric()
-      .withMessage('please enter a numeric value for the saturday hours'),
-    body('saturdayHours', 'please enter saturday hours')
+      .withMessage(
+        'please enter a numeric value for the saturday free minutes'
+      ),
+    body('saturdayFreeMinutes', 'please enter saturday free minutes')
       .notEmpty()
       .isNumeric()
-      .withMessage('please enter a numeric value for the saturday hours'),
-    body('sundayHours', 'please enter sunday hours')
+      .withMessage(
+        'please enter a numeric value for the saturday free minutes'
+      ),
+    body('sundayFreeMinutes', 'please enter sunday free minutes')
       .notEmpty()
       .isNumeric()
-      .withMessage('please enter a numeric value for the sunday hours'),
+      .withMessage('please enter a numeric value for the sunday free minutes'),
   ],
   createWeek
 );

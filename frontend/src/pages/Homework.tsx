@@ -105,6 +105,10 @@ export const AddHomeworkPage: React.FC = () => {
       errorMessage: 'insert a duration',
     },
     {
+      check: (value) => +value >= 5,
+      errorMessage: 'minimum 5 minutes',
+    },
+    {
       check: (value) => {
         try {
           +value;
@@ -144,7 +148,7 @@ export const AddHomeworkPage: React.FC = () => {
     event.preventDefault();
     //FETCH AND SAVE IN STATE
     try {
-      const res = await fetchAuthorized(BACKEND_URL + '/homework/freeDays', {
+      const res = await fetchAuthorized(BACKEND_URL + '/homework/freeDays/2', {
         method: 'POST',
         requestBody: {
           expirationDate: expirationDateValue,
