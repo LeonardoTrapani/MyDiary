@@ -27,6 +27,7 @@ export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 //   { check: emailValidCheck, errorMessage: 'Please enter a valid email' },
 // ]);
 // ===================================
+
 export const useInput = (
   checksToBeValid: {
     check: (value: string) => boolean;
@@ -176,4 +177,32 @@ export const useShowBurger = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [dispatch, showBurgerMenu]);
+};
+
+export const useFetchAuthorized = () => {
+  const token = useAppSelector((state) => state.auth.token);
+  const fetchAuthorized = async (url: string, options?: CustomRequestInit) => {
+    if (options) {
+      if (options.requestBody) {
+        options.body = JSON.stringify(options.requestBody);
+        delete options.requestBody;
+      }
+      options.headers = {
+        ...options.headers,
+        Authorization: token as string,
+        'Content-Type': 'application/json',
+      };
+    }
+
+    const result = await fetch(url, {
+      ...options,
+    });
+
+    const data = await result.json();
+    if (!result.ok) {
+      throw new Error(data.message);
+    }
+    return data;
+  };
+  return fetchAuthorized;
 };

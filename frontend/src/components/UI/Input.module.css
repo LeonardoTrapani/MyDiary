@@ -39,10 +39,12 @@
 .error {
   color: #dd4848;
 }
-.error input {
+.error input,
+.error textarea {
   border: 2px solid #dd4848;
   padding: calc(0.5rem - 1px);
 }
+
 /* ef4444 */
 .text-area {
   font-family: inherit;

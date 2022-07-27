@@ -1,5 +1,9 @@
 import { Router } from 'express';
-import { createHomework, getAllHomework } from '../controllers/homework';
+import {
+  calculateFreeDays,
+  createHomework,
+  getAllHomework,
+} from '../controllers/homework';
 import { isAuthenticated } from '../middlewares';
 import { validatorDateHandler } from '../utilities';
 import { body } from 'express-validator';
@@ -36,4 +40,19 @@ router.post(
 
 router.get('/all', isAuthenticated, getAllHomework);
 
+router.post(
+  '/freeDays',
+  isAuthenticated,
+  [
+    body('expirationDate', 'please insert a valid date')
+      .notEmpty()
+      .custom((value) => validatorDateHandler(value)),
+    body('duration', 'please enter a valid duration (min: 5)')
+      .trim()
+      .isNumeric()
+      .custom((value) => +value >= 5),
+  ],
+  calculateFreeDays
+);
+router.post('');
 export default router;

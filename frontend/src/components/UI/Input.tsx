@@ -9,7 +9,7 @@ const Input: React.FC<{
   hasError: boolean;
   errorMessage: string;
   type: string;
-  other?: Record<string, never>;
+  other?: Record<string, unknown>;
   className?: string;
 }> = (props) => {
   return (

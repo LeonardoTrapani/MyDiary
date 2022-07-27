@@ -3,7 +3,14 @@ import Form from '../components/BurgerMenu/Form';
 import styles from './Homework.module.css';
 import Input from '../components/UI/Input';
 import { fetchHomework } from '../store/homework-slice';
-import { useAppDispatch, useAppSelector, useInput } from '../utilities/hooks';
+import {
+  useAppDispatch,
+  useAppSelector,
+  useFetchAuthorized,
+  useInput,
+} from '../utilities/hooks';
+
+import { BACKEND_URL } from '../utilities/contants';
 
 export const HomePage: React.FC = () => {
   const token = useAppSelector((state) => state.auth.token) as string;
@@ -130,10 +137,24 @@ export const AddHomeworkPage: React.FC = () => {
     isDurationValid &&
     isExpirationDateValid;
 
-  const addHomeworkSubmitHandler = (
+  const fetchAuthorized = useFetchAuthorized();
+  const addHomeworkSubmitHandler = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
+    //FETCH AND SAVE IN STATE
+    try {
+      const res = await fetchAuthorized(BACKEND_URL + '/homework/freeDays', {
+        method: 'POST',
+        requestBody: {
+          expirationDate: expirationDateValue,
+          duration: durationValue,
+        },
+      });
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -191,6 +212,9 @@ export const AddHomeworkPage: React.FC = () => {
         onChange={onChangeExpirationDate}
         type='date'
         value={expirationDateValue}
+        other={{
+          min: new Date().toISOString().split('T')[0],
+        }}
         className={styles['expiration-input']}
       />
     </Form>

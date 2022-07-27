@@ -67,3 +67,49 @@ export const getAllHomework = async (
   });
   res.json(homework);
 };
+
+export const calculateFreeDays = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (areThereExpressValidatorErrors(req, res)) {
+    return;
+  }
+  const { expirationDate, duration } = req.body;
+  const expirationDateDate = new Date(expirationDate);
+  const { userId } = req;
+  try {
+    const freeDays = await prisma.user.findUnique({
+      where: {
+        id: +userId!,
+      },
+      select: {
+        days: {
+          select: {
+            date: true,
+            freeMinutes: true,
+          },
+          where: {
+            date: {
+              lt: expirationDateDate,
+            },
+            AND: {
+              freeMinutes: {
+                gte: +duration,
+              },
+            },
+          },
+        },
+      },
+    });
+    res.json(freeDays);
+  } catch (err) {
+    console.log(err);
+    throwResponseError(
+      'an error has occurred finding the free hours',
+      400,
+      res
+    );
+  }
+};
