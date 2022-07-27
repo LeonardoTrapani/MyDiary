@@ -4,10 +4,13 @@ import { myFetch } from '../utilities/utilities';
 
 interface Homework {
   name: string;
+  id: number;
   subject: string;
   finishDate: Date;
   plannedDate: Date;
-  description: Date;
+  description: string;
+  duration: number;
+  completed: boolean;
 }
 
 interface HomeworkState {
