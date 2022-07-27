@@ -134,23 +134,25 @@ export const calculateFreeDays = async (
         },
       },
     });
-    console.log(freeDays);
     if (!freeDays) {
       return throwResponseError('error finding free days', 400, res);
     }
     const finalFreeDays: {
       date: Date;
-      freeHours: number;
+      freeMinutes: number;
     }[] = [];
     for (let i = 0; i < 7; i++) {
       const currentDate = addDays(starterDate, i);
       finalFreeDays.push({
         date: currentDate,
-        freeHours: findFreeHoursInDay(currentDate, week),
+        freeMinutes: findfreeMinutesInDay(currentDate, week),
       });
     }
     freeDays.days.forEach((day) => {
-      'replace in the final free day array';
+      const dayToReplace = finalFreeDays.find((d) => {
+        return (d.date = day.date);
+      });
+      dayToReplace!.freeMinutes = day.freeMinutes;
     });
     return res.json(finalFreeDays);
   } catch (err) {
@@ -163,7 +165,7 @@ export const calculateFreeDays = async (
   }
 };
 
-const findFreeHoursInDay = (
+const findfreeMinutesInDay = (
   date: Date,
   week: {
     id: number;
@@ -177,7 +179,6 @@ const findFreeHoursInDay = (
   }
 ) => {
   const dayOfTheWeek = date.getDay();
-  console.log(dayOfTheWeek, date.getDay());
   switch (dayOfTheWeek) {
     case 0: {
       return week.sundayFreeMinutes;
