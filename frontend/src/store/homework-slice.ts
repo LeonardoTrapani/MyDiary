@@ -2,7 +2,7 @@ import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
 import { BACKEND_URL } from '../utilities/contants';
 import { myFetch } from '../utilities/utilities';
 
-interface Homework {
+export interface Homework {
   name: string;
   id: number;
   subject: string;

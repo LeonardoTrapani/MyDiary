@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authSlice from './auth-slice';
+import createHomeworkSlice from './create-homework-slice';
 import homeworkSlice from './homework-slice';
 import uiSlice from './ui-slice';
 
@@ -8,6 +9,7 @@ export const store = configureStore({
     auth: authSlice.reducer,
     ui: uiSlice.reducer,
     homework: homeworkSlice.reducer,
+    createHomework: createHomeworkSlice.reducer,
   },
 });
 

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import Form from '../components/BurgerMenu/Form';
 import styles from './Homework.module.css';
 import Input from '../components/UI/Input';
+
 import { fetchHomework } from '../store/homework-slice';
 import {
   useAppDispatch,
@@ -11,6 +12,7 @@ import {
 } from '../utilities/hooks';
 
 import { BACKEND_URL } from '../utilities/contants';
+import { createHomeworkActions } from '../store/create-homework-slice';
 
 export const HomePage: React.FC = () => {
   const token = useAppSelector((state) => state.auth.token) as string;
@@ -23,7 +25,7 @@ export const HomePage: React.FC = () => {
   if (!homework.length) {
     return <h1>No homework</h1>;
   }
-  console.log(homework);
+
   const homeworkJSX = homework.map((hmk) => {
     return (
       <li key={hmk.id}>
@@ -141,13 +143,16 @@ export const AddHomeworkPage: React.FC = () => {
     isDurationValid &&
     isExpirationDateValid;
 
+  const dispatch = useAppDispatch();
+
   const fetchAuthorized = useFetchAuthorized();
   const addHomeworkSubmitHandler = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
-    //FETCH AND SAVE IN STATE
+
     try {
+      dispatch(createHomeworkActions.setLoading(true));
       const res = await fetchAuthorized(BACKEND_URL + '/homework/freeDays/1', {
         method: 'POST',
         requestBody: {
@@ -155,9 +160,20 @@ export const AddHomeworkPage: React.FC = () => {
           duration: durationValue,
         },
       });
-      console.log(res);
+      dispatch(createHomeworkActions.setFreeDays(res));
+      dispatch(
+        createHomeworkActions.setHomeworkCreating({
+          description: descriptionValue,
+          duration: +durationValue,
+          expirationDate: new Date(expirationDateValue),
+          name: nameValue,
+          subject: subjectValue,
+        })
+      );
     } catch (err) {
-      console.log(err);
+      //TODO: handle err
+    } finally {
+      dispatch(createHomeworkActions.setLoading(false));
     }
   };
 
