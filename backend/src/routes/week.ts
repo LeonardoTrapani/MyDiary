@@ -1,9 +1,11 @@
 import { Router } from 'express';
 import { isAuthenticated } from '../middlewares';
-import { createWeek } from '../controllers/week';
+import { createWeek, getWeek } from '../controllers/week';
 import { body } from 'express-validator';
 // import { body } from 'express-validator';
 const router = Router();
+
+router.get('/get', isAuthenticated, getWeek);
 
 router.post(
   '/create',

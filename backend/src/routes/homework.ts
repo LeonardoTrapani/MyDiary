@@ -41,7 +41,7 @@ router.post(
 router.get('/all', isAuthenticated, getAllHomework);
 
 router.post(
-  '/freeDays/:weekNumber',
+  '/freeDays/:pageNumber',
   isAuthenticated,
   [
     body('expirationDate', 'please insert a valid date')
@@ -51,7 +51,7 @@ router.post(
       .trim()
       .isNumeric()
       .custom((value) => +value >= 5),
-    param('weekNumber', 'week number not provided').isNumeric(),
+    param('pageNumber', 'page number not provided').isNumeric(),
   ],
   calculateFreeDays
 );

@@ -68,3 +68,30 @@ export const createWeek = async (
     );
   }
 };
+
+export const getWeek = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { userId } = req;
+  const week = await prisma.user.findUnique({
+    where: {
+      id: +userId!,
+    },
+    select: {
+      week: {
+        select: {
+          mondayFreeMinutes: true,
+          tuesdayFreeMinutes: true,
+          wednesdayFreeMinutes: true,
+          thursdayFreeMinutes: true,
+          fridayFreeMinutes: true,
+          saturdayFreeMinutes: true,
+          sundayFreeMinutes: true,
+        },
+      },
+    },
+  });
+  res.json(week);
+};

@@ -15,12 +15,18 @@ export const createHomework = async (
     return;
   }
   const { userId } = req;
-  let { name, subject, duration, description, expirationDate, plannedDate } =
-    req.body;
+  let {
+    name,
+    subject,
+    homeworkDuration,
+    description,
+    expirationDate,
+    plannedDate,
+  } = req.body;
   try {
     const homework = await prisma.homework.create({
       data: {
-        duration,
+        duration: homeworkDuration,
         expirationDate,
         name,
         description,
@@ -68,6 +74,7 @@ export const getAllHomework = async (
   res.json(homework);
 };
 
+const DAYS_PER_PAGE = 7;
 export const calculateFreeDays = async (
   req: Request,
   res: Response,
@@ -76,14 +83,13 @@ export const calculateFreeDays = async (
   if (areThereExpressValidatorErrors(req, res)) {
     return;
   }
-  const { expirationDate, duration } = req.body;
-  const { weekNumber } = req.params;
+  const { expirationDate, duration: homeworkDuration } = req.body;
+  const { pageNumber } = req.params;
   const expirationDateDate = new Date(expirationDate);
 
-  const constantStarterDate = addDaysFromToday(+weekNumber * 7 - 7);
-  const constantFinishDate = addDaysFromToday(+weekNumber * 7 - 1);
-  let starterDate = addDaysFromToday(+weekNumber * 7 - 7);
-  let finishDate = addDaysFromToday(+weekNumber * 7 - 1);
+  let currentDate = addDaysFromToday(
+    +pageNumber * DAYS_PER_PAGE - DAYS_PER_PAGE
+  );
 
   const { userId } = req;
   try {
@@ -110,30 +116,6 @@ export const calculateFreeDays = async (
       );
     }
 
-    const finalFreeDays: {
-      date: Date;
-      freeMinutes: number;
-    }[] = [];
-
-    let counter = 0;
-    while (
-      finalFreeDays.length < 7 &&
-      finishDate.getDate() < expirationDateDate.getDate() &&
-      counter < 100
-    ) {
-      const freeMinutes = findfreeMinutesInDay(starterDate, week);
-
-      if (freeMinutes > duration) {
-        finalFreeDays.push({
-          date: starterDate,
-          freeMinutes,
-        });
-      }
-      starterDate = addDays(starterDate, 1);
-      finishDate = addDays(finishDate, 1);
-      counter++;
-    }
-
     const freeDays = await prisma.user.findUnique({
       where: {
         id: +userId!,
@@ -145,17 +127,8 @@ export const calculateFreeDays = async (
             freeMinutes: true,
           },
           where: {
-            date: {
-              lt: expirationDateDate,
-            },
-            AND: {
-              freeMinutes: {
-                gte: +duration,
-              },
-              date: {
-                lte: constantFinishDate,
-                gte: constantStarterDate,
-              },
+            freeMinutes: {
+              gte: +homeworkDuration,
             },
           },
         },
@@ -163,20 +136,36 @@ export const calculateFreeDays = async (
     });
 
     if (!freeDays) {
-      return throwResponseError('error finding free days', 400, res);
+      return throwResponseError(
+        "an error has occurred: can't find free days",
+        400,
+        res
+      );
     }
+    console.log('FREE DAYS: ', freeDays.days);
+    const finalFreeDays: {
+      date: Date;
+      freeMinutes: number;
+    }[] = [];
 
-    freeDays.days.forEach((day) => {
-      const dayToReplace = finalFreeDays.find((d) => {
-        return d.date.getDate() === day.date.getDate();
+    while (
+      finalFreeDays.length < DAYS_PER_PAGE &&
+      currentDate < expirationDateDate
+    ) {
+      const freeMinutes = findfreeMinutesInDay(currentDate, week);
+      const freeDayToPut = freeDays.days.find((day) => {
+        return day.date.toDateString() === currentDate.toDateString();
       });
-
-      if (dayToReplace) {
-        dayToReplace.freeMinutes = day.freeMinutes;
-      } else {
-        //If there are no days but there is a special day
+      if (freeDayToPut) {
+        finalFreeDays.push(freeDayToPut);
+      } else if (freeMinutes > homeworkDuration) {
+        finalFreeDays.push({
+          date: currentDate,
+          freeMinutes,
+        });
       }
-    });
+      currentDate = addDays(currentDate, 1);
+    }
     return res.json(finalFreeDays);
   } catch (err) {
     console.log(err);
