@@ -5,28 +5,18 @@ interface UiState {
   burgerMenuOpen: boolean;
   showBurgerMenu: boolean;
   isLoading: boolean;
+  modalOpened: boolean;
+  snackbarOpened: boolean;
+  snackBarMessage?: string;
 }
 
 const initialState: UiState = {
   burgerMenuOpen: false,
   isLoading: false,
   showBurgerMenu: window.innerWidth <= SHOW_BURGER_MENU_PX,
+  modalOpened: false,
+  snackbarOpened: false,
 };
-
-// 'sm': '640px',
-//       // => @media (min-width: 640px) { ... }
-
-//       'md': '768px',
-//       // => @media (min-width: 768px) { ... }
-
-//       'lg': '1024px',
-//       // => @media (min-width: 1024px) { ... }
-
-//       'xl': '1280px',
-//       // => @media (min-width: 1280px) { ... }
-
-//       '2xl': '1536px',
-//       // => @media (min-width: 1536px) { ... }
 
 const uiSlice = createSlice({
   name: 'ui',
@@ -43,6 +33,9 @@ const uiSlice = createSlice({
     },
     toggleLoading(state) {
       state.isLoading = !state.isLoading;
+    },
+    toggleModalOpened(state, action: PayloadAction<boolean>) {
+      state.modalOpened = action.payload;
     },
   },
 });

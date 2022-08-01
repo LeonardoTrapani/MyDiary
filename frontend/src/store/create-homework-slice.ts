@@ -1,7 +1,10 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
+import { BACKEND_URL } from '../utilities/contants';
+import { CustomRequestInit } from '../utilities/hooks';
+import { uiActions } from './ui-slice';
 
 interface freeDay {
-  date: Date;
+  date: string;
   freeMinutes: number;
 }
 interface HomeworkCreating {
@@ -9,7 +12,7 @@ interface HomeworkCreating {
   subject: string;
   description: string;
   duration: number;
-  expirationDate: Date;
+  expirationDate: string;
 }
 interface createHomeworkState {
   isLoading: boolean;
@@ -36,6 +39,48 @@ const createHomeworkSlice = createSlice({
     },
   },
 });
+
+export const addHomeworkAndSearchDays = (
+  values: {
+    expirationDateValue: string;
+    durationValue: number;
+    descriptionValue: string;
+    nameValue: string;
+    subjectValue: string;
+  },
+  fetchAuthorized: (
+    url: string,
+    options?: CustomRequestInit | undefined
+  ) => Promise<freeDay[]>
+) => {
+  return async (dispatch: Dispatch) => {
+    try {
+      dispatch(uiActions.toggleModalOpened(true));
+      dispatch(createHomeworkActions.setLoading(true));
+      const res = await fetchAuthorized(BACKEND_URL + '/homework/freeDays/1', {
+        method: 'POST',
+        requestBody: {
+          expirationDate: values.expirationDateValue,
+          duration: values.durationValue,
+        },
+      });
+      dispatch(createHomeworkActions.setFreeDays(res));
+      dispatch(
+        createHomeworkActions.setHomeworkCreating({
+          description: values.descriptionValue,
+          duration: values.durationValue,
+          expirationDate: values.expirationDateValue,
+          name: values.nameValue,
+          subject: values.subjectValue,
+        })
+      );
+    } catch (err) {
+      //TODO: handle err
+    } finally {
+      dispatch(createHomeworkActions.setLoading(false));
+    }
+  };
+};
 
 export default createHomeworkSlice;
 export const createHomeworkActions = createHomeworkSlice.actions;

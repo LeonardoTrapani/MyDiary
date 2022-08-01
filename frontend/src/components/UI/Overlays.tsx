@@ -1,9 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { useAppSelector } from '../../utilities/hooks';
 import styles from './Overlays.module.css';
 
-export const Backdrop: React.FC = () => {
-  return <div className={styles.backdrop}></div>;
+export const Backdrop: React.FC<{
+  onClose: () => void;
+}> = (props) => {
+  return <div className={styles.backdrop} onClick={props.onClose} />;
 };
 
 const ModalOverlay: React.FC<{
@@ -20,15 +23,22 @@ const portalElement = document.getElementById('overlays') as HTMLDivElement;
 
 export const Modal: React.FC<{
   children: React.ReactElement;
+  onClose: () => void;
 }> = (props) => {
-  return (
+  const modalOpened = useAppSelector((state) => state.ui.modalOpened);
+  return modalOpened ? (
     <>
-      {ReactDOM.createPortal(<Backdrop />, portalElement)}
+      {ReactDOM.createPortal(
+        <Backdrop onClose={props.onClose} />,
+        portalElement
+      )}
       {ReactDOM.createPortal(
         <ModalOverlay>{props.children}</ModalOverlay>,
         portalElement
       )}
     </>
+  ) : (
+    <></>
   );
 };
 

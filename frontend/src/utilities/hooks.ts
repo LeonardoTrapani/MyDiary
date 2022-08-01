@@ -120,7 +120,7 @@ const areAllChecksValid = (
 // } = useFetch();
 // =================================
 
-interface CustomRequestInit extends RequestInit {
+export interface CustomRequestInit extends RequestInit {
   requestBody?: Record<string, unknown>;
 }
 

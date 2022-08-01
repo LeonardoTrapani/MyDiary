@@ -4,12 +4,18 @@ import RouteGuard from './components/UI/RouteGuard';
 import { LoginPage } from './pages/LoginPage/LoginPage';
 import { SignupPage } from './pages/SignupPage/SignupPage';
 import { NotFound } from './pages/pages';
-import { HomePage, AddHomeworkPage, EditHomeworkPage } from './pages/Homework';
+import {
+  HomePage,
+  AddHomeworkPage,
+  EditHomeworkPage,
+  SelectFreeDays,
+} from './pages/Homework';
 import NavBar from './components/UI/NavBar';
 import { useShowBurger, useAppSelector } from './utilities/hooks';
 import BurgerMenu from './components/BurgerMenu/BurgerMenu';
 import LoadingSpinner from './components/UI/LoadingSpinner';
 import AuthenticatedRouteGuard from './components/UI/AuthenticatedRouteGuard';
+import { Modal } from './components/UI/Overlays';
 
 const App: React.FC = () => {
   const showBurger = useAppSelector((state) => state.ui.showBurgerMenu);
@@ -32,7 +38,6 @@ const App: React.FC = () => {
   }
   return (
     <>
-      {!hideNav && navigation}
       <Routes>
         <Route
           path='/'
@@ -62,7 +67,10 @@ const App: React.FC = () => {
           path='/create-homework'
           element={
             <RouteGuard>
-              <AddHomeworkPage />
+              <>
+                <SelectFreeDays />
+                <AddHomeworkPage />
+              </>
             </RouteGuard>
           }
         />

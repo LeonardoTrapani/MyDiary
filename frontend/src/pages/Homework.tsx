@@ -11,8 +11,9 @@ import {
   useInput,
 } from '../utilities/hooks';
 
-import { BACKEND_URL } from '../utilities/contants';
-import { createHomeworkActions } from '../store/create-homework-slice';
+import { addHomeworkAndSearchDays } from '../store/create-homework-slice';
+import { Modal } from '../components/UI/Overlays';
+import { uiActions } from '../store/ui-slice';
 
 export const HomePage: React.FC = () => {
   const token = useAppSelector((state) => state.auth.token) as string;
@@ -144,37 +145,23 @@ export const AddHomeworkPage: React.FC = () => {
     isExpirationDateValid;
 
   const dispatch = useAppDispatch();
-
   const fetchAuthorized = useFetchAuthorized();
   const addHomeworkSubmitHandler = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
-
-    try {
-      dispatch(createHomeworkActions.setLoading(true));
-      const res = await fetchAuthorized(BACKEND_URL + '/homework/freeDays/1', {
-        method: 'POST',
-        requestBody: {
-          expirationDate: expirationDateValue,
-          duration: durationValue,
+    dispatch(
+      addHomeworkAndSearchDays(
+        {
+          descriptionValue,
+          durationValue: +durationValue,
+          expirationDateValue: expirationDateValue,
+          nameValue,
+          subjectValue,
         },
-      });
-      dispatch(createHomeworkActions.setFreeDays(res));
-      dispatch(
-        createHomeworkActions.setHomeworkCreating({
-          description: descriptionValue,
-          duration: +durationValue,
-          expirationDate: new Date(expirationDateValue),
-          name: nameValue,
-          subject: subjectValue,
-        })
-      );
-    } catch (err) {
-      //TODO: handle err
-    } finally {
-      dispatch(createHomeworkActions.setLoading(false));
-    }
+        fetchAuthorized
+      )
+    );
   };
 
   return (
@@ -238,6 +225,46 @@ export const AddHomeworkPage: React.FC = () => {
         className={styles['expiration-input']}
       />
     </Form>
+  );
+};
+
+export const SelectFreeDays: React.FC = () => {
+  const freeDays = useAppSelector((state) => state.createHomework.freeDays);
+  const createHomeworkLoading = useAppSelector(
+    (state) => state.createHomework.isLoading
+  );
+  const dispatch = useAppDispatch();
+
+  const modalCloseHandler = () => {
+    dispatch(uiActions.toggleModalOpened(false));
+  };
+
+  const freeDaysJsx = freeDays.map((freeDay) => {
+    return (
+      <FreeDay
+        date={freeDay.date}
+        freeTime={freeDay.freeMinutes}
+        key={freeDay.date}
+      />
+    );
+  });
+  return (
+    <Modal onClose={modalCloseHandler}>
+      {createHomeworkLoading ? <div>Loading...</div> : <>{freeDaysJsx}</>}
+    </Modal>
+  );
+};
+
+export const FreeDay: React.FC<{
+  date: string;
+  freeTime: number;
+}> = (props) => {
+  const formattedDate = new Date(props.date).toDateString();
+  return (
+    <div>
+      <h3>{formattedDate}</h3>
+      <h4>{props.freeTime}</h4>
+    </div>
   );
 };
 
