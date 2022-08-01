@@ -61,7 +61,10 @@ router.post(
       .trim()
       .isNumeric()
       .custom((value) => +value >= 5),
-    param('pageNumber', 'page number not provided').isNumeric(),
+    param('pageNumber', 'page number not provided')
+      .isNumeric()
+      .custom((value) => value > 0)
+      .withMessage('the page needs to be at least 1'),
   ],
   validateExpressValidation,
   calculateFreeDays
