@@ -1,13 +1,14 @@
 import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
 import { BACKEND_URL } from '../utilities/contants';
 import { myFetch } from '../utilities/utilities';
+import { plannedDate } from './create-homework-slice';
 
 export interface Homework {
   name: string;
   id: number;
   subject: string;
   finishDate: Date;
-  plannedDate: Date;
+  plannedDates: [plannedDate, ...plannedDate[]];
   description: string;
   duration: number;
   completed: boolean;

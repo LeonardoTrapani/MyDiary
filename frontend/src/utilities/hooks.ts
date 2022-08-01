@@ -181,28 +181,31 @@ export const useShowBurger = () => {
 
 export const useFetchAuthorized = () => {
   const token = useAppSelector((state) => state.auth.token);
-  const fetchAuthorized = async (url: string, options?: CustomRequestInit) => {
-    if (options) {
-      if (options.requestBody) {
-        options.body = JSON.stringify(options.requestBody);
-        delete options.requestBody;
+  const fetchAuthorized = useCallback(
+    () => async (url: string, options?: CustomRequestInit) => {
+      if (options) {
+        if (options.requestBody) {
+          options.body = JSON.stringify(options.requestBody);
+          delete options.requestBody;
+        }
+        options.headers = {
+          ...options.headers,
+          Authorization: token as string,
+          'Content-Type': 'application/json',
+        };
       }
-      options.headers = {
-        ...options.headers,
-        Authorization: token as string,
-        'Content-Type': 'application/json',
-      };
-    }
 
-    const result = await fetch(url, {
-      ...options,
-    });
+      const result = await fetch(url, {
+        ...options,
+      });
 
-    const data = await result.json();
-    if (!result.ok) {
-      throw new Error(data.message);
-    }
-    return data;
-  };
+      const data = await result.json();
+      if (!result.ok) {
+        throw new Error(data.message);
+      }
+      return data;
+    },
+    [token]
+  );
   return fetchAuthorized;
 };

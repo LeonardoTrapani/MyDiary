@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet, Route, Routes, useLocation } from 'react-router-dom';
+import { Outlet, Route, Routes } from 'react-router-dom';
 import RouteGuard from './components/UI/RouteGuard';
 import { LoginPage } from './pages/LoginPage/LoginPage';
 import { SignupPage } from './pages/SignupPage/SignupPage';
@@ -8,30 +8,29 @@ import {
   HomePage,
   AddHomeworkPage,
   EditHomeworkPage,
-  SelectFreeDays,
+  AddedHomeworkWrapper,
 } from './pages/Homework';
-import NavBar from './components/UI/NavBar';
-import { useShowBurger, useAppSelector } from './utilities/hooks';
-import BurgerMenu from './components/BurgerMenu/BurgerMenu';
+
+import { useAppSelector } from './utilities/hooks';
+
 import LoadingSpinner from './components/UI/LoadingSpinner';
 import AuthenticatedRouteGuard from './components/UI/AuthenticatedRouteGuard';
-import { Modal } from './components/UI/Overlays';
 
 const App: React.FC = () => {
-  const showBurger = useAppSelector((state) => state.ui.showBurgerMenu);
+  // const showBurger = useAppSelector((state) => state.ui.showBurgerMenu);
   const isLoading = useAppSelector((state) => state.ui.isLoading);
-  useShowBurger();
+  // useShowBurger();
 
-  const { pathname } = useLocation();
+  // const { pathname } = useLocation();
 
-  const hideNav = pathname === '/login' || pathname === '/signup';
+  // const hideNav = pathname === '/login' || pathname === '/signup';
 
-  const navigation = (
-    <>
-      {showBurger && <BurgerMenu />}
-      {!showBurger && <NavBar />}
-    </>
-  );
+  // const navigation = (
+  //   <>
+  //     {showBurger && <BurgerMenu />}
+  //     {!showBurger && <NavBar />}
+  //   </>
+  // );
 
   if (isLoading) {
     return <LoadingSpinner center />;
@@ -73,7 +72,9 @@ const App: React.FC = () => {
             </>
           }
         >
-          <Route path='free-days' element={<SelectFreeDays />} />
+          <Route path='free-days' element={<Outlet />}>
+            <Route path=':page' element={<AddedHomeworkWrapper />} />
+          </Route>
           <Route index element={<AddHomeworkPage />} />
         </Route>
         <Route

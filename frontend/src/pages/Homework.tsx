@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Form from '../components/BurgerMenu/Form';
 import styles from './Homework.module.css';
 import Input from '../components/UI/Input';
@@ -11,7 +11,13 @@ import {
   useInput,
 } from '../utilities/hooks';
 
-import { addHomeworkAndSearchDays } from '../store/create-homework-slice';
+import {
+  createHomeworkActions,
+  freeDay,
+  searchFreeDays,
+} from '../store/create-homework-slice';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import Card from '../components/UI/Card';
 
 export const HomePage: React.FC = () => {
   const token = useAppSelector((state) => state.auth.token) as string;
@@ -32,7 +38,6 @@ export const HomePage: React.FC = () => {
           <li>{hmk.name}</li>
           <li>{hmk.description}</li>
           <li>{hmk.subject}</li>
-          <li>{hmk.plannedDate.toDateString()}</li>
         </ul>
       </li>
     );
@@ -143,23 +148,38 @@ export const AddHomeworkPage: React.FC = () => {
     isExpirationDateValid;
 
   const dispatch = useAppDispatch();
-  const fetchAuthorized = useFetchAuthorized();
+  const navigate = useNavigate();
+
   const addHomeworkSubmitHandler = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
+    const defaultPage = 1;
+
     dispatch(
-      addHomeworkAndSearchDays(
-        {
-          descriptionValue,
-          durationValue: +durationValue,
-          expirationDateValue: expirationDateValue,
-          nameValue,
-          subjectValue,
-        },
-        fetchAuthorized
-      )
+      createHomeworkActions.setHomeworkCreating({
+        description: descriptionValue,
+        duration: +durationValue,
+        expirationDate: expirationDateValue,
+        name: nameValue,
+        subject: subjectValue,
+      })
     );
+    // dispatch(
+    //   addHomeworkAndSearchDays(
+    //     {
+    //       descriptionValue,
+    //       durationValue: +durationValue,
+    //       expirationDateValue: expirationDateValue,
+    //       nameValue,
+    //       subjectValue,
+    //     },
+    //     defaultPage,
+    //     fetchAuthorized
+    //   )
+    // );
+
+    navigate('/create-homework/free-days/' + defaultPage);
   };
 
   return (
@@ -230,8 +250,9 @@ export const AddHomeworkPage: React.FC = () => {
   );
 };
 
-export const SelectFreeDays: React.FC = () => {
-  const freeDays = useAppSelector((state) => state.createHomework.freeDays);
+export const SelectFreeDays: React.FC<{
+  freeDays: freeDay[];
+}> = ({ freeDays }) => {
   const createHomeworkLoading = useAppSelector(
     (state) => state.createHomework.isLoading
   );
@@ -247,11 +268,12 @@ export const SelectFreeDays: React.FC = () => {
   });
 
   return (
-    <>
+    <div>
       {createHomeworkLoading && <div>Loading...</div>}
-      {!createHomeworkLoading && <>{freeDaysJsx}</>}
-      <div>TEST</div>
-    </>
+      {!createHomeworkLoading && (
+        <div className={styles['free-days']}>{freeDaysJsx}</div>
+      )}
+    </div>
   );
 };
 
@@ -261,11 +283,54 @@ export const FreeDay: React.FC<{
 }> = (props) => {
   const formattedDate = new Date(props.date).toDateString();
   return (
-    <div>
-      <h3>{formattedDate}</h3>
-      <h4>{props.freeTime}</h4>
+    <div className={styles['free-day']}>
+      <Card>
+        <h3>{formattedDate}</h3>
+        <h4>{props.freeTime}</h4>
+      </Card>
     </div>
   );
+};
+
+export const AddedHomeworkWrapper: React.FC = () => {
+  const pageParam = useParams().page;
+  const page = useMemo(() => pageParam || 1, [pageParam]);
+  const dispatch = useAppDispatch();
+  const fetchAuthorized = useFetchAuthorized();
+  const duration = useAppSelector(
+    (state) => state.createHomework.homeworkCreating?.duration
+  );
+  const expirationDate = useAppSelector(
+    (state) => state.createHomework.homeworkCreating?.expirationDate
+  );
+
+  useEffect(() => {
+    if (duration && expirationDate && page) {
+      dispatch(
+        searchFreeDays(
+          {
+            durationValue: duration,
+            expirationDateValue: expirationDate,
+            page: +page,
+          },
+          fetchAuthorized
+        )
+      );
+    }
+  }, [page, dispatch, duration, expirationDate, fetchAuthorized]);
+  const isChoosingFreeDay = useAppSelector(
+    (state) => state.createHomework.isChoosingFreeDay
+  );
+  const isLoading = useAppSelector((state) => state.createHomework.isLoading);
+  const freeDays = useAppSelector((state) => state.createHomework.freeDays);
+
+  if (isChoosingFreeDay) {
+    if (isLoading) {
+      return <div>Loading...</div>;
+    }
+    return <SelectFreeDays freeDays={freeDays} />;
+  }
+  return <Navigate to='/create-homework' />;
 };
 
 export const EditHomeworkPage: React.FC = () => {

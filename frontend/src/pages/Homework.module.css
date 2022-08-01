@@ -16,3 +16,12 @@
   max-width: 50rem;
   padding: 3rem;
 }
+
+.free-day {
+  margin: 2rem;
+}
+
+.free-days {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
