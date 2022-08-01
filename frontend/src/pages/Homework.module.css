@@ -9,3 +9,10 @@
 .description-input {
   grid-column: 1 / -1;
 }
+
+.add-homework-form--container {
+  width: 100%;
+  margin: auto;
+  max-width: 50rem;
+  padding: 3rem;
+}

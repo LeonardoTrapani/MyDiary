@@ -12,8 +12,6 @@ import {
 } from '../utilities/hooks';
 
 import { addHomeworkAndSearchDays } from '../store/create-homework-slice';
-import { Modal } from '../components/UI/Overlays';
-import { uiActions } from '../store/ui-slice';
 
 export const HomePage: React.FC = () => {
   const token = useAppSelector((state) => state.auth.token) as string;
@@ -165,66 +163,70 @@ export const AddHomeworkPage: React.FC = () => {
   };
 
   return (
-    <Form
-      onSubmit={addHomeworkSubmitHandler}
-      buttonName='Add Homework'
-      isFormValid={isFormValid}
-      isFormLoading={false}
-    >
-      <Input
-        errorMessage={nameErrorMessage}
-        hasError={nameHasError}
-        name='Name'
-        onBlur={validateName}
-        onChange={onNameChange}
-        type='text'
-        value={nameValue}
-        className={styles['name-input']}
-      />
-      <Input
-        errorMessage={descriptionErrorMessage}
-        hasError={descriptionHasError}
-        name='Description'
-        onBlur={validateDescription}
-        onChangeTextArea={onDescriptionChange}
-        type='textarea'
-        value={descriptionValue}
-        className={styles['description-input']}
-      />
-      <Input
-        errorMessage={subjectErrorMessage}
-        hasError={subjectHasError}
-        name='Subject'
-        onBlur={validateSubject}
-        onChange={onChangeSubject}
-        type='text'
-        value={subjectValue}
-        className={styles['subject-input']}
-      />
-      <Input
-        errorMessage={durationErrorMessage}
-        hasError={durationHasError}
-        name='Duration (minutes)'
-        onBlur={validateDuration}
-        onChange={onChangeDuration}
-        type='number'
-        value={durationValue}
-        className={styles['duration-input']}
-      />
-      <Input
-        errorMessage={expirationDateErrorMessage}
-        hasError={expirationDateHasError}
-        name='Expiration Date'
-        onBlur={validateExpirationDate}
-        onChange={onChangeExpirationDate}
-        type='date'
-        value={expirationDateValue}
-        other={{
-          min: new Date().toISOString().split('T')[0],
-        }}
-        className={styles['expiration-input']}
-      />
-    </Form>
+    <>
+      <div className={styles['add-homework-form--container']}>
+        <Form
+          onSubmit={addHomeworkSubmitHandler}
+          buttonName='Add Homework'
+          isFormValid={isFormValid}
+          isFormLoading={false}
+        >
+          <Input
+            errorMessage={nameErrorMessage}
+            hasError={nameHasError}
+            name='Name'
+            onBlur={validateName}
+            onChange={onNameChange}
+            type='text'
+            value={nameValue}
+            className={styles['name-input']}
+          />
+          <Input
+            errorMessage={descriptionErrorMessage}
+            hasError={descriptionHasError}
+            name='Description'
+            onBlur={validateDescription}
+            onChangeTextArea={onDescriptionChange}
+            type='textarea'
+            value={descriptionValue}
+            className={styles['description-input']}
+          />
+          <Input
+            errorMessage={subjectErrorMessage}
+            hasError={subjectHasError}
+            name='Subject'
+            onBlur={validateSubject}
+            onChange={onChangeSubject}
+            type='text'
+            value={subjectValue}
+            className={styles['subject-input']}
+          />
+          <Input
+            errorMessage={durationErrorMessage}
+            hasError={durationHasError}
+            name='Duration (minutes)'
+            onBlur={validateDuration}
+            onChange={onChangeDuration}
+            type='number'
+            value={durationValue}
+            className={styles['duration-input']}
+          />
+          <Input
+            errorMessage={expirationDateErrorMessage}
+            hasError={expirationDateHasError}
+            name='Expiration Date'
+            onBlur={validateExpirationDate}
+            onChange={onChangeExpirationDate}
+            type='date'
+            value={expirationDateValue}
+            other={{
+              min: new Date().toISOString().split('T')[0],
+            }}
+            className={styles['expiration-input']}
+          />
+        </Form>
+      </div>
+    </>
   );
 };
 
@@ -233,11 +235,6 @@ export const SelectFreeDays: React.FC = () => {
   const createHomeworkLoading = useAppSelector(
     (state) => state.createHomework.isLoading
   );
-  const dispatch = useAppDispatch();
-
-  const modalCloseHandler = () => {
-    dispatch(uiActions.toggleModalOpened(false));
-  };
 
   const freeDaysJsx = freeDays.map((freeDay) => {
     return (
@@ -248,10 +245,13 @@ export const SelectFreeDays: React.FC = () => {
       />
     );
   });
+
   return (
-    <Modal onClose={modalCloseHandler}>
-      {createHomeworkLoading ? <div>Loading...</div> : <>{freeDaysJsx}</>}
-    </Modal>
+    <>
+      {createHomeworkLoading && <div>Loading...</div>}
+      {!createHomeworkLoading && <>{freeDaysJsx}</>}
+      <div>TEST</div>
+    </>
   );
 };
 

@@ -11,19 +11,17 @@ const Form: React.FC<{
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 }> = (props) => {
   return (
-    <Card>
-      <form onSubmit={props.onSubmit} className={styles.form}>
-        {props.children}
-        <Button
-          isLoading={props.isFormLoading}
-          isValid={props.isFormValid}
-          type='submit'
-          className={styles['form-btn']}
-        >
-          {props.buttonName}
-        </Button>
-      </form>
-    </Card>
+    <form onSubmit={props.onSubmit} className={styles.form}>
+      {props.children}
+      <Button
+        isLoading={props.isFormLoading}
+        isValid={props.isFormValid}
+        type='submit'
+        className={styles['form-btn']}
+      >
+        {props.buttonName}
+      </Button>
+    </form>
   );
 };
 export default Form;
