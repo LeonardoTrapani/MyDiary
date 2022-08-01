@@ -9,37 +9,53 @@ export const createHomework = async (
   next: NextFunction
 ) => {
   const { userId } = req;
-  const {
-    name,
-    subject,
-    homeworkDuration,
-    description,
-    expirationDate,
-    plannedDates,
-  } = req.body;
+  const { name, subject, duration, description, expirationDate, plannedDates } =
+    req.body;
+  const userIdNumber = +userId!;
+
   try {
-    const homework = await prisma.homework.create({
-      data: {
-        duration: homeworkDuration,
-        expirationDate,
-        name,
-        description,
-        subject,
-        plannedDates,
-        userId: +userId!,
+    const homework = await prisma.user.update({
+      where: {
+        id: userIdNumber,
       },
       select: {
-        name: true,
-        completed: true,
-        duration: true,
-        plannedDates: true,
-        description: true,
-        expirationDate: true,
-        subject: true,
+        homework: {
+          orderBy: {
+            createdAt: 'desc',
+          },
+          take: 1,
+          select: {
+            completed: true,
+            description: true,
+            duration: true,
+            expirationDate: true,
+            id: true,
+            name: true,
+            plannedDates: true,
+            subject: true,
+          },
+        },
+      },
+      data: {
+        homework: {
+          create: {
+            description,
+            duration: duration,
+            expirationDate: expirationDate,
+            name: name,
+            subject: subject,
+            plannedDates: {
+              createMany: {
+                data: plannedDates,
+              },
+            },
+          },
+        },
       },
     });
-    res.json(homework);
+    res.json(homework.homework[0]);
   } catch (err) {
+    console.log(err);
     throwResponseError('unable to create homework', 500, res);
   }
 };
@@ -68,7 +84,7 @@ export const getAllHomework = async (
   res.json(homework);
 };
 
-const DAYS_PER_PAGE = 7;
+const DAYS_PER_PAGE = 12;
 export const calculateFreeDays = async (
   req: Request,
   res: Response,

@@ -40,6 +40,7 @@ model Homework {
 model PlannedDate {
   id         Int      @id @default(autoincrement())
   date       DateTime @db.Date
+  minutes    Int
   homework   Homework @relation(fields: [homeworkId], references: [id])
   homeworkId Int
 }

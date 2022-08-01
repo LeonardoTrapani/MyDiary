@@ -31,11 +31,18 @@ router.post(
       .custom((value) => validatorDateHandler(value))
       .toDate(),
     body('plannedDates', 'please enter valid planned dates')
-      .custom((values) =>
-        values.forEach((value: unknown) => validatorDateHandler(value))
-      )
-      .toDate(),
-    body('duration', 'please enter a valid duration').isNumeric(), //TODO: the date needs to be in the future
+      .custom((value) => value.length)
+      .withMessage('please enter the planned dates')
+      .custom((values: { date: string; minutes: number }[]) => {
+        let isValid = true;
+        values.forEach((value) => {
+          if (!validatorDateHandler(value.date) || isNaN(value.minutes)) {
+            isValid = false;
+          }
+        });
+        return isValid;
+      }),
+    body('duration', 'please enter a valid duration').isNumeric(),
   ],
   validateExpressValidation,
   createHomework
