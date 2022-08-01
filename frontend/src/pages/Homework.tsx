@@ -256,7 +256,8 @@ export const SelectFreeDays: React.FC<{
   const createHomeworkLoading = useAppSelector(
     (state) => state.createHomework.isLoading
   );
-
+  const { page } = useParams();
+  const homeworkPage = page as string;
   const freeDaysJsx = freeDays.map((freeDay) => {
     return (
       <FreeDay
@@ -267,11 +268,28 @@ export const SelectFreeDays: React.FC<{
     );
   });
 
+  const navigate = useNavigate();
   return (
     <div>
       {createHomeworkLoading && <div>Loading...</div>}
       {!createHomeworkLoading && (
-        <div className={styles['free-days']}>{freeDaysJsx}</div>
+        <>
+          <div className={styles['free-days']}>{freeDaysJsx}</div>
+          <button
+            onClick={() => {
+              navigate('/create-homework/free-days/' + (+homeworkPage + 1));
+            }}
+          >
+            NEXT PAGE
+          </button>
+          <button
+            onClick={() => {
+              navigate('/create-homework/free-days/' + (+homeworkPage - 1));
+            }}
+          >
+            PREVIOUS PAGE
+          </button>
+        </>
       )}
     </div>
   );
@@ -294,7 +312,11 @@ export const FreeDay: React.FC<{
 
 export const AddedHomeworkWrapper: React.FC = () => {
   const pageParam = useParams().page;
-  const page = useMemo(() => pageParam || 1, [pageParam]);
+  const navigate = useNavigate();
+  const page = useMemo(() => pageParam, [pageParam]);
+  if (!page) {
+    navigate('create-homework/free-days/1');
+  }
   const dispatch = useAppDispatch();
   const fetchAuthorized = useFetchAuthorized();
   const duration = useAppSelector(

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet, Route, Routes } from 'react-router-dom';
+import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import RouteGuard from './components/UI/RouteGuard';
 import { LoginPage } from './pages/LoginPage/LoginPage';
 import { SignupPage } from './pages/SignupPage/SignupPage';
@@ -74,6 +74,10 @@ const App: React.FC = () => {
         >
           <Route path='free-days' element={<Outlet />}>
             <Route path=':page' element={<AddedHomeworkWrapper />} />
+            <Route
+              index
+              element={<Navigate to='/create-homework/free-days/1' />}
+            />
           </Route>
           <Route index element={<AddHomeworkPage />} />
         </Route>
