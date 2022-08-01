@@ -1,9 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { prisma } from '../app';
-import {
-  areThereExpressValidatorErrors,
-  throwResponseError,
-} from '../utilities';
+import { throwResponseError } from '../utilities';
 export const createWeek = async (
   req: Request,
   res: Response,
@@ -19,9 +16,7 @@ export const createWeek = async (
     sundayFreeMinutes,
   } = req.body;
   const userId = +req.userId!;
-  if (areThereExpressValidatorErrors(req, res)) {
-    return;
-  }
+
   try {
     const weekExistance = await prisma.user.findUnique({
       where: {

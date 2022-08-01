@@ -4,10 +4,7 @@ import bcrypt from 'bcrypt';
 
 import { prisma } from '../app';
 import { CustomRequest } from '../models';
-import {
-  throwResponseError,
-  areThereExpressValidatorErrors,
-} from '../utilities';
+import { throwResponseError } from '../utilities';
 
 export const signup = async (
   req: CustomRequest<{
@@ -18,9 +15,6 @@ export const signup = async (
   res: Response,
   next: NextFunction
 ) => {
-  if (areThereExpressValidatorErrors(req, res)) {
-    return;
-  }
   try {
     const email = req.body.email;
     const username = req.body.username;
@@ -67,9 +61,6 @@ export const login = async (
   }>,
   res: Response
 ) => {
-  if (areThereExpressValidatorErrors(req, res)) {
-    return;
-  }
   try {
     const { email, password } = req.body;
     const user = await prisma.user.findUnique({

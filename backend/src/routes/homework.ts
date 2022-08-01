@@ -4,7 +4,7 @@ import {
   createHomework,
   getAllHomework,
 } from '../controllers/homework';
-import { isAuthenticated } from '../middlewares';
+import { isAuthenticated, validateExpressValidation } from '../middlewares';
 import { validatorDateHandler } from '../utilities';
 import { body, param } from 'express-validator';
 
@@ -30,11 +30,14 @@ router.post(
     body('expirationDate', 'plase enter a valid date')
       .custom((value) => validatorDateHandler(value))
       .toDate(),
-    body('plannedDate', 'please enter a valid date')
-      .custom((value) => validatorDateHandler(value))
+    body('plannedDates', 'please enter valid planned dates')
+      .custom((values) =>
+        values.forEach((value: unknown) => validatorDateHandler(value))
+      )
       .toDate(),
     body('duration', 'please enter a valid duration').isNumeric(), //TODO: the date needs to be in the future
   ],
+  validateExpressValidation,
   createHomework
 );
 
@@ -53,6 +56,7 @@ router.post(
       .custom((value) => +value >= 5),
     param('pageNumber', 'page number not provided').isNumeric(),
   ],
+  validateExpressValidation,
   calculateFreeDays
 );
 router.post('');

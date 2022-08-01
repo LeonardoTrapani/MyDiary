@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { validationResult } from 'express-validator';
 import jwt from 'jsonwebtoken';
 import { throwResponseError } from './utilities';
 
@@ -31,4 +32,19 @@ export const isAuthenticated = (
   } catch (err) {
     throwResponseError('Not authenticated', 401, res);
   }
+};
+
+export const validateExpressValidation = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    const message = errors.array()[0].msg;
+    throwResponseError(message, 400, res);
+    return;
+  }
+  next();
 };

@@ -1,8 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import {
-  areThereExpressValidatorErrors,
-  throwResponseError,
-} from '../utilities';
+import { throwResponseError } from '../utilities';
 
 import { prisma } from '../app';
 
@@ -11,17 +8,14 @@ export const createHomework = async (
   res: Response,
   next: NextFunction
 ) => {
-  if (areThereExpressValidatorErrors(req, res)) {
-    return;
-  }
   const { userId } = req;
-  let {
+  const {
     name,
     subject,
     homeworkDuration,
     description,
     expirationDate,
-    plannedDate,
+    plannedDates,
   } = req.body;
   try {
     const homework = await prisma.homework.create({
@@ -31,14 +25,14 @@ export const createHomework = async (
         name,
         description,
         subject,
-        plannedDate,
+        plannedDates,
         userId: +userId!,
       },
       select: {
         name: true,
         completed: true,
         duration: true,
-        plannedDate: true,
+        plannedDates: true,
         description: true,
         expirationDate: true,
         subject: true,
@@ -66,7 +60,7 @@ export const getAllHomework = async (
       description: true,
       subject: true,
       expirationDate: true,
-      plannedDate: true,
+      plannedDates: true,
       duration: true,
       completed: true,
     },
@@ -80,9 +74,6 @@ export const calculateFreeDays = async (
   res: Response,
   next: NextFunction
 ) => {
-  if (areThereExpressValidatorErrors(req, res)) {
-    return;
-  }
   const { expirationDate, duration: homeworkDuration } = req.body;
   const { pageNumber } = req.params;
   const expirationDateDate = new Date(expirationDate);

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../middlewares';
+import { isAuthenticated, validateExpressValidation } from '../middlewares';
 import { createWeek, getWeek } from '../controllers/week';
 import { body } from 'express-validator';
 // import { body } from 'express-validator';
@@ -48,6 +48,7 @@ router.post(
       .isNumeric()
       .withMessage('please enter a numeric value for the sunday free minutes'),
   ],
+  validateExpressValidation,
   createWeek
 );
 

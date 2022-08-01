@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
-import { isAuthenticated } from '../middlewares';
+import { isAuthenticated, validateExpressValidation } from '../middlewares';
 
 const router = Router();
 
@@ -14,6 +14,7 @@ router.post(
       .trim()
       .isStrongPassword(),
   ],
+  validateExpressValidation,
   login
 );
 
@@ -28,6 +29,7 @@ router.post(
       .trim()
       .isStrongPassword(),
   ],
+  validateExpressValidation,
   signup
 );
 
