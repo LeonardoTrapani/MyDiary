@@ -134,8 +134,8 @@ export const calculateFreeDays = async (
             freeMinutes: true,
           },
           where: {
-            freeMinutes: {
-              gte: +homeworkDuration,
+            date: {
+              gte: new Date(),
             },
           },
         },
@@ -149,7 +149,7 @@ export const calculateFreeDays = async (
         res
       );
     }
-    console.log('FREE DAYS: ', freeDays.days);
+
     const finalFreeDays: {
       date: Date;
       freeMinutes: number;
@@ -164,8 +164,10 @@ export const calculateFreeDays = async (
         return day.date.toDateString() === currentDate.toDateString();
       });
       if (freeDayToPut) {
-        finalFreeDays.push(freeDayToPut);
-      } else if (freeMinutes > homeworkDuration) {
+        if (freeDayToPut.freeMinutes >= homeworkDuration) {
+          finalFreeDays.push(freeDayToPut);
+        }
+      } else if (freeMinutes >= homeworkDuration) {
         finalFreeDays.push({
           date: currentDate,
           freeMinutes,
