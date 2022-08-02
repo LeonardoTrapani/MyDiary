@@ -200,7 +200,7 @@ const getFreeDaysArray = (
     freeMinutes: number;
   }[] = [];
   let currentDate = startDate;
-  while (currentDate < endDate && currentDate < expirationDate) {
+  while (currentDate < expirationDate && finalFreeDays.length < DAYS_PER_PAGE) {
     const freeMinutes = findfreeMinutesInDay(currentDate, week);
     const freeDayToPut = freeDays.days.find((day) => {
       return day.date.toDateString() === currentDate.toDateString();
