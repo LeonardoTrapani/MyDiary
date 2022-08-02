@@ -1,23 +1,23 @@
 import React, { useEffect, useMemo } from 'react';
-import Form from '../components/BurgerMenu/Form';
+import Form from '../../components/BurgerMenu/Form';
 import styles from './Homework.module.css';
-import Input from '../components/UI/Input';
+import Input from '../../components/UI/Input';
 
-import { fetchHomework } from '../store/homework-slice';
+import { fetchHomework } from '../../store/homework-slice';
 import {
   useAppDispatch,
   useAppSelector,
   useFetchAuthorized,
   useInput,
-} from '../utilities/hooks';
+} from '../../utilities/hooks';
 
 import {
   createHomeworkActions,
   freeDay,
   searchFreeDays,
-} from '../store/create-homework-slice';
+} from '../../store/create-homework-slice';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
-import Card from '../components/UI/Card';
+import Card from '../../components/UI/Card';
 
 export const HomePage: React.FC = () => {
   const token = useAppSelector((state) => state.auth.token) as string;

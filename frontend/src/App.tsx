@@ -9,7 +9,7 @@ import {
   AddHomeworkPage,
   EditHomeworkPage,
   AddedHomeworkWrapper,
-} from './pages/Homework';
+} from './pages/Homework/Homework';
 
 import { useAppSelector } from './utilities/hooks';
 
