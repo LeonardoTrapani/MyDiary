@@ -94,9 +94,10 @@ export const calculateFreeDays = async (
   const { pageNumber } = req.params;
   const expirationDateDate = new Date(expirationDate);
 
-  let currentDate = addDaysFromToday(
+  const startDate = addDaysFromToday(
     +pageNumber * DAYS_PER_PAGE - DAYS_PER_PAGE
   );
+  const endDate = addDays(startDate, DAYS_PER_PAGE);
 
   const { userId } = req;
   try {
@@ -150,32 +151,16 @@ export const calculateFreeDays = async (
       );
     }
 
-    const finalFreeDays: {
-      date: Date;
-      freeMinutes: number;
-    }[] = [];
+    const freeDaysArray = getFreeDaysArray(
+      startDate,
+      endDate,
+      expirationDateDate,
+      week,
+      freeDays,
+      homeworkDuration
+    );
 
-    while (
-      finalFreeDays.length < DAYS_PER_PAGE &&
-      currentDate < expirationDateDate
-    ) {
-      const freeMinutes = findfreeMinutesInDay(currentDate, week);
-      const freeDayToPut = freeDays.days.find((day) => {
-        return day.date.toDateString() === currentDate.toDateString();
-      });
-      if (freeDayToPut) {
-        if (freeDayToPut.freeMinutes >= homeworkDuration) {
-          finalFreeDays.push(freeDayToPut);
-        }
-      } else if (freeMinutes >= homeworkDuration) {
-        finalFreeDays.push({
-          date: currentDate,
-          freeMinutes,
-        });
-      }
-      currentDate = addDays(currentDate, 1);
-    }
-    return res.json(finalFreeDays);
+    return res.json(freeDaysArray);
   } catch (err) {
     console.log(err);
     return throwResponseError(
@@ -184,6 +169,55 @@ export const calculateFreeDays = async (
       res
     );
   }
+};
+
+interface week {
+  id: number;
+  mondayFreeMinutes: number;
+  tuesdayFreeMinutes: number;
+  wednesdayFreeMinutes: number;
+  thursdayFreeMinutes: number;
+  fridayFreeMinutes: number;
+  saturdayFreeMinutes: number;
+  sundayFreeMinutes: number;
+}
+interface freeDays {
+  days: {
+    date: Date;
+    freeMinutes: number;
+  }[];
+}
+const getFreeDaysArray = (
+  startDate: Date,
+  endDate: Date,
+  expirationDate: Date,
+  week: week,
+  freeDays: freeDays,
+  homeworkDuration: number
+) => {
+  const finalFreeDays: {
+    date: Date;
+    freeMinutes: number;
+  }[] = [];
+  let currentDate = startDate;
+  while (currentDate < endDate && currentDate < expirationDate) {
+    const freeMinutes = findfreeMinutesInDay(currentDate, week);
+    const freeDayToPut = freeDays.days.find((day) => {
+      return day.date.toDateString() === currentDate.toDateString();
+    });
+    if (freeDayToPut) {
+      if (freeDayToPut.freeMinutes >= homeworkDuration) {
+        finalFreeDays.push(freeDayToPut);
+      }
+    } else if (freeMinutes >= homeworkDuration) {
+      finalFreeDays.push({
+        date: currentDate,
+        freeMinutes,
+      });
+    }
+    currentDate = addDays(currentDate, 1);
+  }
+  return finalFreeDays;
 };
 
 const findfreeMinutesInDay = (

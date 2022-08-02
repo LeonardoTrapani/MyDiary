@@ -253,9 +253,12 @@ export const AddHomeworkPage: React.FC = () => {
 export const SelectFreeDays: React.FC<{
   freeDays: freeDay[];
 }> = ({ freeDays }) => {
-  const createHomeworkLoading = useAppSelector(
-    (state) => state.createHomework.isLoading
-  );
+  return <FreeDays freeDays={freeDays} />;
+};
+
+export const FreeDays: React.FC<{
+  freeDays: freeDay[];
+}> = ({ freeDays }) => {
   const { page } = useParams();
   const homeworkPage = page as string;
   const freeDaysJsx = freeDays.map((freeDay) => {
@@ -267,21 +270,21 @@ export const SelectFreeDays: React.FC<{
       />
     );
   });
-
+  const createHomeworkLoading = useAppSelector(
+    (state) => state.createHomework.isLoading
+  );
   const navigate = useNavigate();
+
   return (
     <div>
       {createHomeworkLoading && <div>Loading...</div>}
       {!createHomeworkLoading && (
         <>
-          <div className={styles['free-days']}>{freeDaysJsx}</div>
-          <button
-            onClick={() => {
-              navigate('/create-homework/free-days/' + (+homeworkPage + 1));
-            }}
-          >
-            NEXT PAGE
-          </button>
+          {freeDaysJsx.length ? (
+            <div className={styles['free-days']}>{freeDaysJsx}</div>
+          ) : (
+            <h2>Found no homework</h2>
+          )}
           <button
             onClick={() => {
               navigate('/create-homework/free-days/' + (+homeworkPage - 1));
@@ -289,12 +292,18 @@ export const SelectFreeDays: React.FC<{
           >
             PREVIOUS PAGE
           </button>
+          <button
+            onClick={() => {
+              navigate('/create-homework/free-days/' + (+homeworkPage + 1));
+            }}
+          >
+            NEXT PAGE
+          </button>
         </>
       )}
     </div>
   );
 };
-
 export const FreeDay: React.FC<{
   date: string;
   freeTime: number;
