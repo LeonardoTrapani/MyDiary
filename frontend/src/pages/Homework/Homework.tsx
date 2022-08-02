@@ -17,7 +17,9 @@ import {
   searchFreeDays,
 } from '../../store/create-homework-slice';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
-import Card from '../../components/UI/Card';
+import FreeDays from './FreeDays';
+import CreatingHomeworkInformations from './CreatingHomeworkInformations';
+import SelectedDays from './SelectedDays';
 
 export const HomePage: React.FC = () => {
   const token = useAppSelector((state) => state.auth.token) as string;
@@ -253,68 +255,11 @@ export const AddHomeworkPage: React.FC = () => {
 export const SelectFreeDays: React.FC<{
   freeDays: freeDay[];
 }> = ({ freeDays }) => {
-  return <FreeDays freeDays={freeDays} />;
-};
-
-export const FreeDays: React.FC<{
-  freeDays: freeDay[];
-}> = ({ freeDays }) => {
-  const { page } = useParams();
-  const homeworkPage = page as string;
-  const freeDaysJsx = freeDays.map((freeDay) => {
-    return (
-      <FreeDay
-        date={freeDay.date}
-        freeTime={freeDay.freeMinutes}
-        key={freeDay.date}
-      />
-    );
-  });
-  const createHomeworkLoading = useAppSelector(
-    (state) => state.createHomework.isLoading
-  );
-  const navigate = useNavigate();
-
   return (
-    <div>
-      {createHomeworkLoading && <div>Loading...</div>}
-      {!createHomeworkLoading && (
-        <>
-          {freeDaysJsx.length ? (
-            <div className={styles['free-days']}>{freeDaysJsx}</div>
-          ) : (
-            <h2>Found no homework</h2>
-          )}
-          <button
-            onClick={() => {
-              navigate('/create-homework/free-days/' + (+homeworkPage - 1));
-            }}
-          >
-            PREVIOUS PAGE
-          </button>
-          <button
-            onClick={() => {
-              navigate('/create-homework/free-days/' + (+homeworkPage + 1));
-            }}
-          >
-            NEXT PAGE
-          </button>
-        </>
-      )}
-    </div>
-  );
-};
-export const FreeDay: React.FC<{
-  date: string;
-  freeTime: number;
-}> = (props) => {
-  const formattedDate = new Date(props.date).toDateString();
-  return (
-    <div className={styles['free-day']}>
-      <Card>
-        <h3>{formattedDate}</h3>
-        <h4>{props.freeTime}</h4>
-      </Card>
+    <div className={styles['select-free-days']}>
+      <FreeDays freeDays={freeDays} />
+      <CreatingHomeworkInformations />
+      <SelectedDays />
     </div>
   );
 };
@@ -352,13 +297,9 @@ export const AddedHomeworkWrapper: React.FC = () => {
   const isChoosingFreeDay = useAppSelector(
     (state) => state.createHomework.isChoosingFreeDay
   );
-  const isLoading = useAppSelector((state) => state.createHomework.isLoading);
   const freeDays = useAppSelector((state) => state.createHomework.freeDays);
 
   if (isChoosingFreeDay) {
-    if (isLoading) {
-      return <div>Loading...</div>;
-    }
     return <SelectFreeDays freeDays={freeDays} />;
   }
   return <Navigate to='/create-homework' />;

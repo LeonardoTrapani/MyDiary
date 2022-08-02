@@ -25,3 +25,24 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
+
+.select-free-days {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  height: 100vh;
+}
+
+.free-days--container {
+  grid-row: 1 / -1;
+  overflow: scroll;
+}
+
+.creating-homework-informations {
+  background-color: aquamarine;
+}
+
+.selected-days {
+  background-color: red;
+  overflow: scroll;
+}
