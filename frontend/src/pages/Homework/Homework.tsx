@@ -162,6 +162,7 @@ export const AddHomeworkPage: React.FC = () => {
       createHomeworkActions.setHomeworkCreating({
         description: descriptionValue,
         duration: +durationValue,
+        timeToAssign: +durationValue,
         expirationDate: expirationDateValue,
         name: nameValue,
         subject: subjectValue,

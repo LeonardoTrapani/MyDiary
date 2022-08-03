@@ -92,3 +92,7 @@ export const calculateShowBurger = (width: number, previousShow: boolean) => {
     return true;
   }
 };
+
+export const valueFromPercentage = (full: number, percentage: number) => {
+  return Math.floor((full * percentage) / 100);
+};

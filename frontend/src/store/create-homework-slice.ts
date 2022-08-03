@@ -5,9 +5,12 @@ import { CustomRequestInit } from '../utilities/hooks';
 
 export interface freeDay {
   date: string;
-  assignedTime: number;
   freeMinutes: number;
 }
+interface selectedDay extends freeDay {
+  assignedTime: number;
+}
+
 export interface plannedDate {
   date: string;
   minutes: number;
@@ -17,12 +20,14 @@ interface HomeworkCreating {
   subject: string;
   description: string;
   duration: number;
+  timeToAssign: number;
   expirationDate: string;
   plannedDates?: [plannedDate, ...plannedDate[]];
 }
 interface createHomeworkState {
   isLoading: boolean;
   freeDays: freeDay[];
+  selectedDays: selectedDay[];
   isChoosingFreeDay: boolean;
   homeworkCreating?: HomeworkCreating;
 }
@@ -30,6 +35,7 @@ interface createHomeworkState {
 const initialState: createHomeworkState = {
   isLoading: false,
   isChoosingFreeDay: false,
+  selectedDays: [],
   freeDays: [],
 };
 const createHomeworkSlice = createSlice({
@@ -48,6 +54,17 @@ const createHomeworkSlice = createSlice({
     },
     setIsChoosingFreeDay(state, action: PayloadAction<boolean>) {
       state.isChoosingFreeDay = action.payload;
+    },
+    assignedTimeChange(state, action: PayloadAction<number>) {
+      //TODO: use the selected days array and instad of duration here sum all the selected days assigned time
+
+      if (
+        state.homeworkCreating &&
+        action.payload <= state.homeworkCreating.duration
+      ) {
+        state.homeworkCreating.timeToAssign =
+          state.homeworkCreating.duration - action.payload;
+      }
     },
   },
 });
@@ -77,9 +94,6 @@ export const searchFreeDays = (
           },
         }
       );
-      res.map((freeDay) => {
-        freeDay.assignedTime = 0;
-      });
       dispatch(createHomeworkActions.setFreeDays(res));
     } catch (err) {
       //TODO: handle err

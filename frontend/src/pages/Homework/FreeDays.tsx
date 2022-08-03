@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { freeDay } from '../../store/create-homework-slice';
+import {
+  createHomeworkActions,
+  freeDay,
+} from '../../store/create-homework-slice';
 import styles from './Homework.module.css';
-import { useAppSelector } from '../../utilities/hooks';
+import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
 import { AiOutlineCalendar } from 'react-icons/ai';
+import Slider from '../../components/UI/Slider';
+import { valueFromPercentage } from '../../utilities/utilities';
 
 export const FreeDays: React.FC<{
   freeDays: freeDay[];
@@ -25,7 +30,7 @@ export const FreeDays: React.FC<{
         date={freeDay.date}
         freeTime={freeDay.freeMinutes}
         key={freeDay.date}
-        assignedTime={freeDay.assignedTime}
+        assignedTime={0}
       />
     );
   });
@@ -66,12 +71,32 @@ export const FreeDay: React.FC<{
   assignedTime: number;
 }> = (props) => {
   const formattedDate = new Date(props.date).toDateString();
+  const [sliderPercentage, setSliderPercentage] = useState(0);
+  const dispatch = useAppDispatch();
+
+  const duration = useAppSelector(
+    (state) => state.createHomework.homeworkCreating?.duration
+  ) as number;
+
+  const sliderChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const sliderValue = valueFromPercentage(duration, +event.target.value);
+
+    setSliderPercentage(+event.target.value);
+
+    dispatch(createHomeworkActions.assignedTimeChange(sliderValue));
+  };
+
   return (
     <div className={styles['free-day']}>
       <FreeDayDate formattedDate={formattedDate} />
       <FreeDayMinutes freeTime={props.freeTime} />
       <AssignTime timeAssigned={props.assignedTime} />
-      {/* Slider */}
+      <Slider
+        max={100}
+        min={0}
+        value={sliderPercentage}
+        onChange={sliderChangeHandler}
+      />
     </div>
   );
 };

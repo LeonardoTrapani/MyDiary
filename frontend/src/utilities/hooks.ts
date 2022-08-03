@@ -209,3 +209,21 @@ export const useFetchAuthorized = () => {
   );
   return fetchAuthorized;
 };
+
+export const useUpdate = (
+  func: () => React.EffectCallback,
+  deps: unknown[]
+) => {
+  const firstUpdate = useRef(true);
+  useEffect(() => {
+    if (firstUpdate.current) {
+      firstUpdate.current = false;
+      return;
+    }
+
+    const cleanup = func();
+
+    return cleanup();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deps]);
+};
