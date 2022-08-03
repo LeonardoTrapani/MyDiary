@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface AssignTimeState {
   modalOpened: boolean;
-  dayInformations?: {
+  dayInformations: {
     timeAssigned: number;
     date: string;
     freeMinutes: number;
@@ -11,6 +11,11 @@ interface AssignTimeState {
 
 const initialState: AssignTimeState = {
   modalOpened: false,
+  dayInformations: {
+    timeAssigned: 0,
+    date: '',
+    freeMinutes: 0,
+  },
 };
 
 const assignTimeSlice = createSlice({
@@ -19,6 +24,17 @@ const assignTimeSlice = createSlice({
   reducers: {
     setModalOpened(state, action: PayloadAction<boolean>) {
       state.modalOpened = action.payload;
+    },
+    assignTime(
+      state,
+      action: PayloadAction<{
+        timeAssigned: number;
+        date: string;
+        freeMinutes: number;
+      }>
+    ) {
+      state.dayInformations = action.payload;
+      state.modalOpened = true;
     },
   },
 });
