@@ -18,7 +18,34 @@
 }
 
 .free-day {
-  margin: 2rem;
+  margin: 1.2rem;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.free-day--date h2 {
+  font-size: large;
+  vertical-align: center;
+}
+
+.free-day--date {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.7rem;
+  align-items: center;
+}
+
+.free-day--button-container {
+  margin: auto;
+  margin-top: 1rem;
+}
+
+.free-day--button {
+  padding: 0 2rem;
+  font-size: 1rem;
 }
 
 .free-days {
@@ -26,9 +53,15 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.free-day--space-content {
+  display: flex;
+  justify-content: space-between;
+  font-size: medium;
+}
+
 .select-free-days {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
   grid-template-rows: repeat(2, minmax(0, 1fr));
   height: 100vh;
 }
@@ -38,11 +71,11 @@
   overflow: scroll;
 }
 
-.creating-homework-informations {
-  background-color: aquamarine;
+.creating-homework-informations--container {
+  padding: 3rem;
 }
 
-.selected-days {
-  background-color: red;
+.selected-days--container {
+  padding: 3rem;
   overflow: scroll;
 }

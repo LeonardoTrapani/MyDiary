@@ -5,8 +5,7 @@
   width: 100%;
   height: 100vh;
   z-index: 20;
-  background-color: rgba(0, 0, 0, 0.75);
-  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .modal {
@@ -17,11 +16,22 @@
   background-color: white;
   padding: 1rem;
   border-radius: 14px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
   z-index: 30;
   animation: slide-down 300ms ease-out forwards;
 }
 
+.modal--close-icon {
+  position: absolute;
+  right: 1rem;
+  cursor: pointer;
+  transition: all 300ms;
+}
+
+.modal--close-icon:hover,
+.modal--close-icon:active {
+  transform: scale(1.4);
+}
 @media (min-width: 768px) {
   .modal {
     width: 40rem;

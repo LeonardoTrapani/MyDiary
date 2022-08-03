@@ -8,20 +8,16 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 const Button: React.FC<ButtonProps> = ({
   children,
+  onClick,
   isValid,
   isLoading,
   className,
   ...props
 }) => {
-  const buttonClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (!isValid) {
-      event.preventDefault();
-    }
-  };
   return (
     <button
       {...props}
-      onClick={buttonClickHandler}
+      onClick={onClick}
       className={
         styles.button +
         ' ' +

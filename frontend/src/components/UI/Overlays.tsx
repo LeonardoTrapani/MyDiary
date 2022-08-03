@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { useAppSelector } from '../../utilities/hooks';
+import { GrClose } from 'react-icons/gr';
+
 import styles from './Overlays.module.css';
 
 export const Backdrop: React.FC<{
@@ -11,9 +12,13 @@ export const Backdrop: React.FC<{
 
 const ModalOverlay: React.FC<{
   children: React.ReactElement;
+  onClose: () => void;
 }> = (props) => {
   return (
     <div className={styles.modal}>
+      <div className={styles['modal--close-icon']} onClick={props.onClose}>
+        <GrClose />
+      </div>
       <div className={styles.content}>{props.children}</div>
     </div>
   );
@@ -24,8 +29,9 @@ const portalElement = document.getElementById('overlays') as HTMLDivElement;
 export const Modal: React.FC<{
   children: React.ReactElement;
   onClose: () => void;
+  isOpen: boolean;
 }> = (props) => {
-  const modalOpened = useAppSelector((state) => state.ui.modalOpened);
+  const modalOpened = props.isOpen;
   return modalOpened ? (
     <>
       {ReactDOM.createPortal(
@@ -33,7 +39,7 @@ export const Modal: React.FC<{
         portalElement
       )}
       {ReactDOM.createPortal(
-        <ModalOverlay>{props.children}</ModalOverlay>,
+        <ModalOverlay onClose={props.onClose}>{props.children}</ModalOverlay>,
         portalElement
       )}
     </>

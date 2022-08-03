@@ -1,9 +1,13 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Card from '../../components/UI/Card';
 import { freeDay } from '../../store/create-homework-slice';
 import styles from './Homework.module.css';
-import { useAppSelector } from '../../utilities/hooks';
+import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
+import { AiOutlineCalendar } from 'react-icons/ai';
+import Button from '../../components/UI/Button';
+import { Modal } from '../../components/UI/Overlays';
+import { createPortal } from 'react-dom';
+import { assignTimeActions } from '../../store/assign-time-slice';
 export const FreeDays: React.FC<{
   freeDays: freeDay[];
 }> = ({ freeDays }) => {
@@ -24,6 +28,7 @@ export const FreeDays: React.FC<{
         date={freeDay.date}
         freeTime={freeDay.freeMinutes}
         key={freeDay.date}
+        assignedTime={freeDay.assignedTime}
       />
     );
   });
@@ -61,15 +66,73 @@ export const FreeDays: React.FC<{
 export const FreeDay: React.FC<{
   date: string;
   freeTime: number;
+  assignedTime: number;
 }> = (props) => {
   const formattedDate = new Date(props.date).toDateString();
+  const isModalOpened = useAppSelector((state) => state.assignTime.modalOpened);
+  const dispatch = useAppDispatch();
+  const assignTimeClickHandler = () => {
+    dispatch(assignTimeActions.setModalOpened(true));
+  };
   return (
     <div className={styles['free-day']}>
-      <Card>
-        <h3>{formattedDate}</h3>
-        <h4>{props.freeTime}</h4>
-      </Card>
+      <FreeDayDate formattedDate={formattedDate} />
+      <FreeDayMinutes freeTime={props.freeTime} />
+      <AssignTime />
+      <div className={styles['free-day--button-container']}>
+        <Button
+          onClick={assignTimeClickHandler}
+          isLoading={false}
+          isValid={true}
+          className={styles['free-day--button']}
+        >
+          Assign Time
+        </Button>
+      </div>
+      <AssignTimeModal isOpen={isModalOpened} />
     </div>
+  );
+};
+
+const FreeDayDate: React.FC<{ formattedDate: string }> = ({
+  formattedDate,
+}) => {
+  return (
+    <div className={styles['free-day--date']}>
+      <h2>{formattedDate}</h2>
+      <AiOutlineCalendar size='24' />
+    </div>
+  );
+};
+
+const FreeDayMinutes: React.FC<{ freeTime: number }> = (props) => {
+  return (
+    <div className={styles['free-day--space-content']}>
+      <p>Free minutes: </p>
+      <p>{props.freeTime}</p>
+    </div>
+  );
+};
+
+const AssignTime: React.FC = () => {
+  return (
+    <div className={styles['free-day--space-content']}>
+      <p>Assigned Time: </p>
+      <p>0</p>
+    </div>
+  );
+};
+
+const AssignTimeModal: React.FC<{ isOpen: boolean }> = ({ isOpen }) => {
+  const dispatch = useAppDispatch();
+  const closeModalHandler = () => {
+    dispatch(assignTimeActions.setModalOpened(false));
+  };
+  return createPortal(
+    <Modal onClose={closeModalHandler} isOpen={isOpen}>
+      <div>Informations About assigning time</div>
+    </Modal>,
+    document.getElementById('overlays') as HTMLDivElement
   );
 };
 

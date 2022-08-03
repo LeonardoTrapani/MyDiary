@@ -5,6 +5,7 @@ import { CustomRequestInit } from '../utilities/hooks';
 
 export interface freeDay {
   date: string;
+  assignedTime: number;
   freeMinutes: number;
 }
 export interface plannedDate {
@@ -76,6 +77,9 @@ export const searchFreeDays = (
           },
         }
       );
+      res.map((freeDay) => {
+        freeDay.assignedTime = 0;
+      });
       dispatch(createHomeworkActions.setFreeDays(res));
     } catch (err) {
       //TODO: handle err

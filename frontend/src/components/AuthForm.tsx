@@ -34,6 +34,12 @@ const AuthForm: React.FC<{
   hasFetchError,
   errorMessage,
 }) => {
+  const buttonClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (!isValid) {
+      event.preventDefault();
+    }
+  };
+
   const InputsJsx = inputs.map((input) => {
     return (
       <Input
@@ -64,7 +70,12 @@ const AuthForm: React.FC<{
           <h2>{name}</h2>
           <div className={styles['input-wrap']}>{InputsJsx}</div>
           <div className={styles['btn-wrap']}>
-            <Button isValid={isValid} type='submit' isLoading={isLoading}>
+            <Button
+              isValid={isValid}
+              type='submit'
+              isLoading={isLoading}
+              onClick={buttonClickHandler}
+            >
               {name}
             </Button>
             <Link to={insteadToPath} className={styles.instead}>
