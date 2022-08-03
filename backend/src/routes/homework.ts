@@ -42,7 +42,7 @@ router.post(
         });
         return isValid;
       }),
-    body('duration', 'please enter a valid duration').isNumeric(),
+    body('duration', 'please enter a valid duration').isNumeric(), //Validate dates and times etc...
   ],
   validateExpressValidation,
   createHomework

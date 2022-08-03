@@ -213,8 +213,8 @@ const getFreeDaysArray = (
       return day.date.toDateString() === currentDate.toDateString();
     });
     const isDayValid = calculateIsDayValid(
-      freeDayToPut,
-      homeworkDuration,
+      // freeDayToPut,
+      // homeworkDuration,
       freeMinutes
     );
     if (isDayValid) {
@@ -298,12 +298,12 @@ const calculateSubtractedDays = (
   let length = 0;
   while (length < maxLength) {
     const freeMinutes = findfreeMinutesInDay(currentDate, week);
-    const freeDayToPut = freeDays.days.find((day) => {
-      return day.date.toDateString() === currentDate.toDateString();
-    });
+    // const freeDayToPut = freeDays.days.find((day) => {
+    //   return day.date.toDateString() === currentDate.toDateString();
+    // });
     const isDayValid = calculateIsDayValid(
-      freeDayToPut,
-      homeworkDuration,
+      // freeDayToPut,
+      // homeworkDuration,
       freeMinutes
     );
     if (isDayValid) {
@@ -318,22 +318,25 @@ const calculateSubtractedDays = (
 };
 
 const calculateIsDayValid = (
-  freeDayToPut:
-    | {
-        date: Date;
-        freeMinutes: number;
-      }
-    | undefined,
-  homeworkDuration: number,
+  // freeDayToPut:
+  //   | {
+  //       date: Date;
+  //       freeMinutes: number;
+  //     }
+  //   | undefined,
+  // homeworkDuration: number,
   freeMinutes: number
 ) => {
-  if (freeDayToPut) {
-    if (freeDayToPut.freeMinutes >= homeworkDuration) {
-      return true;
-    }
-  } else if (freeMinutes >= homeworkDuration) {
+  // if (freeDayToPut) {
+  //   if (freeDayToPut.freeMinutes >= homeworkDuration) {
+  //     return true;
+  //   }
+  // } else if (freeMinutes >= homeworkDuration) {
+  //   return true;
+  // }
+  // return false;  REMOVED BECAUSE SOMEONE SHOULD BE ABLE TO ASSIGN 5 MINUTES TO A DAY
+  if (freeMinutes >= 5) {
     return true;
   }
-
   return false;
 };
