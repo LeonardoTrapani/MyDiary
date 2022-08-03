@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import assignTimeSlice from './assign-time-slice';
+
 import authSlice from './auth-slice';
 import createHomeworkSlice from './create-homework-slice';
 import homeworkSlice from './homework-slice';
@@ -11,7 +11,6 @@ export const store = configureStore({
     ui: uiSlice.reducer,
     homework: homeworkSlice.reducer,
     createHomework: createHomeworkSlice.reducer,
-    assignTime: assignTimeSlice.reducer,
   },
 });
 

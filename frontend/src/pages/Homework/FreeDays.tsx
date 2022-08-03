@@ -2,12 +2,9 @@ import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { freeDay } from '../../store/create-homework-slice';
 import styles from './Homework.module.css';
-import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
+import { useAppSelector } from '../../utilities/hooks';
 import { AiOutlineCalendar } from 'react-icons/ai';
-import Button from '../../components/UI/Button';
-import { Modal } from '../../components/UI/Overlays';
-import { createPortal } from 'react-dom';
-import { assignTimeActions } from '../../store/assign-time-slice';
+
 export const FreeDays: React.FC<{
   freeDays: freeDay[];
 }> = ({ freeDays }) => {
@@ -69,33 +66,12 @@ export const FreeDay: React.FC<{
   assignedTime: number;
 }> = (props) => {
   const formattedDate = new Date(props.date).toDateString();
-  const isModalOpened = useAppSelector((state) => state.assignTime.modalOpened);
-  const dispatch = useAppDispatch();
-  const assignTimeClickHandler = () => {
-    dispatch(
-      assignTimeActions.assignTime({
-        freeMinutes: props.freeTime,
-        timeAssigned: props.assignedTime,
-        date: props.date,
-      })
-    );
-  };
   return (
     <div className={styles['free-day']}>
       <FreeDayDate formattedDate={formattedDate} />
       <FreeDayMinutes freeTime={props.freeTime} />
       <AssignTime timeAssigned={props.assignedTime} />
-      <div className={styles['free-day--button-container']}>
-        <Button
-          onClick={assignTimeClickHandler}
-          isLoading={false}
-          isValid={true}
-          className={styles['free-day--button']}
-        >
-          Assign Time
-        </Button>
-      </div>
-      <AssignTimeModal isOpen={isModalOpened} />
+      {/* Slider */}
     </div>
   );
 };
@@ -131,29 +107,4 @@ const AssignTime: React.FC<{
   );
 };
 
-const AssignTimeModal: React.FC<{ isOpen: boolean }> = ({ isOpen }) => {
-  const dispatch = useAppDispatch();
-  const closeModalHandler = () => {
-    dispatch(assignTimeActions.setModalOpened(false));
-  };
-  return createPortal(
-    <Modal onClose={closeModalHandler} isOpen={isOpen}>
-      <AssignTimeInformations />
-    </Modal>,
-    document.getElementById('overlays') as HTMLDivElement
-  );
-};
-
-const AssignTimeInformations: React.FC = () => {
-  const dayInformations = useAppSelector(
-    (state) => state.assignTime.dayInformations
-  );
-  return (
-    <div>
-      <FreeDayDate formattedDate={dayInformations.date} />
-      <FreeDayMinutes freeTime={dayInformations.freeMinutes} />
-      <AssignTime timeAssigned={dayInformations.timeAssigned} />
-    </div>
-  );
-};
 export default FreeDays;
