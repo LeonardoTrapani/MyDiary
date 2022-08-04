@@ -96,3 +96,13 @@ export const calculateShowBurger = (width: number, previousShow: boolean) => {
 export const valueFromPercentage = (full: number, percentage: number) => {
   return Math.floor((full * percentage) / 100);
 };
+
+export const formatDateToString = (date: string | Date) => {
+  if (date instanceof Date) {
+    return date.toString();
+  }
+  if (typeof date === 'string') {
+    return new Date(date).toString();
+  }
+  return '';
+};

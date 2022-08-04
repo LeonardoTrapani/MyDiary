@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   createHomeworkActions,
@@ -8,7 +8,7 @@ import styles from './Homework.module.css';
 import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
 import { AiOutlineCalendar } from 'react-icons/ai';
 import Slider from '../../components/UI/Slider';
-import { valueFromPercentage } from '../../utilities/utilities';
+import { formatDateToString } from '../../utilities/utilities';
 
 export const FreeDays: React.FC<{
   freeDays: freeDay[];
@@ -23,6 +23,7 @@ export const FreeDays: React.FC<{
   if (isLoading) {
     return <div>Loading...</div>;
   }
+
   const homeworkPage = page as string;
   const freeDaysJsx = freeDays.map((freeDay) => {
     return (
@@ -30,7 +31,7 @@ export const FreeDays: React.FC<{
         date={freeDay.date}
         freeTime={freeDay.freeMinutes}
         key={freeDay.date}
-        assignedTime={0}
+        assignedTime={freeDay.assignedTime}
       />
     );
   });
@@ -71,19 +72,31 @@ export const FreeDay: React.FC<{
   assignedTime: number;
 }> = (props) => {
   const formattedDate = new Date(props.date).toDateString();
-  const [sliderPercentage, setSliderPercentage] = useState(0);
   const dispatch = useAppDispatch();
 
   const duration = useAppSelector(
     (state) => state.createHomework.homeworkCreating?.duration
   ) as number;
 
+  const assignedTime = useAppSelector(
+    (state) =>
+      state.createHomework.freeDays.find(
+        (freeDay) =>
+          formatDateToString(freeDay.date) === formatDateToString(props.date)
+      )?.assignedTime as number
+  );
+
   const sliderChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const sliderValue = valueFromPercentage(duration, +event.target.value);
-
-    setSliderPercentage(+event.target.value);
-
-    dispatch(createHomeworkActions.assignedTimeChange(sliderValue));
+    dispatch(
+      createHomeworkActions.assignedTimeChange({
+        assignedTime: +event.target.value,
+        freeDay: {
+          date: props.date,
+          assignedTime: props.assignedTime,
+          freeMinutes: props.freeTime,
+        },
+      })
+    );
   };
 
   return (
@@ -92,9 +105,9 @@ export const FreeDay: React.FC<{
       <FreeDayMinutes freeTime={props.freeTime} />
       <AssignTime timeAssigned={props.assignedTime} />
       <Slider
-        max={100}
+        max={duration}
         min={0}
-        value={sliderPercentage}
+        value={assignedTime}
         onChange={sliderChangeHandler}
       />
     </div>

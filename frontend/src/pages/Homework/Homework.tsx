@@ -166,6 +166,7 @@ export const AddHomeworkPage: React.FC = () => {
         expirationDate: expirationDateValue,
         name: nameValue,
         subject: subjectValue,
+        isAllTimeAssigned: false,
       })
     );
     // dispatch(
