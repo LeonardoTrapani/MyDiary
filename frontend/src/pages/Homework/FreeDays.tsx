@@ -12,18 +12,21 @@ import Slider from '../../components/UI/Slider';
 export const FreeDays: React.FC<{
   freeDays: freeDay[];
 }> = ({ freeDays }) => {
-  const isLoading = useAppSelector((state) => state.createHomework.isLoading);
   const { page } = useParams();
+  const homeworkPage = page as string;
+  const isLoading = useAppSelector((state) => state.createHomework.isLoading);
   const createHomeworkLoading = useAppSelector(
     (state) => state.createHomework.isLoading
   );
-  const navigate = useNavigate();
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
+  let message = 'Found no more free days';
+  if (+homeworkPage === 1) {
+    message = 'Found no free days';
+  }
 
-  const homeworkPage = page as string;
   const freeDaysJsx = freeDays.map((freeDay) => {
     return (
       <FreeDay
@@ -44,25 +47,46 @@ export const FreeDays: React.FC<{
           {freeDaysJsx.length ? (
             <div className={styles['free-days']}>{freeDaysJsx}</div>
           ) : (
-            <h2>Found no homework</h2>
+            <h2>{message}</h2>
           )}
-          <button
-            onClick={() => {
-              navigate('/create-homework/free-days/' + (+homeworkPage - 1));
-            }}
-          >
-            PREVIOUS PAGE
-          </button>
-          <button
-            onClick={() => {
-              navigate('/create-homework/free-days/' + (+homeworkPage + 1));
-            }}
-          >
-            NEXT PAGE
-          </button>
         </>
       )}
+      <FreeDaysButtons page={+homeworkPage} />
     </div>
+  );
+};
+
+import { IoIosArrowBack } from 'react-icons/io';
+import { IoIosArrowForward } from 'react-icons/io';
+export const FreeDaysButtons: React.FC<{ page: number }> = ({ page }) => {
+  const navigate = useNavigate();
+
+  const buttonBackHandler = () => {
+    navigate('/create-homework/free-days/' + (page - 1));
+  };
+  const buttonForwardHandler = () => {
+    navigate('/create-homework/free-days/' + (page + 1));
+  };
+  return (
+    <div className={styles['free-day--button-container']}>
+      <FreeDayButton onClick={buttonBackHandler}>
+        <IoIosArrowBack />
+      </FreeDayButton>
+      <FreeDayButton onClick={buttonForwardHandler}>
+        <IoIosArrowForward />
+      </FreeDayButton>
+    </div>
+  );
+};
+
+export const FreeDayButton: React.FC<{
+  onClick: () => void;
+  children: React.ReactNode;
+}> = (props) => {
+  return (
+    <button onClick={props.onClick} className={styles['free-day--button']}>
+      {props.children}
+    </button>
   );
 };
 

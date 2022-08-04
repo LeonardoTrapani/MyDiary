@@ -41,16 +41,27 @@
 .free-day--button-container {
   margin: auto;
   margin-top: 1rem;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+  display: flex;
+  gap: 4rem;
 }
 
 .free-day--button {
-  padding: 0 2rem;
-  font-size: 1rem;
+  aspect-ratio: 1;
+  width: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .free-days {
+  height: 100%;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
 }
 
 .free-day--space-content {
@@ -61,13 +72,15 @@
 
 .select-free-days {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
   grid-template-rows: repeat(2, minmax(0, 1fr));
   height: 100vh;
 }
 
 .free-days--container {
+  position: relative;
   grid-row: 1 / -1;
+  grid-column: 2 / -1;
   overflow: scroll;
 }
 
