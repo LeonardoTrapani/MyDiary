@@ -63,26 +63,24 @@ const createHomeworkSlice = createSlice({
       if (!state.homeworkCreating) {
         return;
       }
-
       const freeDayIndex = state.freeDays.findIndex(
         (freeDay) =>
           formatDateToString(action.payload.freeDay.date) ===
           formatDateToString(freeDay.date)
       );
-
-      const totalAssignedTime = state.freeDays.reduce((prev, currFreeDay) => {
-        let sum = prev + currFreeDay.assignedTime;
-        if (
-          formatDateToString(currFreeDay.date) ===
-          formatDateToString(action.payload.freeDay.date)
-        ) {
-          sum = prev + action.payload.assignedTime;
-        }
-        return sum;
-      }, 0);
-      const timeToAssign = state.homeworkCreating.duration - totalAssignedTime;
-      if (timeToAssign < 0) {
+      if (freeDayIndex === -1) {
+        console.error("can't find day");
         return;
+      }
+      const previousAssignedTime = state.freeDays[freeDayIndex].assignedTime;
+      const assignedTimeDifference =
+        action.payload.assignedTime - previousAssignedTime;
+      let timeToAssign =
+        state.homeworkCreating.timeToAssign - assignedTimeDifference;
+
+      if (timeToAssign < 0) {
+        action.payload.assignedTime += timeToAssign;
+        timeToAssign = 0;
       }
       state.homeworkCreating.timeToAssign = timeToAssign;
 

@@ -8,7 +8,6 @@ import styles from './Homework.module.css';
 import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
 import { AiOutlineCalendar } from 'react-icons/ai';
 import Slider from '../../components/UI/Slider';
-import { formatDateToString } from '../../utilities/utilities';
 
 export const FreeDays: React.FC<{
   freeDays: freeDay[];
@@ -32,6 +31,7 @@ export const FreeDays: React.FC<{
         freeTime={freeDay.freeMinutes}
         key={freeDay.date}
         assignedTime={freeDay.assignedTime}
+        freeMinutes={freeDay.freeMinutes}
       />
     );
   });
@@ -70,20 +70,13 @@ export const FreeDay: React.FC<{
   date: string;
   freeTime: number;
   assignedTime: number;
+  freeMinutes: number;
 }> = (props) => {
+  const { assignedTime, freeMinutes } = props;
   const formattedDate = new Date(props.date).toDateString();
   const dispatch = useAppDispatch();
-
-  const duration = useAppSelector(
-    (state) => state.createHomework.homeworkCreating?.duration
-  ) as number;
-
-  const assignedTime = useAppSelector(
-    (state) =>
-      state.createHomework.freeDays.find(
-        (freeDay) =>
-          formatDateToString(freeDay.date) === formatDateToString(props.date)
-      )?.assignedTime as number
+  const timeToAssign = useAppSelector(
+    (state) => state.createHomework.homeworkCreating?.timeToAssign as number
   );
 
   const sliderChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,14 +91,15 @@ export const FreeDay: React.FC<{
       })
     );
   };
-
+  const sliderDisabled = timeToAssign === 0 && assignedTime === 0;
   return (
     <div className={styles['free-day']}>
       <FreeDayDate formattedDate={formattedDate} />
       <FreeDayMinutes freeTime={props.freeTime} />
       <AssignTime timeAssigned={props.assignedTime} />
       <Slider
-        max={duration}
+        disabled={sliderDisabled}
+        max={freeMinutes}
         min={0}
         value={assignedTime}
         onChange={sliderChangeHandler}
