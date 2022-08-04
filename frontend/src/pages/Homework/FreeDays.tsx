@@ -4,24 +4,22 @@ import {
   createHomeworkActions,
   freeDay,
 } from '../../store/create-homework-slice';
-import styles from './Homework.module.css';
 import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
 import { AiOutlineCalendar } from 'react-icons/ai';
 import Slider from '../../components/UI/Slider';
-
+import { IoIosArrowBack } from 'react-icons/io';
+import { IoIosArrowForward } from 'react-icons/io';
+import styles from './Homework.module.css';
 export const FreeDays: React.FC<{
   freeDays: freeDay[];
 }> = ({ freeDays }) => {
   const { page } = useParams();
   const homeworkPage = page as string;
-  const isLoading = useAppSelector((state) => state.createHomework.isLoading);
+
   const createHomeworkLoading = useAppSelector(
     (state) => state.createHomework.isLoading
   );
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
   let message = 'Found no more free days';
   if (+homeworkPage === 1) {
     message = 'Found no free days';
@@ -38,54 +36,75 @@ export const FreeDays: React.FC<{
       />
     );
   });
+  const navigate = useNavigate();
+
+  const buttonBackHandler = () => {
+    navigate('/create-homework/free-days/' + (+homeworkPage - 1));
+  };
+  const buttonForwardHandler = () => {
+    navigate('/create-homework/free-days/' + (+homeworkPage + 1));
+  };
 
   return (
     <div className={styles['free-days--container']}>
-      {createHomeworkLoading && <div>Loading...</div>}
+      <FreeDayButton
+        onClick={buttonBackHandler}
+        left
+        disabled={+homeworkPage === 1}
+      />
+
       {!createHomeworkLoading && (
         <>
           {freeDaysJsx.length ? (
             <div className={styles['free-days']}>{freeDaysJsx}</div>
           ) : (
-            <h2>{message}</h2>
+            <h2 className={styles['free-days--message']}>{message}</h2>
           )}
         </>
       )}
-      <FreeDaysButtons page={+homeworkPage} />
-    </div>
-  );
-};
 
-import { IoIosArrowBack } from 'react-icons/io';
-import { IoIosArrowForward } from 'react-icons/io';
-export const FreeDaysButtons: React.FC<{ page: number }> = ({ page }) => {
-  const navigate = useNavigate();
-
-  const buttonBackHandler = () => {
-    navigate('/create-homework/free-days/' + (page - 1));
-  };
-  const buttonForwardHandler = () => {
-    navigate('/create-homework/free-days/' + (page + 1));
-  };
-  return (
-    <div className={styles['free-day--button-container']}>
-      <FreeDayButton onClick={buttonBackHandler}>
-        <IoIosArrowBack />
-      </FreeDayButton>
-      <FreeDayButton onClick={buttonForwardHandler}>
-        <IoIosArrowForward />
-      </FreeDayButton>
+      <FreeDayButton
+        onClick={buttonForwardHandler}
+        right
+        disabled={!freeDaysJsx.length}
+      />
     </div>
   );
 };
 
 export const FreeDayButton: React.FC<{
   onClick: () => void;
-  children: React.ReactNode;
+  right?: boolean;
+  left?: boolean;
+  disabled: boolean;
 }> = (props) => {
+  const iconSize = 20;
+  const iconsWidth = 8;
+
   return (
-    <button onClick={props.onClick} className={styles['free-day--button']}>
-      {props.children}
+    <button
+      onClick={props.onClick}
+      className={
+        styles['free-day--button'] +
+        ' ' +
+        (props.disabled ? styles['free-day--button_disabled'] : '')
+      }
+      disabled={props.disabled}
+    >
+      {props.left && (
+        <IoIosArrowBack
+          size={iconSize}
+          strokeWidth={iconsWidth}
+          className={styles['free-day--icon-left']}
+        />
+      )}
+      {props.right && (
+        <IoIosArrowForward
+          size={iconSize}
+          strokeWidth={iconsWidth}
+          className={styles['free-day--icon-right']}
+        />
+      )}
     </button>
   );
 };

@@ -38,27 +38,48 @@
   align-items: center;
 }
 
-.free-day--button-container {
-  margin: auto;
-  margin-top: 1rem;
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translate(-50%, 0);
-  display: flex;
-  gap: 4rem;
-}
-
 .free-day--button {
-  aspect-ratio: 1;
-  width: 1rem;
+  height: 2.4rem;
+  width: 2.7rem;
   display: flex;
   justify-content: center;
   align-items: center;
+  border: none;
+  background-color: #2563eb;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+}
+
+.free-days--message {
+  width: 100%;
+  text-align: center;
+}
+
+.free-day--button:hover,
+.free-day--button:active {
+  background-color: #3b82f6;
+}
+
+.free-day--button_disabled:hover,
+.free-day--button_disabled {
+  background-color: #bbb;
+}
+.free-day--button_disabled {
+  background-color: #bbb;
+  cursor: not-allowed;
+}
+
+.free-day--icon-right {
+  transform: translate(7%, 0);
+}
+.free-day--icon-left {
+  transform: translate(-7%, 0);
 }
 
 .free-days {
   height: 100%;
+  width: 100%;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   grid-template-rows: repeat(3, minmax(0, 1fr));
@@ -72,20 +93,26 @@
 
 .select-free-days {
   display: grid;
+  gap: 2rem;
+  padding-left: 2rem;
   grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
   grid-template-rows: repeat(2, minmax(0, 1fr));
-  height: 100vh;
 }
 
 .free-days--container {
-  position: relative;
+  height: 100vh;
   grid-row: 1 / -1;
   grid-column: 2 / -1;
   overflow: scroll;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  padding: 0 1rem;
 }
 
 .creating-homework-informations--container {
-  padding: 3rem;
+  padding-top: 2rem;
 }
 
 .selected-days--container {
