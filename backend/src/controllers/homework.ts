@@ -84,7 +84,7 @@ export const getAllHomework = async (
   res.json(homework);
 };
 
-const DAYS_PER_PAGE = 12;
+const DAYS_PER_PAGE = 6;
 export const calculateFreeDays = async (
   req: Request,
   res: Response,
