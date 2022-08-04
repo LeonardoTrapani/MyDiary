@@ -1,5 +1,4 @@
 import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
-import { AiTwotoneAlert } from 'react-icons/ai';
 
 import { BACKEND_URL } from '../utilities/contants';
 import { CustomRequestInit } from '../utilities/hooks';
@@ -122,15 +121,19 @@ const createHomeworkSlice = createSlice({
 
       state.freeDays[freeDayIndex].assignedTime = action.payload.assignedTime;
 
+      const freeDayWithUpdatedAssignedTime = {
+        ...action.payload.freeDay,
+        assignedTime: action.payload.assignedTime,
+      };
       if (!existsOnSelectedDays(selectedDaysIndex)) {
-        state.selectedDays.push(action.payload.freeDay);
+        state.selectedDays.push(freeDayWithUpdatedAssignedTime);
         return;
       }
       if (action.payload.assignedTime === 0) {
         state.selectedDays.splice(selectedDaysIndex, 1);
         return;
       }
-      state.selectedDays[selectedDaysIndex] = action.payload.freeDay;
+      state.selectedDays[selectedDaysIndex] = freeDayWithUpdatedAssignedTime;
     },
   },
 });
