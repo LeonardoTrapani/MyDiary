@@ -97,12 +97,20 @@ export const valueFromPercentage = (full: number, percentage: number) => {
   return Math.floor((full * percentage) / 100);
 };
 
-export const formatDateToString = (date: string | Date) => {
-  if (date instanceof Date) {
-    return date.toString();
-  }
-  if (typeof date === 'string') {
-    return new Date(date).toString();
-  }
-  return '';
+export const datesEqualOnDay = (
+  date1ToFormat: string | Date,
+  date2ToFormat: string | Date
+) => {
+  const date1 = new Date(date1ToFormat).setHours(0, 0, 0, 0);
+  const date2 = new Date(date2ToFormat).setHours(0, 0, 0, 0);
+  return date1 === date2;
 };
+// export const formatDateToString = (date: string | Date) => {
+//   if (date instanceof Date) {
+//     return date.toString();
+//   }
+//   if (typeof date === 'string') {
+//     return new Date(date).toString();
+//   }
+//   return '';
+// };

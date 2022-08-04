@@ -169,20 +169,6 @@ export const AddHomeworkPage: React.FC = () => {
         isAllTimeAssigned: false,
       })
     );
-    // dispatch(
-    //   addHomeworkAndSearchDays(
-    //     {
-    //       descriptionValue,
-    //       durationValue: +durationValue,
-    //       expirationDateValue: expirationDateValue,
-    //       nameValue,
-    //       subjectValue,
-    //     },
-    //     defaultPage,
-    //     fetchAuthorized
-    //   )
-    // );
-
     navigate('/create-homework/free-days/' + defaultPage);
   };
 

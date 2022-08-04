@@ -1,8 +1,9 @@
 import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
+import { AiTwotoneAlert } from 'react-icons/ai';
 
 import { BACKEND_URL } from '../utilities/contants';
 import { CustomRequestInit } from '../utilities/hooks';
-import { formatDateToString } from '../utilities/utilities';
+import { datesEqualOnDay } from '../utilities/utilities';
 
 export interface freeDay {
   date: string;
@@ -22,11 +23,11 @@ interface HomeworkCreating {
   timeToAssign: number;
   isAllTimeAssigned: false;
   expirationDate: string;
-  plannedDates?: [plannedDate, ...plannedDate[]];
 }
 interface createHomeworkState {
   isLoading: boolean;
   freeDays: freeDay[];
+  selectedDays: freeDay[];
   isChoosingFreeDay: boolean;
   homeworkCreating?: HomeworkCreating;
 }
@@ -35,13 +36,35 @@ const initialState: createHomeworkState = {
   isLoading: false,
   isChoosingFreeDay: false,
   freeDays: [],
+  selectedDays: [],
 };
 const createHomeworkSlice = createSlice({
   name: 'createHomework',
   initialState,
   reducers: {
     setFreeDays(state, action: PayloadAction<freeDay[]>) {
-      state.freeDays = action.payload;
+      const { selectedDays } = state;
+      const freeDays = action.payload;
+      const selectedDaysToDeleteIndexes = [];
+
+      for (let i = 0; i < selectedDays.length; i++) {
+        for (let j = 0; j < freeDays.length; j++) {
+          if (datesEqualOnDay(selectedDays[i].date, freeDays[j].date)) {
+            if (selectedDays[i].freeMinutes === freeDays[j].freeMinutes) {
+              freeDays[j] = selectedDays[i];
+            } else {
+              selectedDaysToDeleteIndexes.push(i);
+              freeDays[j].assignedTime = 0;
+            }
+          }
+        }
+      }
+
+      selectedDaysToDeleteIndexes.forEach((i) => {
+        selectedDays.splice(i, 1);
+      });
+
+      state.freeDays = freeDays;
     },
     setHomeworkCreating(state, action: PayloadAction<HomeworkCreating>) {
       state.isChoosingFreeDay = true;
@@ -63,11 +86,20 @@ const createHomeworkSlice = createSlice({
       if (!state.homeworkCreating) {
         return;
       }
-      const freeDayIndex = state.freeDays.findIndex(
-        (freeDay) =>
-          formatDateToString(action.payload.freeDay.date) ===
-          formatDateToString(freeDay.date)
+      const freeDayIndex = state.freeDays.findIndex((freeDay) =>
+        datesEqualOnDay(action.payload.freeDay.date, freeDay.date)
       );
+      const selectedDaysIndex = state.selectedDays.findIndex((freeDay) =>
+        datesEqualOnDay(action.payload.freeDay.date, freeDay.date)
+      );
+
+      const existsOnSelectedDays = (i: number) => {
+        if (i === -1) {
+          return false;
+        }
+        return true;
+      };
+
       if (freeDayIndex === -1) {
         console.error("can't find day");
         return;
@@ -89,6 +121,16 @@ const createHomeworkSlice = createSlice({
       }
 
       state.freeDays[freeDayIndex].assignedTime = action.payload.assignedTime;
+
+      if (!existsOnSelectedDays(selectedDaysIndex)) {
+        state.selectedDays.push(action.payload.freeDay);
+        return;
+      }
+      if (action.payload.assignedTime === 0) {
+        state.selectedDays.splice(selectedDaysIndex, 1);
+        return;
+      }
+      state.selectedDays[selectedDaysIndex] = action.payload.freeDay;
     },
   },
 });
@@ -119,7 +161,8 @@ export const searchFreeDays = (
         }
       );
       const freeDays = res.map((freeDay) => {
-        return { ...freeDay, assignedTime: 0 };
+        const freeDayModified = { ...freeDay, assignedTime: 0 };
+        return freeDayModified;
       });
       dispatch(createHomeworkActions.setFreeDays(freeDays));
     } catch (err) {

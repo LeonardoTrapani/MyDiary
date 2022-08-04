@@ -129,6 +129,7 @@ export const calculateFreeDays = async (
       freeDays,
       homeworkDuration
     );
+    console.log(freeDaysArray);
 
     return res.json(freeDaysArray);
   } catch (err) {
