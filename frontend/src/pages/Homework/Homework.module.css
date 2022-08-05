@@ -18,7 +18,6 @@
 }
 
 .free-day {
-  margin: 1rem;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   padding: 2rem;
   display: flex;
@@ -48,6 +47,7 @@
   width: 2.4rem;
   position: relative;
   border: none;
+  padding: 0 !important;
   background-color: #2563eb;
   border-radius: 50%;
   color: white;
@@ -88,9 +88,8 @@
   height: 100%;
   width: 100%;
   display: grid;
-  gap: 1rem;
-  column-gap: 2rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-template-rows: repeat(3, minmax(0, 1fr));
 }
 
@@ -105,7 +104,10 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
+  gap: 2rem;
+  padding: 2rem;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .free-days--container {
@@ -118,10 +120,6 @@
   display: flex;
 }
 
-.select-free-days {
-  padding: 2rem;
-  height: 100vh;
-}
 .creating-homework-informations--container {
   padding: 1rem;
 }
@@ -142,18 +140,32 @@
   font-size: 1.2rem;
 }
 
-duration {
-  font-size: 1.6rem;
-  letter-spacing: -0.1rem;
-  margin-bottom: 0.5rem;
-}
-.duration span {
-  margin-left: 0.1rem;
-  font-size: 1.2rem;
-  letter-spacing: 0rem;
+.free-days--informations {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
 }
 
-.description {
+.free-days--informations-actions button {
+  padding: 0 1rem;
+}
+
+.time-to-assign {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   font-size: 1.2rem;
-  margin-bottom: 2rem;
+}
+
+.free-days--informations-actions {
+  display: flex;
+  align-items: center;
+  gap: 6rem;
+}
+
+.time-to-assign--value {
+  font-size: 1.8rem;
 }

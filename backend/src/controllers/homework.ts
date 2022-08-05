@@ -84,7 +84,7 @@ export const getAllHomework = async (
   res.json(homework);
 };
 
-const DAYS_PER_PAGE = 6;
+const DAYS_PER_PAGE = 9;
 export const calculateFreeDays = async (
   req: Request,
   res: Response,
@@ -126,8 +126,7 @@ export const calculateFreeDays = async (
       startDate,
       expirationDate,
       week,
-      freeDays,
-      homeworkDuration
+      freeDays
     );
 
     return res.json(freeDaysArray);
@@ -198,8 +197,7 @@ const getFreeDaysArray = (
   startDate: Date,
   expirationDate: Date,
   week: week,
-  freeDays: freeDays,
-  homeworkDuration: number
+  freeDays: freeDays
 ) => {
   const finalFreeDays: {
     date: Date;

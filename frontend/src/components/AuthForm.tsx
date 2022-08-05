@@ -36,6 +36,7 @@ const AuthForm: React.FC<{
 }) => {
   const buttonClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
     if (!isValid) {
+      inputs.forEach((input) => input.validate());
       event.preventDefault();
     }
   };

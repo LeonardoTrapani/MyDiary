@@ -17,7 +17,7 @@ import {
   searchFreeDays,
 } from '../../store/create-homework-slice';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
-import FreeDays, { FreeDayButtons } from './FreeDays';
+import FreeDays, { FreeDaysInformations } from './FreeDays';
 
 export const HomePage: React.FC = () => {
   const token = useAppSelector((state) => state.auth.token) as string;
@@ -170,12 +170,20 @@ export const AddHomeworkPage: React.FC = () => {
     navigate('/create-homework/free-days/' + defaultPage);
   };
 
+  const validateInputs = () => {
+    validateName();
+    validateDescription();
+    validateDuration();
+    validateExpirationDate();
+    validateSubject();
+  };
   return (
     <>
       <div className={styles['add-homework-form--container']}>
         <Form
           onSubmit={addHomeworkSubmitHandler}
           buttonName='Add Homework'
+          validateInputs={validateInputs}
           isFormValid={isFormValid}
           isFormLoading={false}
         >
@@ -243,8 +251,8 @@ export const SelectFreeDays: React.FC<{
 }> = ({ freeDays }) => {
   return (
     <div className={styles['select-free-days']}>
+      <FreeDaysInformations />
       <FreeDays freeDays={freeDays} />
-      <FreeDayButtons />
     </div>
   );
 };

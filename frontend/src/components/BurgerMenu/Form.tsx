@@ -1,19 +1,26 @@
 import styles from './Form.module.css';
 import React from 'react';
 import Button from '../UI/Button';
-import Card from '../UI/Card';
 
 const Form: React.FC<{
   children: React.ReactNode;
   isFormValid: boolean;
   isFormLoading: boolean;
   buttonName: string;
+  validateInputs: () => void;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 }> = (props) => {
+  const formSubmitHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (!props.isFormValid) {
+      props.validateInputs();
+      event.preventDefault();
+    }
+  };
   return (
     <form onSubmit={props.onSubmit} className={styles.form}>
       {props.children}
       <Button
+        onClick={formSubmitHandler}
         isLoading={props.isFormLoading}
         isValid={props.isFormValid}
         type='submit'

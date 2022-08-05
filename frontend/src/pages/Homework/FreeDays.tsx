@@ -10,6 +10,8 @@ import Slider from '../../components/UI/Slider';
 import { IoIosArrowBack } from 'react-icons/io';
 import { IoIosArrowForward } from 'react-icons/io';
 import styles from './Homework.module.css';
+import Button from '../../components/UI/Button';
+import MinutesFromHoursMinutes from '../../components/UI/MinutesFromHoursMinutes';
 export const FreeDays: React.FC<{
   freeDays: freeDay[];
 }> = ({ freeDays }) => {
@@ -178,7 +180,9 @@ const FreeDayMinutes: React.FC<{ freeTime: number }> = (props) => {
   return (
     <div className={styles['free-day--space-content']}>
       <p>Free minutes: </p>
-      <p>{props.freeTime}</p>
+      <p>
+        <MinutesFromHoursMinutes minutes={props.freeTime} />
+      </p>
     </div>
   );
 };
@@ -189,9 +193,48 @@ const AssignTime: React.FC<{
   return (
     <div className={styles['free-day--space-content']}>
       <p>Assigned Time: </p>
-      <p>{props.timeAssigned}</p>
+      <p>
+        <MinutesFromHoursMinutes minutes={props.timeAssigned} />
+      </p>
     </div>
   );
 };
 
 export default FreeDays;
+
+export const FreeDaysInformations: React.FC = () => {
+  return (
+    <div className={styles['free-days--informations']}>
+      <FreeDayTitle />
+      <TimeToAssign />
+      <div className={styles['free-days--informations-actions']}>
+        <Button isLoading={false} isValid={false}>
+          Submit
+        </Button>
+        <FreeDayButtons />
+      </div>
+    </div>
+  );
+};
+
+export const FreeDayTitle: React.FC = () => {
+  const name = useAppSelector(
+    (state) => state.createHomework.homeworkCreating?.name
+  );
+  return <h1 className={styles['time-to-assign--name']}>{name}</h1>;
+};
+
+export const TimeToAssign: React.FC = () => {
+  const timeToAssign = useAppSelector(
+    (state) => state.createHomework.homeworkCreating?.timeToAssign as number
+  );
+  return (
+    <div className={styles['time-to-assign']}>
+      <MinutesFromHoursMinutes
+        minutes={timeToAssign}
+        hoursValueClass={styles['time-to-assign--value']}
+        minutesValueClass={styles['time-to-assign--value']}
+      />
+    </div>
+  );
+};
