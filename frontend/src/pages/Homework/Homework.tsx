@@ -17,9 +17,7 @@ import {
   searchFreeDays,
 } from '../../store/create-homework-slice';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
-import FreeDays from './FreeDays';
-import CreatingHomeworkInformations from './CreatingHomeworkInformations';
-import SelectedDays from './SelectedDays';
+import FreeDays, { FreeDayButtons } from './FreeDays';
 
 export const HomePage: React.FC = () => {
   const token = useAppSelector((state) => state.auth.token) as string;
@@ -246,8 +244,7 @@ export const SelectFreeDays: React.FC<{
   return (
     <div className={styles['select-free-days']}>
       <FreeDays freeDays={freeDays} />
-      <CreatingHomeworkInformations />
-      <SelectedDays />
+      <FreeDayButtons />
     </div>
   );
 };

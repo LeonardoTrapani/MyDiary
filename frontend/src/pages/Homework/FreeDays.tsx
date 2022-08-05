@@ -36,23 +36,9 @@ export const FreeDays: React.FC<{
       />
     );
   });
-  const navigate = useNavigate();
-
-  const buttonBackHandler = () => {
-    navigate('/create-homework/free-days/' + (+homeworkPage - 1));
-  };
-  const buttonForwardHandler = () => {
-    navigate('/create-homework/free-days/' + (+homeworkPage + 1));
-  };
 
   return (
     <div className={styles['free-days--container']}>
-      <FreeDayButton
-        onClick={buttonBackHandler}
-        left
-        disabled={+homeworkPage === 1}
-      />
-
       {!createHomeworkLoading && (
         <>
           {freeDaysJsx.length ? (
@@ -62,24 +48,48 @@ export const FreeDays: React.FC<{
           )}
         </>
       )}
-
-      <FreeDayButton
-        onClick={buttonForwardHandler}
-        right
-        disabled={!freeDaysJsx.length}
-      />
     </div>
   );
 };
 
+export const FreeDayButtons: React.FC = () => {
+  const navigate = useNavigate();
+  const freeDaysLength = useAppSelector(
+    (state) => state.createHomework.freeDays.length
+  );
+  const { page } = useParams();
+  const homeworkPage = page as string;
+
+  const buttonBackHandler = () => {
+    navigate('/create-homework/free-days/' + (+homeworkPage - 1));
+  };
+  const buttonForwardHandler = () => {
+    navigate('/create-homework/free-days/' + (+homeworkPage + 1));
+  };
+  return (
+    <div className={styles['free-days--button-container']}>
+      <FreeDayButton
+        onClick={buttonBackHandler}
+        left
+        disabled={+homeworkPage === 1}
+      />
+
+      <FreeDayButton
+        onClick={buttonForwardHandler}
+        right
+        disabled={freeDaysLength ? false : true}
+      />
+    </div>
+  );
+};
 export const FreeDayButton: React.FC<{
   onClick: () => void;
   right?: boolean;
   left?: boolean;
   disabled: boolean;
 }> = (props) => {
-  const iconSize = 20;
-  const iconsWidth = 8;
+  const iconSize = 17;
+  const iconsWidth = 15;
 
   return (
     <button

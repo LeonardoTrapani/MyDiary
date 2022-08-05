@@ -18,7 +18,7 @@
 }
 
 .free-day {
-  margin: 1.2rem;
+  margin: 1rem;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   padding: 2rem;
   display: flex;
@@ -45,10 +45,8 @@
 
 .free-day--button {
   height: 2.4rem;
-  width: 2.6rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  width: 2.4rem;
+  position: relative;
   border: none;
   background-color: #2563eb;
   border-radius: 50%;
@@ -57,6 +55,10 @@
 }
 
 .free-days--message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
   width: 100%;
   text-align: center;
 }
@@ -76,16 +78,18 @@
 }
 
 .free-day--icon-right {
-  transform: translate(7%, 0);
+  transform: translate(7%, 10%);
 }
 .free-day--icon-left {
-  transform: translate(-7%, 0);
+  transform: translate(-7%, 10%);
 }
 
 .free-days {
   height: 100%;
   width: 100%;
   display: grid;
+  gap: 1rem;
+  column-gap: 2rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   grid-template-rows: repeat(3, minmax(0, 1fr));
 }
@@ -97,30 +101,59 @@
 }
 
 .select-free-days {
-  display: grid;
-  gap: 2rem;
-  padding-left: 2rem;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-  grid-template-rows: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
 }
 
 .free-days--container {
-  height: 100vh;
-  grid-row: 1 / -1;
-  grid-column: 2 / -1;
-  overflow: scroll;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+  height: 100%;
   width: 100%;
-  padding: 0 1rem;
 }
 
+.free-days--button-container {
+  gap: 3rem;
+  display: flex;
+}
+
+.select-free-days {
+  padding: 2rem;
+  height: 100vh;
+}
 .creating-homework-informations--container {
-  padding-top: 2rem;
+  padding: 1rem;
 }
 
-.selected-days--container {
-  padding: 3rem;
-  overflow: scroll;
+.name {
+  font-size: 3.2rem;
+  color: #2563eb;
+  letter-spacing: -0.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.subject {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.expiration-date {
+  font-size: 1.2rem;
+}
+
+duration {
+  font-size: 1.6rem;
+  letter-spacing: -0.1rem;
+  margin-bottom: 0.5rem;
+}
+.duration span {
+  margin-left: 0.1rem;
+  font-size: 1.2rem;
+  letter-spacing: 0rem;
+}
+
+.description {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
 }
