@@ -18,6 +18,7 @@ import {
 } from '../../store/create-homework-slice';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import FreeDays, { FreeDaysInformations } from './FreeDays';
+import { addDaysFromToday } from '../../utilities/utilities';
 
 export const HomePage: React.FC = () => {
   const token = useAppSelector((state) => state.auth.token) as string;
@@ -94,7 +95,7 @@ export const AddHomeworkPage: React.FC = () => {
   } = useInput([
     {
       check: (value) => !!value,
-      errorMessage: 'please insert a description',
+      errorMessage: 'please insert a subject',
     },
   ]);
 
@@ -237,6 +238,7 @@ export const AddHomeworkPage: React.FC = () => {
             value={expirationDateValue}
             other={{
               min: new Date().toISOString().split('T')[0],
+              max: new Date(addDaysFromToday(365)).toISOString().split('T')[0],
             }}
             className={styles['expiration-input']}
           />

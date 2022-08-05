@@ -48,3 +48,34 @@ export const validateExpressValidation = (
   }
   next();
 };
+
+export const plannedDatesAreValid = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const plannedDates = req.body.plannedDates as {
+    date: string;
+    minutes: number;
+  }[];
+  const totalMinutes = plannedDates.reduce((prev, curr) => {
+    return prev + curr.minutes;
+  }, 0);
+  if (totalMinutes > req.body.duration) {
+    throwResponseError(
+      'The duration provided exceed your duration limit',
+      400,
+      res
+    );
+    return;
+  }
+  if (totalMinutes < req.body.duration) {
+    throwResponseError(
+      "The duration provided don't complete your duration limit",
+      400,
+      res
+    );
+    return;
+  }
+  next();
+};

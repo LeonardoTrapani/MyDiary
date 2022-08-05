@@ -105,12 +105,13 @@ export const datesEqualOnDay = (
   const date2 = new Date(date2ToFormat).setHours(0, 0, 0, 0);
   return date1 === date2;
 };
-// export const formatDateToString = (date: string | Date) => {
-//   if (date instanceof Date) {
-//     return date.toString();
-//   }
-//   if (typeof date === 'string') {
-//     return new Date(date).toString();
-//   }
-//   return '';
-// };
+
+export const addDaysFromToday = (daysToAdd: number) => {
+  return addDays(new Date(Date.now()), daysToAdd);
+};
+
+export const addDays = (from: Date, daysToAdd: number) => {
+  const result = new Date(from);
+  result.setDate(result.getDate() + daysToAdd);
+  return result;
+};

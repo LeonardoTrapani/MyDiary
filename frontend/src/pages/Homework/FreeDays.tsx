@@ -180,9 +180,9 @@ const FreeDayMinutes: React.FC<{ freeTime: number }> = (props) => {
   return (
     <div className={styles['free-day--space-content']}>
       <p>Free minutes: </p>
-      <p>
+      <div>
         <MinutesFromHoursMinutes minutes={props.freeTime} />
-      </p>
+      </div>
     </div>
   );
 };
@@ -193,9 +193,9 @@ const AssignTime: React.FC<{
   return (
     <div className={styles['free-day--space-content']}>
       <p>Assigned Time: </p>
-      <p>
+      <div>
         <MinutesFromHoursMinutes minutes={props.timeAssigned} />
-      </p>
+      </div>
     </div>
   );
 };
@@ -208,10 +208,10 @@ export const FreeDaysInformations: React.FC = () => {
       <FreeDayTitle />
       <TimeToAssign />
       <div className={styles['free-days--informations-actions']}>
-        <Button isLoading={false} isValid={false}>
-          Submit
-        </Button>
         <FreeDayButtons />
+        <Button isLoading={false} isValid={false}>
+          Create date
+        </Button>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { throwResponseError } from '../utilities';
+import { addDays, addDaysFromToday, throwResponseError } from '../utilities';
 
 import { prisma } from '../app';
 
@@ -268,16 +268,6 @@ const findfreeMinutesInDay = (
     }
   }
   return 0;
-};
-
-const addDaysFromToday = (daysToAdd: number) => {
-  return addDays(new Date(Date.now()), daysToAdd);
-};
-
-const addDays = (from: Date, daysToAdd: number) => {
-  let result = new Date(from);
-  result.setDate(result.getDate() + daysToAdd);
-  return result;
 };
 
 const calculateSubtractedDays = (

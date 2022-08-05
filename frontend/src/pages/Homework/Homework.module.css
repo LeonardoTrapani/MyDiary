@@ -116,7 +116,7 @@
 }
 
 .free-days--button-container {
-  gap: 3rem;
+  gap: 1.4rem;
   display: flex;
 }
 
@@ -153,10 +153,6 @@
 }
 
 .time-to-assign {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   font-size: 1.2rem;
 }
 

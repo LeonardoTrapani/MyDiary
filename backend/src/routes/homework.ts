@@ -4,8 +4,12 @@ import {
   createHomework,
   getAllHomework,
 } from '../controllers/homework';
-import { isAuthenticated, validateExpressValidation } from '../middlewares';
-import { validatorDateHandler } from '../utilities';
+import {
+  isAuthenticated,
+  plannedDatesAreValid,
+  validateExpressValidation,
+} from '../middlewares';
+import { dateLessThanDays, isValidDate } from '../utilities';
 import { body, param } from 'express-validator';
 
 const router = Router();
@@ -27,24 +31,30 @@ router.post(
       .isLength({ min: 5, max: 400 })
       .notEmpty(),
     body('subject', 'please enter a subject').trim().isString().notEmpty(),
-    body('expirationDate', 'plase enter a valid date')
-      .custom((value) => validatorDateHandler(value))
-      .toDate(),
+    body('expirationDate', 'please insert a valid expiration date')
+      .isISO8601()
+      .notEmpty()
+      .custom((value) => dateLessThanDays(365, new Date(value)))
+      .withMessage('the expiration date is too far (max 1 year)'),
     body('plannedDates', 'please enter valid planned dates')
-      .custom((value) => value.length)
+      .custom((value) => {
+        return value.length;
+      })
       .withMessage('please enter the planned dates')
       .custom((values: { date: string; minutes: number }[]) => {
         let isValid = true;
         values.forEach((value) => {
-          if (!validatorDateHandler(value.date) || isNaN(value.minutes)) {
+          if (!isValidDate(value.date) || isNaN(value.minutes)) {
             isValid = false;
           }
         });
         return isValid;
-      }),
+      })
+      .withMessage('the dates of the planned dates are not valid'),
     body('duration', 'please enter a valid duration').isNumeric(), //Validate dates and times etc...
   ],
   validateExpressValidation,
+  plannedDatesAreValid,
   createHomework
 );
 
@@ -54,9 +64,11 @@ router.post(
   '/freeDays/:pageNumber',
   isAuthenticated,
   [
-    body('expirationDate', 'please insert a valid date')
+    body('expirationDate', 'please insert a valid expiration date')
       .notEmpty()
-      .custom((value) => validatorDateHandler(value)),
+      .isISO8601()
+      .custom((value) => dateLessThanDays(365, new Date(value)))
+      .withMessage('the expiration date is too far (max 1 year)'),
     body('duration', 'please enter a valid duration (min: 5)')
       .trim()
       .isNumeric()
