@@ -63,9 +63,10 @@ export const login = async (
 ) => {
   try {
     const { email, password } = req.body;
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
       where: {
         email,
+        deleted: false,
       },
     });
 
@@ -98,9 +99,10 @@ export const getUserInfo = async (
   next: NextFunction
 ) => {
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
       where: {
         id: +req.userId!,
+        deleted: false,
       },
       select: {
         email: true,

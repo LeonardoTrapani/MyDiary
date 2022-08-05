@@ -35,6 +35,12 @@ export const createHomework = async (
             plannedDates: true,
             subject: true,
           },
+          where: {
+            user: {
+              deleted: false,
+            },
+            deleted: false,
+          },
         },
       },
       data: {
@@ -70,6 +76,9 @@ export const getAllHomework = async (
   const homework = await prisma.homework.findMany({
     where: {
       userId,
+      AND: {
+        deleted: false,
+      },
     },
     select: {
       id: true,
@@ -175,9 +184,10 @@ const fetchWeek = async (userId: number) => {
   });
 };
 const fetchFreeDays = async (userId: number) => {
-  return await prisma.user.findUnique({
+  return await prisma.user.findFirst({
     where: {
       id: userId,
+      deleted: false,
     },
     select: {
       days: {
