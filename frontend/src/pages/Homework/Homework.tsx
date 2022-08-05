@@ -254,7 +254,9 @@ export const SelectFreeDays: React.FC<{
   return (
     <div className={styles['select-free-days']}>
       <FreeDaysInformations />
-      <FreeDays freeDays={freeDays} />
+      <div className={styles['free-days--container']}>
+        <FreeDays freeDays={freeDays} />
+      </div>
     </div>
   );
 };

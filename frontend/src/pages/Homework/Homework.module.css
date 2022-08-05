@@ -165,3 +165,10 @@
 .time-to-assign--value {
   font-size: 1.8rem;
 }
+
+.center-flex {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

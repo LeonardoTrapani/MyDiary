@@ -3,6 +3,7 @@ import { addDays, addDaysFromToday, throwResponseError } from '../utilities';
 
 import { prisma } from '../app';
 
+//TODO: Create a Day for every selected day subtracting the minutes assigned, and if it already exists just subtract the minutes
 export const createHomework = async (
   req: Request,
   res: Response,
@@ -269,7 +270,7 @@ const findfreeMinutesInDay = (
   }
   return 0;
 };
-
+// if already created remove then
 const calculateSubtractedDays = (
   pageNumber: number,
   week: week,

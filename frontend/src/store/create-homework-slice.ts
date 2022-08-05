@@ -4,6 +4,15 @@ import { BACKEND_URL } from '../utilities/contants';
 import { CustomRequestInit } from '../utilities/hooks';
 import { datesEqualOnDay } from '../utilities/utilities';
 
+interface createHomeworkState {
+  isLoading: boolean;
+  hasError: boolean;
+  freeDays: freeDay[];
+  selectedDays: freeDay[];
+  isChoosingFreeDay: boolean;
+  homeworkCreating?: HomeworkCreating;
+}
+
 export interface freeDay {
   date: string;
   freeMinutes: number;
@@ -23,17 +32,11 @@ interface HomeworkCreating {
   isAllTimeAssigned: false;
   expirationDate: string;
 }
-interface createHomeworkState {
-  isLoading: boolean;
-  freeDays: freeDay[];
-  selectedDays: freeDay[];
-  isChoosingFreeDay: boolean;
-  homeworkCreating?: HomeworkCreating;
-}
 
 const initialState: createHomeworkState = {
   isLoading: false,
   isChoosingFreeDay: false,
+  hasError: false,
   freeDays: [],
   selectedDays: [],
 };
@@ -71,6 +74,9 @@ const createHomeworkSlice = createSlice({
     },
     setLoading(state, action: PayloadAction<boolean>) {
       state.isLoading = action.payload;
+    },
+    setError(state, action: PayloadAction<boolean>) {
+      state.hasError = action.payload;
     },
     setIsChoosingFreeDay(state, action: PayloadAction<boolean>) {
       state.isChoosingFreeDay = action.payload;
@@ -151,8 +157,8 @@ export const searchFreeDays = (
 ) => {
   return async (dispatch: Dispatch) => {
     try {
+      dispatch(createHomeworkActions.setError(false));
       dispatch(createHomeworkActions.setLoading(true));
-
       const res = await fetchAuthorized()(
         BACKEND_URL + '/homework/freeDays/' + options.page,
         {
@@ -169,9 +175,11 @@ export const searchFreeDays = (
       });
       dispatch(createHomeworkActions.setFreeDays(freeDays));
     } catch (err) {
-      //TODO: handle err
+      dispatch(createHomeworkActions.setError(true));
     } finally {
-      dispatch(createHomeworkActions.setLoading(false));
+      setTimeout(() => {
+        dispatch(createHomeworkActions.setLoading(false));
+      }, 300);
     }
   };
 };

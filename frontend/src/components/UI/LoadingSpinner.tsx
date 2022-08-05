@@ -4,7 +4,7 @@ const LoadingSpinner: React.FC<{
   center?: true;
 }> = () => {
   return (
-    <div className={`${styles['lds-ring']} ${styles['center']}`}>
+    <div className={styles['lds-ring']}>
       <div></div>
       <div></div>
       <div></div>

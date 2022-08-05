@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   createHomeworkActions,
@@ -12,46 +12,57 @@ import { IoIosArrowForward } from 'react-icons/io';
 import styles from './Homework.module.css';
 import Button from '../../components/UI/Button';
 import MinutesFromHoursMinutes from '../../components/UI/MinutesFromHoursMinutes';
+import LoadingSpinner from '../../components/UI/LoadingSpinner';
+
 export const FreeDays: React.FC<{
   freeDays: freeDay[];
 }> = ({ freeDays }) => {
   const { page } = useParams();
   const homeworkPage = page as string;
-
-  const createHomeworkLoading = useAppSelector(
-    (state) => state.createHomework.isLoading
-  );
+  const isLoading = useAppSelector((state) => state.createHomework.isLoading);
+  const hasError = useAppSelector((state) => state.createHomework.hasError);
 
   let message = 'Found no more free days';
   if (+homeworkPage === 1) {
     message = 'Found no free days';
   }
 
-  const freeDaysJsx = freeDays.map((freeDay) => {
-    return (
-      <FreeDay
-        date={freeDay.date}
-        freeTime={freeDay.freeMinutes}
-        key={freeDay.date}
-        assignedTime={freeDay.assignedTime}
-        freeMinutes={freeDay.freeMinutes}
-      />
-    );
-  });
-
-  return (
-    <div className={styles['free-days--container']}>
-      {!createHomeworkLoading && (
-        <>
-          {freeDaysJsx.length ? (
-            <div className={styles['free-days']}>{freeDaysJsx}</div>
-          ) : (
-            <h2 className={styles['free-days--message']}>{message}</h2>
-          )}
-        </>
-      )}
-    </div>
+  const freeDaysJsx = useMemo(
+    () =>
+      freeDays.map((freeDay) => {
+        return (
+          <FreeDay
+            date={freeDay.date}
+            freeTime={freeDay.freeMinutes}
+            key={freeDay.date}
+            assignedTime={freeDay.assignedTime}
+            freeMinutes={freeDay.freeMinutes}
+          />
+        );
+      }),
+    [freeDays]
   );
+
+  if (isLoading) {
+    return (
+      <div className={styles['center-flex']}>
+        <LoadingSpinner />
+      </div>
+    );
+  }
+  if (hasError) {
+    return (
+      <div className={styles['center-flex'] + ' ' + styles['error']}>
+        <h2>An error has occurred finding the free days</h2>
+      </div>
+    );
+  }
+  if (!freeDaysJsx.length) {
+    <div className={styles['center-flex']}>
+      <h2 className={styles['free-days--message']}>{message}</h2>
+    </div>;
+  }
+  return <div className={styles['free-days']}>{freeDaysJsx}</div>;
 };
 
 export const FreeDayButtons: React.FC = () => {
@@ -79,7 +90,7 @@ export const FreeDayButtons: React.FC = () => {
       <FreeDayButton
         onClick={buttonForwardHandler}
         right
-        disabled={freeDaysLength ? false : true}
+        disabled={freeDaysLength < 9}
       />
     </div>
   );
@@ -210,7 +221,7 @@ export const FreeDaysInformations: React.FC = () => {
       <div className={styles['free-days--informations-actions']}>
         <FreeDayButtons />
         <Button isLoading={false} isValid={false}>
-          Create date
+          Create Homework
         </Button>
       </div>
     </div>
