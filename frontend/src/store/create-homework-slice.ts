@@ -2,7 +2,7 @@ import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
 import { NavigateFunction } from 'react-router-dom';
 
 import { BACKEND_URL } from '../utilities/contants';
-import { CustomRequestInit, useFetchAuthorized } from '../utilities/hooks';
+import { CustomRequestInit } from '../utilities/hooks';
 import { datesEqualOnDay } from '../utilities/utilities';
 
 interface createHomeworkState {
