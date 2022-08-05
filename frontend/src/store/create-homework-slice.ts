@@ -232,7 +232,6 @@ export const submitCreateHomework = (
           plannedDates: formattedPlannedDates,
         },
       });
-      console.log(res);
       dispatch(createHomeworkActions.setLoading(false));
       dispatch(createHomeworkActions.reset());
       navigate('/');
