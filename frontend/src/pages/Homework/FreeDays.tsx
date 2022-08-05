@@ -138,8 +138,10 @@ export const FreeDay: React.FC<{
   return (
     <div className={styles['free-day']}>
       <FreeDayDate formattedDate={formattedDate} />
-      <FreeDayMinutes freeTime={props.freeTime} />
-      <AssignTime timeAssigned={props.assignedTime} />
+      <div className={styles['free-day--informations']}>
+        <FreeDayMinutes freeTime={props.freeTime} />
+        <AssignTime timeAssigned={props.assignedTime} />
+      </div>
       <Slider
         disabled={sliderDisabled}
         max={freeMinutes}

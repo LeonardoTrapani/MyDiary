@@ -22,10 +22,15 @@
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   padding: 2rem;
   display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+.free-day--informations {
+  display: flex;
   flex-direction: column;
   gap: 1rem;
 }
-
 .free-day--date h2 {
   font-size: large;
   vertical-align: center;
@@ -40,7 +45,7 @@
 
 .free-day--button {
   height: 2.4rem;
-  width: 2.7rem;
+  width: 2.6rem;
   display: flex;
   justify-content: center;
   align-items: center;

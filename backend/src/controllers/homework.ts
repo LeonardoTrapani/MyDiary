@@ -132,7 +132,6 @@ export const calculateFreeDays = async (
 
     return res.json(freeDaysArray);
   } catch (err) {
-    console.log(err);
     return throwResponseError(
       'an error has occurred finding the free hours',
       400,
