@@ -3,18 +3,37 @@ import { addDays, addDaysFromToday, throwResponseError } from '../utilities';
 
 import { prisma } from '../app';
 
-//TODO: Create a Day for every selected day subtracting the minutes assigned, and if it already exists just subtract the minutes
 export const createHomework = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   const { userId } = req;
-  const { name, subject, duration, description, expirationDate, plannedDates } =
-    req.body;
+  const { name, subject, duration, description, expirationDate } = req.body;
+  const plannedDates = req.body.plannedDates as {
+    minutes: number;
+    date: string;
+  }[];
   const userIdNumber = +userId!;
 
   try {
+    // -----------------TODO: FIX------------------ //
+    plannedDates.forEach(async (plannedDate) => {
+      const day = await fetchDayAndUpdateIfExists(
+        plannedDate.date,
+        plannedDate.minutes,
+        +userId!
+      );
+      if (!day) {
+        //CREATE DAY WITH UPDATED DURATION
+        await createDayWithUpdatedDuration(
+          plannedDate.date,
+          plannedDate.minutes,
+          +userId!
+        );
+      }
+    });
+    // --------------------------------------- //
     const homework = await prisma.user.update({
       where: {
         id: userIdNumber,
@@ -337,4 +356,54 @@ const calculateIsDayValid = (
     return true;
   }
   return false;
+};
+
+const fetchDayAndUpdateIfExists = async (
+  date: string,
+  minutes: number,
+  userId: number
+) => {
+  const freeMinutes = await prisma.day.findFirst({
+    where: {
+      userId: userId,
+      date,
+    },
+    select: { freeMinutes: true },
+  });
+  if (!freeMinutes) {
+    return;
+  }
+
+  return await prisma.day.updateMany({
+    where: {
+      userId: userId,
+      date,
+    },
+    data: {
+      freeMinutes: freeMinutes.freeMinutes - minutes,
+    },
+  });
+};
+
+const createDayWithUpdatedDuration = async (
+  date: string,
+  minutes: number,
+  userId: number
+) => {
+  const week = await prisma.week.findUnique({
+    where: {
+      userId: userId,
+    },
+  });
+  if (!week) {
+    return;
+  }
+  const freeMinutesInDay = findfreeMinutesInDay(new Date(date), week);
+  return await prisma.day.create({
+    data: {
+      userId: userId,
+      date,
+      freeMinutes: freeMinutesInDay - minutes,
+    },
+  });
 };

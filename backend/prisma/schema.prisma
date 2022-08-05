@@ -45,12 +45,13 @@ model PlannedDate {
   minutes    Int
   homework   Homework @relation(fields: [homeworkId], references: [id])
   homeworkId Int
+  deleted    Boolean  @default(false)
 }
 
 model Day {
   id          Int      @id @default(autoincrement())
   freeMinutes Int
-  date        DateTime @db.Date
+  date        DateTime @unique @db.Date
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   user        User     @relation(fields: [userId], references: [id])
