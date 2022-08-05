@@ -42,7 +42,7 @@ export const createHomework = async (
           create: {
             description,
             duration: duration,
-            expirationDate: expirationDate,
+            expirationDate: new Date(expirationDate),
             name: name,
             subject: subject,
             plannedDates: {

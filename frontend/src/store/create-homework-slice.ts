@@ -1,7 +1,8 @@
 import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
+import { NavigateFunction } from 'react-router-dom';
 
 import { BACKEND_URL } from '../utilities/contants';
-import { CustomRequestInit } from '../utilities/hooks';
+import { CustomRequestInit, useFetchAuthorized } from '../utilities/hooks';
 import { datesEqualOnDay } from '../utilities/utilities';
 
 interface createHomeworkState {
@@ -19,17 +20,21 @@ export interface freeDay {
   assignedTime: number;
 }
 
+export interface selectedDay {
+  date: string;
+  minutes: number;
+}
+
 export interface plannedDate {
   date: string;
   minutes: number;
 }
-interface HomeworkCreating {
+export interface HomeworkCreating {
   name: string;
   subject: string;
   description: string;
   duration: number;
   timeToAssign: number;
-  isAllTimeAssigned: false;
   expirationDate: string;
 }
 
@@ -80,6 +85,14 @@ const createHomeworkSlice = createSlice({
     },
     setIsChoosingFreeDay(state, action: PayloadAction<boolean>) {
       state.isChoosingFreeDay = action.payload;
+    },
+    reset(state) {
+      state.freeDays = initialState.freeDays;
+      state.hasError = initialState.hasError;
+      state.homeworkCreating = initialState.homeworkCreating;
+      state.homeworkCreating = initialState.homeworkCreating;
+      state.isChoosingFreeDay = initialState.isChoosingFreeDay;
+      state.selectedDays = initialState.selectedDays;
     },
     assignedTimeChange(
       state,
@@ -184,5 +197,50 @@ export const searchFreeDays = (
   };
 };
 
+export const submitCreateHomework = (
+  isValid: boolean,
+  fetchAuthorized: () => (
+    url: string,
+    options?: CustomRequestInit | undefined
+  ) => unknown,
+  homeworkCreating: HomeworkCreating,
+  plannedDates: freeDay[],
+  navigate: NavigateFunction
+) => {
+  return async (dispatch: Dispatch) => {
+    if (!isValid) {
+      console.log('TODO: snackbar or make time red untill next change');
+      return;
+    }
+    dispatch(createHomeworkActions.setLoading(true));
+    const { name, description, duration, expirationDate, subject } =
+      homeworkCreating;
+
+    const formattedPlannedDates = plannedDates.map((selectedDay) => {
+      return { date: selectedDay.date, minutes: selectedDay.assignedTime };
+    });
+
+    try {
+      const res = await fetchAuthorized()(BACKEND_URL + '/homework/create', {
+        method: 'POST',
+        requestBody: {
+          name,
+          description,
+          expirationDate,
+          subject,
+          duration,
+          plannedDates: formattedPlannedDates,
+        },
+      });
+      console.log(res);
+      dispatch(createHomeworkActions.setLoading(false));
+      dispatch(createHomeworkActions.reset());
+      navigate('/');
+    } catch (err) {
+      dispatch(createHomeworkActions.setLoading(false));
+      console.log('ERROR');
+    }
+  };
+};
 export default createHomeworkSlice;
 export const createHomeworkActions = createHomeworkSlice.actions;

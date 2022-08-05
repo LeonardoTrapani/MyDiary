@@ -3,8 +3,14 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
   createHomeworkActions,
   freeDay,
+  HomeworkCreating,
+  submitCreateHomework,
 } from '../../store/create-homework-slice';
-import { useAppDispatch, useAppSelector } from '../../utilities/hooks';
+import {
+  useAppDispatch,
+  useAppSelector,
+  useFetchAuthorized,
+} from '../../utilities/hooks';
 import { AiOutlineCalendar } from 'react-icons/ai';
 import Slider from '../../components/UI/Slider';
 import { IoIosArrowBack } from 'react-icons/io';
@@ -214,13 +220,41 @@ const AssignTime: React.FC<{
 export default FreeDays;
 
 export const FreeDaysInformations: React.FC = () => {
+  const homeworkCreating = useAppSelector(
+    (state) => state.createHomework.homeworkCreating as HomeworkCreating
+  );
+  const isValid = useMemo(
+    () => homeworkCreating.timeToAssign === 0,
+    [homeworkCreating.timeToAssign]
+  );
+  const selectedDays = useAppSelector(
+    (state) => state.createHomework.selectedDays
+  );
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const fetchAuthorized = useFetchAuthorized();
+  const buttonSubmitHandler = () => {
+    dispatch(
+      submitCreateHomework(
+        isValid,
+        fetchAuthorized,
+        homeworkCreating,
+        selectedDays,
+        navigate
+      )
+    );
+  };
   return (
     <div className={styles['free-days--informations']}>
       <FreeDayTitle />
       <TimeToAssign />
       <div className={styles['free-days--informations-actions']}>
         <FreeDayButtons />
-        <Button isLoading={false} isValid={false}>
+        <Button
+          isLoading={false}
+          isValid={isValid}
+          onClick={buttonSubmitHandler}
+        >
           Create Homework
         </Button>
       </div>
