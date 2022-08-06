@@ -50,26 +50,32 @@ const createHomeworkSlice = createSlice({
   initialState,
   reducers: {
     setFreeDays(state, action: PayloadAction<freeDay[]>) {
+      if (!state.homeworkCreating) {
+        return;
+      }
       const { selectedDays } = state;
       const freeDays = action.payload;
-      const selectedDaysToDeleteIndexes = [];
-
+      // const selectedDaysToDeleteIndexes = [];
+      let reset = false;
       for (let i = 0; i < selectedDays.length; i++) {
         for (let j = 0; j < freeDays.length; j++) {
           if (datesEqualOnDay(selectedDays[i].date, freeDays[j].date)) {
             if (selectedDays[i].freeMinutes === freeDays[j].freeMinutes) {
               freeDays[j] = selectedDays[i];
             } else {
-              selectedDaysToDeleteIndexes.push(i);
-              freeDays[j].assignedTime = 0;
+              reset = true;
+              i = selectedDays.length;
+              j = freeDays.length;
             }
           }
         }
       }
 
-      selectedDaysToDeleteIndexes.forEach((i) => {
-        selectedDays.splice(i, 1);
-      });
+      if (reset) {
+        state.freeDays = action.payload;
+        state.selectedDays = [];
+        state.homeworkCreating.timeToAssign = state.homeworkCreating.duration;
+      }
 
       state.freeDays = freeDays;
     },
