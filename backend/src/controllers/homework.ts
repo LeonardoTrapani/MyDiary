@@ -124,11 +124,10 @@ export const calculateFreeDays = async (
   const { expirationDate: expirationDateBody } = req.body;
   const { pageNumber } = req.params;
   const expirationDate = new Date(expirationDateBody);
-  await prisma.day.delete({
-    where: {
-      id: 28,
-    },
-  });
+  // await prisma.day.deleteMany({
+  //   where: {},
+  // });
+  console.log(await prisma.day.findMany({}));
   const { userId } = req;
   try {
     const week = await fetchWeek(+userId!);
