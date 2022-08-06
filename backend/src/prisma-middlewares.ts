@@ -62,6 +62,32 @@ const applyPrismaMiddlewares = async (
     }
     return next(params);
   });
+
+  prisma.$use(async (params, next) => {
+    if (
+      params.model == 'Day' ||
+      params.model == 'User' ||
+      params.model == 'Homework' ||
+      params.model == 'PlannedDate'
+    ) {
+      if (params.action == 'update') {
+        // Change to updateMany - you cannot filter
+        // by anything except ID / unique with findUnique
+        params.action = 'updateMany';
+        // Add 'deleted' filter
+        // ID filter maintained
+        params.args.where['deleted'] = false;
+      }
+      if (params.action == 'updateMany') {
+        if (params.args.where != undefined) {
+          params.args.where['deleted'] = false;
+        } else {
+          params.args['where'] = { deleted: false };
+        }
+      }
+    }
+    return next(params);
+  });
 };
 
 export default applyPrismaMiddlewares;

@@ -127,7 +127,13 @@ export const calculateFreeDays = async (
   // await prisma.day.deleteMany({
   //   where: {},
   // });
-  console.log(await prisma.day.findMany({}));
+  console.log(
+    await prisma.day.updateMany({
+      data: {
+        freeMinutes: 33,
+      },
+    })
+  );
   const { userId } = req;
   try {
     const week = await fetchWeek(+userId!);
