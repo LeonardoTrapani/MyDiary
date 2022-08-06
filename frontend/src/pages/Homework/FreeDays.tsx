@@ -163,7 +163,8 @@ export const FreeDay: React.FC<{
       })
     );
   };
-  const sliderDisabled = timeToAssign === 0 && assignedTime === 0;
+  const sliderDisabled =
+    freeMinutes === 0 || (timeToAssign === 0 && assignedTime === 0);
   return (
     <div className={styles['free-day']}>
       <FreeDayDate formattedDate={formattedDate} />
