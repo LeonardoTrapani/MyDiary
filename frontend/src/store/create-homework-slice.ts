@@ -221,7 +221,7 @@ export const submitCreateHomework = (
     });
 
     try {
-      const res = await fetchAuthorized()(BACKEND_URL + '/homework/create', {
+      await fetchAuthorized()(BACKEND_URL + '/homework/create', {
         method: 'POST',
         requestBody: {
           name,
