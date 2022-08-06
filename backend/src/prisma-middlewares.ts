@@ -17,7 +17,6 @@ const applyPrismaMiddlewares = async (
       if (params.action == 'delete') {
         // Delete queries
         // Change action to an update
-        console.log('CHANGING PARAMS TT UPDATE');
         params.action = 'update';
         params.args['data'] = { deleted: true };
       }

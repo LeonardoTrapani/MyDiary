@@ -14,7 +14,6 @@ export const createHomework = async (
     minutes: number;
     date: string;
   }[];
-  const userIdNumber = +userId!;
 
   try {
     plannedDates.forEach(async (plannedDate) => {
@@ -38,52 +37,67 @@ export const createHomework = async (
       );
     });
 
-    const homework = await prisma.user.update({
-      where: {
-        id: userIdNumber,
-      },
-      select: {
-        homework: {
-          orderBy: {
-            createdAt: 'desc',
-          },
-          take: 1,
-          select: {
-            completed: true,
-            description: true,
-            duration: true,
-            expirationDate: true,
-            id: true,
-            name: true,
-            plannedDates: true,
-            subject: true,
-          },
-          where: {
-            user: {
-              deleted: false,
-            },
-            deleted: false,
-          },
-        },
-      },
+    const homework = await prisma.homework.create({
       data: {
-        homework: {
-          create: {
-            description,
-            duration: duration,
-            expirationDate: new Date(expirationDate),
-            name: name,
-            subject: subject,
-            plannedDates: {
-              createMany: {
-                data: plannedDates,
-              },
-            },
+        userId: +userId!,
+        description,
+        duration: duration,
+        expirationDate: new Date(expirationDate),
+        name: name,
+        subject: subject,
+        plannedDates: {
+          createMany: {
+            data: plannedDates,
           },
         },
       },
     });
-    res.json(homework.homework[0]);
+    // const homework = await prisma.user.update({
+    //   where: {
+    //     id: userIdNumber,
+    //   },
+    //   select: {
+    //     homework: {
+    //       orderBy: {
+    //         createdAt: 'desc',
+    //       },
+    //       take: 1,
+    //       select: {
+    //         completed: true,
+    //         description: true,
+    //         duration: true,
+    //         expirationDate: true,
+    //         id: true,
+    //         name: true,
+    //         plannedDates: true,
+    //         subject: true,
+    //       },
+    //       where: {
+    //         user: {
+    //           deleted: false,
+    //         },
+    //         deleted: false,
+    //       },
+    //     },
+    //   },
+    //   data: {
+    //     homework: {
+    //       create: {
+    //         description,
+    //         duration: duration,
+    //         expirationDate: new Date(expirationDate),
+    //         name: name,
+    //         subject: subject,
+    //         plannedDates: {
+    //           createMany: {
+    //             data: plannedDates,
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    // });
+    res.json(homework);
   } catch (err) {
     console.error(err);
     throwResponseError('unable to create homework', 500, res);
@@ -124,16 +138,6 @@ export const calculateFreeDays = async (
   const { expirationDate: expirationDateBody } = req.body;
   const { pageNumber } = req.params;
   const expirationDate = new Date(expirationDateBody);
-  // await prisma.day.deleteMany({
-  //   where: {},
-  // });
-  console.log(
-    await prisma.day.updateMany({
-      data: {
-        freeMinutes: 33,
-      },
-    })
-  );
   const { userId } = req;
   try {
     const week = await fetchWeek(+userId!);
@@ -374,7 +378,7 @@ const fetchFreeDay = async (date: string, userId: number) => {
       deleted: false,
     },
   });
-  console.log('AAAA', freeDay);
+
   return freeDay;
 };
 
@@ -384,13 +388,6 @@ const updateExistingDay = async (
   assignedMinutes: number,
   userId: number
 ) => {
-  console.log({
-    msg: 'EXISTS SO UPDATE WITH MINS: ',
-    newMinutes: previousMinutes - assignedMinutes,
-    previousMinutes,
-    assignedMinutes,
-    date: date,
-  });
   return await prisma.day.updateMany({
     where: {
       userId: userId,
@@ -418,7 +415,6 @@ const createDayWithUpdatedDuration = async (
     return;
   }
   const freeMinutesInDay = findfreeMinutesInDay(new Date(date), week);
-  console.log({ newMinutes: freeMinutesInDay - assignedMinutes, date });
   return await prisma.day.create({
     data: {
       userId: userId,
