@@ -85,7 +85,7 @@ export const createHomework = async (
     });
     res.json(homework.homework[0]);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     throwResponseError('unable to create homework', 500, res);
   }
 };
@@ -146,7 +146,7 @@ export const calculateFreeDays = async (
     }
 
     const daysFromToday = +pageNumber * DAYS_PER_PAGE - DAYS_PER_PAGE;
-    console.log(daysFromToday);
+
     // const daysFromTodayWithSubtractedDays =
     //   daysFromToday + calculateSubtractedDays(+pageNumber, week, freeDays);
     // const startDate = addDaysFromToday(daysFromTodayWithSubtractedDays); //THIS DOESN'T SHOW DAYS WITH LESS THAN 1 MIN
@@ -239,7 +239,6 @@ const getFreeDaysArray = (
   let currentDate = startDate;
   while (currentDate < expirationDate && finalFreeDays.length < DAYS_PER_PAGE) {
     const freeMinutes = findfreeMinutesInDay(currentDate, week);
-    console.log(freeMinutes);
     const freeDayToPut = freeDays.days.find((day) => {
       return day.date.toDateString() === currentDate.toDateString();
     });
@@ -363,9 +362,10 @@ const fetchFreeDay = async (date: string, userId: number) => {
     where: {
       userId,
       date,
+      deleted: false,
     },
-    select: { freeMinutes: true },
   });
+  console.log('AAAA', freeDay);
   return freeDay;
 };
 
@@ -378,6 +378,8 @@ const updateExistingDay = async (
   console.log({
     msg: 'EXISTS SO UPDATE WITH MINS: ',
     newMinutes: previousMinutes - assignedMinutes,
+    previousMinutes,
+    assignedMinutes,
     date: date,
   });
   return await prisma.day.updateMany({

@@ -16,7 +16,10 @@ import { ErrorResponse } from './models';
 
 import { PrismaClient } from '@prisma/client';
 import weekRouter from './routes/week';
+import applyPrismaMiddlewares from './prisma-middlewares';
 export const prisma = new PrismaClient();
+
+applyPrismaMiddlewares(prisma);
 
 //Configuring dotenv package to use env variables form .env
 dotenv.config();
