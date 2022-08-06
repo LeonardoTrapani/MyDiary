@@ -19,6 +19,7 @@ import AuthenticatedRouteGuard from './components/UI/AuthenticatedRouteGuard';
 const App: React.FC = () => {
   // const showBurger = useAppSelector((state) => state.ui.showBurgerMenu);
   const isLoading = useAppSelector((state) => state.ui.isLoading);
+
   // useShowBurger();
 
   // const { pathname } = useLocation();

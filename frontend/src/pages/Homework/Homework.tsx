@@ -3,7 +3,6 @@ import Form from '../../components/BurgerMenu/Form';
 import styles from './Homework.module.css';
 import Input from '../../components/UI/Input';
 
-import { fetchHomework } from '../../store/homework-slice';
 import {
   useAppDispatch,
   useAppSelector,
@@ -21,29 +20,7 @@ import FreeDays, { FreeDaysInformations } from './FreeDays';
 import { addDaysFromToday } from '../../utilities/utilities';
 
 export const HomePage: React.FC = () => {
-  const token = useAppSelector((state) => state.auth.token) as string;
-  const homework = useAppSelector((state) => state.homework.homework);
-  const dispatch = useAppDispatch();
-  useEffect(() => {
-    dispatch(fetchHomework(token));
-  }, [token, dispatch]);
-
-  if (!homework.length) {
-    return <h1>No homework</h1>;
-  }
-
-  const homeworkJSX = homework.map((hmk) => {
-    return (
-      <li key={hmk.id}>
-        <ul>
-          <li>{hmk.name}</li>
-          <li>{hmk.description}</li>
-          <li>{hmk.subject}</li>
-        </ul>
-      </li>
-    );
-  });
-  return <ul>{homeworkJSX}</ul>;
+  return <div>MAIN PAGE</div>;
 };
 
 export const AddHomeworkPage: React.FC = () => {
@@ -165,7 +142,6 @@ export const AddHomeworkPage: React.FC = () => {
         expirationDate: expirationDateValue,
         name: nameValue,
         subject: subjectValue,
-        isAllTimeAssigned: false,
       })
     );
     navigate('/create-homework/free-days/' + defaultPage);
@@ -299,7 +275,7 @@ export const AddedHomeworkWrapper: React.FC = () => {
   if (isChoosingFreeDay) {
     return <SelectFreeDays freeDays={freeDays} />;
   }
-  return <Navigate to='/create-homework' />;
+  return <Navigate to='/' />;
 };
 
 export const EditHomeworkPage: React.FC = () => {
