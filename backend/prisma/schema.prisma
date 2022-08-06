@@ -12,7 +12,7 @@ datasource db {
 
 model User {
   id             Int        @id @default(autoincrement())
-  email          String     @unique
+  email          String
   hashedPassword String
   username       String
   updatedAt      DateTime   @updatedAt
@@ -51,7 +51,7 @@ model PlannedDate {
 model Day {
   id          Int      @id @default(autoincrement())
   freeMinutes Int
-  date        DateTime @unique @db.Date
+  date        DateTime @db.Date
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   user        User     @relation(fields: [userId], references: [id])
