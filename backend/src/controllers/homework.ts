@@ -173,10 +173,8 @@ export const calculateFreeDays = async (
       week,
       freeDays
     );
-    console.log('RESpONDING');
     return res.json(freeDaysArray);
   } catch (err) {
-    console.log('YEESADa');
     return throwResponseError(
       'an error has occurred finding the free hours',
       400,
