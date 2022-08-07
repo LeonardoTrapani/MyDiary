@@ -135,6 +135,7 @@ export const calculateFreeDays = async (
   res: Response,
   next: NextFunction
 ) => {
+  console.log('YE');
   const { expirationDate: expirationDateBody } = req.body;
   const { pageNumber } = req.params;
   const expirationDate = new Date(expirationDateBody);
@@ -172,9 +173,10 @@ export const calculateFreeDays = async (
       week,
       freeDays
     );
-
+    console.log('RESpONDING');
     return res.json(freeDaysArray);
   } catch (err) {
+    console.log('YEESADa');
     return throwResponseError(
       'an error has occurred finding the free hours',
       400,

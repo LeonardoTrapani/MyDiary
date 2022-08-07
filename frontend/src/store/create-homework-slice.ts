@@ -178,6 +178,7 @@ export const searchFreeDays = (
     try {
       dispatch(createHomeworkActions.setError(false));
       dispatch(createHomeworkActions.setLoading(true));
+
       const res = await fetchAuthorized()(
         BACKEND_URL + '/homework/freeDays/' + options.page,
         {
@@ -188,17 +189,18 @@ export const searchFreeDays = (
           },
         }
       );
+      console.log({ res });
       const freeDays = res.map((freeDay) => {
         const freeDayModified = { ...freeDay, assignedTime: 0 };
         return freeDayModified;
       });
       dispatch(createHomeworkActions.setFreeDays(freeDays));
-    } catch (err) {
-      dispatch(createHomeworkActions.setError(true));
-    } finally {
       setTimeout(() => {
         dispatch(createHomeworkActions.setLoading(false));
       }, 300);
+    } catch (err) {
+      dispatch(createHomeworkActions.setError(true));
+      dispatch(createHomeworkActions.setLoading(false));
     }
   };
 };

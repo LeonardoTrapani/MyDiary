@@ -183,22 +183,28 @@ export const useFetchAuthorized = () => {
   const token = useAppSelector((state) => state.auth.token);
   const fetchAuthorized = useCallback(
     () => async (url: string, options?: CustomRequestInit) => {
+      let finalOptions: CustomRequestInit | undefined = {};
       if (options) {
+        finalOptions = { ...options };
         if (options.requestBody) {
-          options.body = JSON.stringify(options.requestBody);
-          delete options.requestBody;
+          finalOptions.body = JSON.stringify(options.requestBody);
+          delete finalOptions.requestBody;
         }
-        options.headers = {
-          ...options.headers,
+        finalOptions.headers = {
+          ...finalOptions.headers,
           Authorization: token as string,
           'Content-Type': 'application/json',
         };
+      } else {
+        finalOptions = {
+          headers: {
+            Authorization: token as string,
+            'Content-Type': 'application/json',
+          },
+        };
       }
 
-      const result = await fetch(url, {
-        ...options,
-      });
-
+      const result = await fetch(url, finalOptions);
       const data = await result.json();
       if (!result.ok) {
         throw new Error(data.message);

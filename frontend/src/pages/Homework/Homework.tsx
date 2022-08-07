@@ -19,10 +19,6 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import FreeDays, { FreeDaysInformations } from './FreeDays';
 import { addDaysFromToday } from '../../utilities/utilities';
 
-export const HomePage: React.FC = () => {
-  return <div>MAIN PAGE</div>;
-};
-
 export const AddHomeworkPage: React.FC = () => {
   const {
     errorMessage: nameErrorMessage,

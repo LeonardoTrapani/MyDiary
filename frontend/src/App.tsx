@@ -5,7 +5,6 @@ import { LoginPage } from './pages/LoginPage/LoginPage';
 import { SignupPage } from './pages/SignupPage/SignupPage';
 import { NotFound } from './pages/pages';
 import {
-  HomePage,
   AddHomeworkPage,
   EditHomeworkPage,
   AddedHomeworkWrapper,
@@ -15,6 +14,7 @@ import { useAppSelector } from './utilities/hooks';
 
 import LoadingSpinner from './components/UI/LoadingSpinner';
 import AuthenticatedRouteGuard from './components/UI/AuthenticatedRouteGuard';
+import Calendar from './pages/Calendar/Calendar';
 
 const App: React.FC = () => {
   // const showBurger = useAppSelector((state) => state.ui.showBurgerMenu);
@@ -43,7 +43,7 @@ const App: React.FC = () => {
           path='/'
           element={
             <RouteGuard>
-              <HomePage />
+              <Calendar />
             </RouteGuard>
           }
         />
