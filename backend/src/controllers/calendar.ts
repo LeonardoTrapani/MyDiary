@@ -13,6 +13,7 @@ interface CalendarHomework {
   homeworkId: number;
   minutesOccupied: number;
   name: string;
+  subject: string;
 }
 
 const DAYS_PER_PAGE = 7;
@@ -35,6 +36,7 @@ export const getCalendar = async (
     let endDate = new Date(addDays(currentDate, 1).setHours(0, 0, 0, 0));
     const homework = await prisma.homework.findMany({
       where: {
+        completed: false,
         userId: +userId!,
         plannedDates: {
           some: {
@@ -48,6 +50,7 @@ export const getCalendar = async (
       select: {
         id: true,
         name: true,
+        subject: true,
         plannedDates: {
           where: {
             deleted: false,
@@ -67,6 +70,7 @@ export const getCalendar = async (
         homeworkId: hmk.id,
         minutesOccupied: hmk.plannedDates[0].minutes,
         name: hmk.name,
+        subject: hmk.subject,
       };
     });
     homeworkInDays.push(formattedHomework);

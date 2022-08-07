@@ -16,6 +16,7 @@ type Calendar = {
 
 interface CalendarHomework {
   homeworkId: number;
+  subject: string;
   minutesOccupied: number;
   name: string;
 }

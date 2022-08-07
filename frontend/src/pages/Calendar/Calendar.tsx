@@ -38,6 +38,7 @@ const Calendar: React.FC = () => {
                   <br />
                   <div>
                     <p>{hmk.name}</p>
+                    <p>{hmk.subject}</p>
                     <p>{hmk.minutesOccupied}</p>
                   </div>
                   <br />
