@@ -30,7 +30,6 @@ const calendarSlice = createSlice({
   initialState,
   reducers: {
     setCalendar(state, action: PayloadAction<Calendar>) {
-      console.log(action.payload);
       state.calendar = action.payload;
     },
     setError(state, action: PayloadAction<boolean>) {
@@ -51,15 +50,17 @@ export const fetchCalendar = (
 ) => {
   return async (dispatch: Dispatch) => {
     try {
-      dispatch(calendarActions.setError(false));
       dispatch(calendarActions.setLoading(true));
+      dispatch(calendarActions.setError(false));
       const calendar = (await fetchAuthorized()(
         BACKEND_URL + '/calendar/' + page
       )) as Calendar;
       dispatch(calendarActions.setCalendar(calendar));
+      setTimeout(() => {
+        dispatch(calendarActions.setLoading(false));
+      }, 300);
     } catch (err) {
       dispatch(calendarActions.setError(true));
-    } finally {
       dispatch(calendarActions.setLoading(false));
     }
   };
