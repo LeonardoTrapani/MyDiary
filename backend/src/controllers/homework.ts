@@ -200,7 +200,7 @@ interface freeDays {
   }[];
 }
 
-const fetchWeek = async (userId: number) => {
+export const fetchWeek = async (userId: number) => {
   return await prisma.week.findUnique({
     where: {
       userId: userId,
@@ -217,7 +217,7 @@ const fetchWeek = async (userId: number) => {
     },
   });
 };
-const fetchFreeDays = async (userId: number) => {
+export const fetchFreeDays = async (userId: number) => {
   return await prisma.user.findFirst({
     where: {
       id: userId,
@@ -239,7 +239,7 @@ const fetchFreeDays = async (userId: number) => {
     },
   });
 };
-const getFreeDaysArray = (
+export const getFreeDaysArray = (
   startDate: Date,
   expirationDate: Date,
   week: week,

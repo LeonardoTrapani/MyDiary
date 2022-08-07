@@ -11,11 +11,12 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/auth';
 import homeworkRoutes from './routes/homework';
 import dayRoutes from './routes/day';
+import calendarRoutes from './routes/calendar';
 
 import { ErrorResponse } from './models';
 
 import { PrismaClient } from '@prisma/client';
-import weekRouter from './routes/week';
+import weekRoutes from './routes/week';
 import applyPrismaMiddlewares from './prisma-middlewares';
 export const prisma = new PrismaClient();
 
@@ -36,7 +37,8 @@ app.get('/', (req: Request, res: Response) => {
 app.use(authRoutes);
 app.use('/homework', homeworkRoutes);
 app.use('/day', dayRoutes);
-app.use('/week', weekRouter);
+app.use('/week', weekRoutes);
+app.use('/calendar', calendarRoutes);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   const response: ErrorResponse = {
