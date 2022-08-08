@@ -19,7 +19,7 @@ interface CalendarHomework {
 
 const isCalendarDayDisabled = (date: Date, month: number) => {
   const currDate = new Date();
-  if (date < currDate || date.getMonth() !== month) {
+  if (date <= currDate || date.getMonth() !== month) {
     return true;
   }
   return false;
