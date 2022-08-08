@@ -8,13 +8,16 @@ interface CalendarState {
   calendar: Calendar;
 }
 
-type Calendar = {
-  date: Date;
+export interface CalendarDayType {
+  date: string;
   freeTime: number;
+  disabled: boolean;
   homework: CalendarHomework[];
-}[];
+}
 
-interface CalendarHomework {
+type Calendar = CalendarDayType[];
+
+export interface CalendarHomework {
   homeworkId: number;
   subject: string;
   minutesOccupied: number;

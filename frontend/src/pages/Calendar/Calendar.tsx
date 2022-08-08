@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import LoadingSpinner from '../../components/UI/LoadingSpinner';
-import { fetchCalendar } from '../../store/calendar-slice';
+import { fetchCalendar, CalendarDayType } from '../../store/calendar-slice';
+import styles from './Calendar.module.css';
 import {
   useAppDispatch,
   useAppSelector,
@@ -13,9 +14,11 @@ const Calendar: React.FC = () => {
   const calendar = useAppSelector((state) => state.calendar.calendar);
   const isLoading = useAppSelector((state) => state.calendar.isLoading);
   const hasError = useAppSelector((state) => state.calendar.hasError);
+
   useEffect(() => {
     dispatch(fetchCalendar(fetchAuthorized, 1));
   }, [dispatch, fetchAuthorized]);
+
   if (isLoading) {
     return <LoadingSpinner />;
   }
@@ -23,37 +26,32 @@ const Calendar: React.FC = () => {
     return <h1>An error has occurred fetching the calendar</h1>;
   }
 
-  console.log(isLoading);
   const calendarJsx = calendar.map((day) => {
-    return (
-      <div key={day.date.toString()}>
-        <br />
-        <div>
-          <p>Date: {day.date.toString()}</p>
-          <p>Free time: {day.freeTime}</p>
-          <div>
-            {day.homework.map((hmk) => {
-              return (
-                <div key={hmk.homeworkId}>
-                  <br />
-                  <div>
-                    <p>{hmk.name}</p>
-                    <p>{hmk.subject}</p>
-                    <p>{hmk.minutesOccupied}</p>
-                  </div>
-                  <br />
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        <br />
-        <br />
-        <br />
-      </div>
-    );
+    return <CalendarDay key={day.date} day={day} />;
   });
-  return <div>{calendarJsx}</div>;
+  return <ul className={styles.calendar}>{calendarJsx}</ul>;
+};
+
+const CalendarDay: React.FC<{ day: CalendarDayType }> = ({ day }) => {
+  return (
+    <li className={styles['calendar-day']}>
+      <h3>{new Date(day.date).toDateString()}</h3>
+      <p>Free time: {day.freeTime}</p>
+      <div>
+        {day.homework.map((hmk) => {
+          return (
+            <div key={hmk.homeworkId}>
+              <div>
+                <p>{hmk.name}</p>
+                <p>{hmk.subject}</p>
+                <p>{hmk.minutesOccupied}</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </li>
+  );
 };
 
 export default Calendar;
