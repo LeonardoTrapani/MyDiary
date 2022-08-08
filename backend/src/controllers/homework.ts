@@ -171,7 +171,8 @@ export const calculateFreeDays = async (
       startDate,
       expirationDate,
       week,
-      freeDays
+      freeDays,
+      DAYS_PER_PAGE
     );
     return res.json(freeDaysArray);
   } catch (err) {
@@ -243,14 +244,15 @@ export const getFreeDaysArray = (
   startDate: Date,
   expirationDate: Date,
   week: week,
-  freeDays: freeDays
+  freeDays: freeDays,
+  daysPerPage: number
 ) => {
   const finalFreeDays: {
     date: Date;
     freeMinutes: number;
   }[] = [];
   let currentDate = startDate;
-  while (currentDate < expirationDate && finalFreeDays.length < DAYS_PER_PAGE) {
+  while (currentDate < expirationDate && finalFreeDays.length < daysPerPage) {
     const freeMinutes = findfreeMinutesInDay(currentDate, week);
     const freeDayToPut = freeDays.days.find((day) => {
       return day.date.toDateString() === currentDate.toDateString();

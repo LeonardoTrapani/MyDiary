@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { addDays, addDaysFromToday, throwResponseError } from '../utilities';
+import { addDays, throwResponseError } from '../utilities';
 import { prisma } from '../app';
 import { fetchFreeDays, fetchWeek, getFreeDaysArray } from './homework';
 
@@ -16,7 +16,19 @@ interface CalendarHomework {
   subject: string;
 }
 
-const DAYS_PER_PAGE = 7;
+const daysInMonth = (month: number, year: number) => {
+  return new Date(year, month, 0).getDate();
+};
+const getFirstDayOfMonth = (year: number, month: number) => {
+  const firstDay = new Date(year, month, 1);
+  return firstDay;
+};
+
+const getLastDayOfMonth = (year: number, month: number) => {
+  const lastDay = new Date(year, month + 1, 0);
+  return lastDay;
+};
+
 export const getCalendar = async (
   req: Request,
   res: Response,
@@ -25,13 +37,25 @@ export const getCalendar = async (
   const { userId } = req;
   const { page } = req.params;
   const pageNumber = +page!;
-  const daysFromToday = +pageNumber * DAYS_PER_PAGE - DAYS_PER_PAGE;
-  const startDate = addDaysFromToday(daysFromToday);
-  let currentDate = new Date(startDate);
-  const endDate = addDaysFromToday(daysFromToday + DAYS_PER_PAGE);
+  const currDate = new Date();
+
+  const daysPerPage = daysInMonth(
+    currDate.getMonth() + pageNumber - 1,
+    currDate.getFullYear()
+  );
+  const firstDay = getFirstDayOfMonth(
+    currDate.getFullYear(),
+    currDate.getMonth()
+  );
+  const lastDay = getLastDayOfMonth(
+    currDate.getFullYear(),
+    currDate.getMonth()
+  );
+  console.log({ firstDay, lastDay });
+  let currentDate = new Date(firstDay);
   const homeworkInDays: CalendarHomework[][] = [];
   const calendar: Calendar = [];
-  while (currentDate <= endDate) {
+  while (currentDate <= lastDay) {
     let initialDate = new Date(currentDate.setHours(0, 0, 0, 0));
     let endDate = new Date(addDays(currentDate, 1).setHours(0, 0, 0, 0));
     const homework = await prisma.homework.findMany({
@@ -89,14 +113,21 @@ export const getCalendar = async (
     return;
   }
 
-  const calendarWeek = getFreeDaysArray(startDate, endDate, week, freeDays);
-
-  for (let i = 0; i < DAYS_PER_PAGE; i++) {
+  const calendarDays = getFreeDaysArray(
+    firstDay,
+    lastDay,
+    week,
+    freeDays,
+    daysPerPage
+  );
+  console.log(calendarDays);
+  calendarDays.forEach((calendarDay, i) => {
     calendar.push({
-      date: calendarWeek[i].date,
-      freeTime: calendarWeek[i].freeMinutes,
+      date: calendarDay.date,
+      freeTime: calendarDay.freeMinutes,
       homework: homeworkInDays[i],
     });
-  }
+  });
+
   res.json(calendar);
 };
