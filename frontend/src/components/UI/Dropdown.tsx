@@ -1,5 +1,5 @@
 import React from 'react';
-import { GroupBase, StylesConfig } from 'react-select';
+import { ActionMeta, GroupBase, SingleValue, StylesConfig } from 'react-select';
 import ReactSelect from 'react-select/creatable';
 import styles from './Dropdown.module.css';
 
@@ -14,6 +14,17 @@ const Dropdown: React.FC<{
     label: string;
   }[];
   colors: string[];
+  onChange: (
+    newValue: SingleValue<{
+      value: string;
+      label: string;
+    }>,
+    actionMeta: ActionMeta<{
+      value: string;
+      label: string;
+    }>
+  ) => void;
+  onBlur: () => void;
 }> = (props) => {
   const customStyles: StylesConfig<
     {
@@ -98,7 +109,12 @@ const Dropdown: React.FC<{
           <p className={styles['error-text']}>{props.errorMessage}</p>
         )}
       </div>
-      <ReactSelect options={props.options} styles={customStyles} />
+      <ReactSelect
+        options={props.options}
+        styles={customStyles}
+        onChange={props.onChange}
+        onBlur={props.onBlur}
+      />
     </div>
   );
 };

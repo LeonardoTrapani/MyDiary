@@ -10,6 +10,7 @@ import React, {
 } from 'react';
 import { uiActions } from '../store/ui-slice';
 import { calculateShowBurger } from './utilities';
+import { ActionMeta, OnChangeValue, SingleValue } from 'react-select';
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch: () => AppDispatch = useDispatch;
@@ -232,4 +233,67 @@ export const useUpdate = (
     return cleanup();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deps]);
+};
+
+export const useDropdown = (
+  checksToBeValid: {
+    check: (value: string) => boolean;
+    errorMessage: string;
+  }[]
+) => {
+  const [value, setValue] = useState('');
+  const [isValid, setIsValid] = useState(false);
+  const [hasBeenTouched, setHasBeenTouched] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const isFirstTime = useRef(true);
+  useEffect(() => {
+    if (!isFirstTime.current) {
+      setHasBeenTouched(true);
+      const checksValidResult = areAllChecksValid(checksToBeValid, value);
+      setErrorMessage(checksValidResult.errorMessage);
+      setIsValid(checksValidResult.isValid);
+    } else {
+      isFirstTime.current = false;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  const hasError = useMemo(
+    () => !isValid && hasBeenTouched,
+    [isValid, hasBeenTouched]
+  );
+
+  const handleChange = (
+    newValue: SingleValue<{
+      value: string;
+      label: string;
+    }>,
+    actionMeta: ActionMeta<{
+      value: string;
+      label: string;
+    }>
+  ) => {
+    if (actionMeta.action === 'select-option') {
+      if (newValue?.value) {
+        setValue(newValue.value);
+      }
+    }
+  };
+
+  const validate = () => {
+    setHasBeenTouched(true);
+    const checksValidResult = areAllChecksValid(checksToBeValid, value);
+    setErrorMessage(checksValidResult.errorMessage);
+    setIsValid(checksValidResult.isValid);
+    return checksValidResult.isValid;
+  };
+  return {
+    value,
+    handleChange,
+    errorMessage,
+    hasError,
+    validate,
+    isValid,
+  };
 };

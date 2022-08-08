@@ -6,6 +6,7 @@ import Input from '../../components/UI/Input';
 import {
   useAppDispatch,
   useAppSelector,
+  useDropdown,
   useFetchAuthorized,
   useInput,
 } from '../../utilities/hooks';
@@ -17,11 +18,7 @@ import {
 } from '../../store/create-homework-slice';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import FreeDays, { FreeDaysInformations } from './FreeDays';
-import {
-  addDaysFromToday,
-  calculateContrast,
-  hexToRgb,
-} from '../../utilities/utilities';
+import { addDaysFromToday } from '../../utilities/utilities';
 import Dropdown from '../../components/UI/Dropdown';
 import { fetchSubjects } from '../../store/subjects-slice';
 
@@ -70,6 +67,20 @@ export const AddHomeworkPage: React.FC = () => {
     {
       check: (value) => value.length <= 400,
       errorMessage: 'insert maximum 400 character',
+    },
+  ]);
+
+  const {
+    errorMessage: subjectErrorMesssage,
+    hasError: subjectHasError,
+    isValid: isSubjectValid,
+    handleChange: onSubjectChange,
+    validate: validateSubject,
+    value: subjectIndex,
+  } = useDropdown([
+    {
+      check: (value) => !!value,
+      errorMessage: 'please choose a subject',
     },
   ]);
 
@@ -135,7 +146,7 @@ export const AddHomeworkPage: React.FC = () => {
         timeToAssign: +durationValue,
         expirationDate: expirationDateValue,
         name: nameValue,
-        subjectId: subjectId,
+        subjectId: subjects[+subjectIndex].id,
       })
     );
     navigate('/create-homework/free-days/' + defaultPage);
@@ -167,7 +178,7 @@ export const AddHomeworkPage: React.FC = () => {
       return subject.color;
     });
   }, [subjects]);
-  console.log(subjectColors);
+
   return (
     <>
       <div className={styles['add-homework-form--container']}>
@@ -200,11 +211,13 @@ export const AddHomeworkPage: React.FC = () => {
           />
           <Dropdown
             parentClassName={styles['subject-input']}
-            errorMessage='ERROR'
-            hasError={false}
+            errorMessage={subjectErrorMesssage}
+            hasError={subjectHasError}
             name='Subject'
             options={subjectOptions}
             colors={subjectColors}
+            onBlur={validateSubject}
+            onChange={onSubjectChange}
           />
           <Input
             errorMessage={durationErrorMessage}
