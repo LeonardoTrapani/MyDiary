@@ -1,4 +1,15 @@
 import { Prisma, PrismaClient } from '@prisma/client';
+
+const prismaModelChecks = (params: Prisma.MiddlewareParams) => {
+  return (
+    params.model == 'Day' ||
+    params.model == 'User' ||
+    params.model == 'Homework' ||
+    params.model == 'PlannedDate' ||
+    params.model == 'Subject'
+  );
+};
+
 const applyPrismaMiddlewares = async (
   prisma: PrismaClient<
     Prisma.PrismaClientOptions,
@@ -8,12 +19,7 @@ const applyPrismaMiddlewares = async (
 ) => {
   prisma.$use(async (params, next) => {
     // Check incoming query type
-    if (
-      params.model == 'Day' ||
-      params.model == 'User' ||
-      params.model == 'Homework' ||
-      params.model == 'PlannedDate'
-    ) {
+    if (prismaModelChecks(params)) {
       if (params.action == 'delete') {
         // Delete queries
         // Change action to an update
@@ -33,12 +39,7 @@ const applyPrismaMiddlewares = async (
     return next(params);
   });
   prisma.$use(async (params, next) => {
-    if (
-      params.model == 'Day' ||
-      params.model == 'User' ||
-      params.model == 'Homework' ||
-      params.model == 'PlannedDate'
-    ) {
+    if (prismaModelChecks(params)) {
       if (params.action === 'findUnique' || params.action === 'findFirst') {
         // Change to findFirst - you cannot filter
         // by anything except ID / unique with findUnique
@@ -63,12 +64,7 @@ const applyPrismaMiddlewares = async (
   });
 
   prisma.$use(async (params, next) => {
-    if (
-      params.model == 'Day' ||
-      params.model == 'User' ||
-      params.model == 'Homework' ||
-      params.model == 'PlannedDate'
-    ) {
+    if (prismaModelChecks(params)) {
       if (params.action == 'update') {
         // Change to updateMany - you cannot filter
         // by anything except ID / unique with findUnique

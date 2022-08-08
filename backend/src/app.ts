@@ -12,6 +12,7 @@ import authRoutes from './routes/auth';
 import homeworkRoutes from './routes/homework';
 import dayRoutes from './routes/day';
 import calendarRoutes from './routes/calendar';
+import subjectRoutes from './routes/subject';
 
 import { ErrorResponse } from './models';
 
@@ -39,6 +40,7 @@ app.use('/homework', homeworkRoutes);
 app.use('/day', dayRoutes);
 app.use('/week', weekRoutes);
 app.use('/calendar', calendarRoutes);
+app.use('/subject', subjectRoutes);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   const response: ErrorResponse = {
