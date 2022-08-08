@@ -21,8 +21,6 @@
   justify-content: space-between;
 }
 
-.nav  {
-}
 .days {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));

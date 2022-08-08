@@ -20,6 +20,7 @@ type Calendar = CalendarDayType[];
 export interface CalendarHomework {
   homeworkId: number;
   subject: string;
+  subjectColor: string;
   minutesOccupied: number;
   name: string;
 }

@@ -95,15 +95,16 @@ const CalendarDay: React.FC<{ day: CalendarDayType }> = ({ day }) => {
         </h3>
       )}
 
-      <p>
+      <div>
         Free time: <MinutesToHoursMinutes minutes={day.freeTime} />
-      </p>
+      </div>
       <div>
         {day.homework.map((hmk) => {
           return (
             <div key={hmk.homeworkId}>
               <div>
                 <p>{hmk.name}</p>
+                <p>{hmk.subjectColor}</p>
                 <p>{hmk.subject}</p>
                 <p>{hmk.minutesOccupied}</p>
               </div>
