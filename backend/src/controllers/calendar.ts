@@ -4,6 +4,7 @@ import { prisma } from '../app';
 import { fetchFreeDays, fetchWeek, getFreeDaysArray } from './homework';
 
 type Calendar = {
+  disabled: boolean;
   date: Date;
   freeTime: number;
   homework: CalendarHomework[];
@@ -16,6 +17,13 @@ interface CalendarHomework {
   subject: string;
 }
 
+const isCalendarDayDisabled = (date: Date, month: number) => {
+  const currDate = new Date();
+  if (date < currDate || date.getMonth() !== month) {
+    return true;
+  }
+  return false;
+};
 const getDaysInMonth = (month: number, year: number) => {
   return new Date(year, month, 0).getDate();
 };
@@ -30,11 +38,7 @@ const getLastDayOfMonth = (year: number, month: number) => {
 };
 
 const DAYS_PER_PAGE = 35;
-export const getCalendar = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const getCalendar = async (req: Request, res: Response) => {
   const { userId } = req;
   const { page } = req.params;
   const pageNumber = +page!;
@@ -56,7 +60,6 @@ export const getCalendar = async (
   const daysToRemoveStart = firstDayInMonth.getDay() - 1;
   const daysToAddEnd = DAYS_PER_PAGE - daysInMonth;
   const firstDay = removeDays(firstDayInMonth, daysToRemoveStart);
-
   const lastDay = addDays(lastDayInMonth, daysToAddEnd);
   let currentDate = new Date(firstDay);
   const homeworkInDays: CalendarHomework[][] = [];
@@ -130,6 +133,10 @@ export const getCalendar = async (
     calendar.push({
       date: calendarDay.date,
       freeTime: calendarDay.freeMinutes,
+      disabled: isCalendarDayDisabled(
+        calendarDay.date,
+        firstDayInMonth.getMonth()
+      ),
       homework: homeworkInDays[i],
     });
   });
