@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import Form from '../../components/BurgerMenu/Form';
 import styles from './Homework.module.css';
 import Input from '../../components/UI/Input';
@@ -17,7 +17,11 @@ import {
 } from '../../store/create-homework-slice';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import FreeDays, { FreeDaysInformations } from './FreeDays';
-import { addDaysFromToday } from '../../utilities/utilities';
+import {
+  addDaysFromToday,
+  calculateContrast,
+  hexToRgb,
+} from '../../utilities/utilities';
 import Dropdown from '../../components/UI/Dropdown';
 import { fetchSubjects } from '../../store/subjects-slice';
 
@@ -147,12 +151,23 @@ export const AddHomeworkPage: React.FC = () => {
 
   const subjects = useAppSelector((state) => state.subjects.subjects);
 
-  const subjectOptions = subjects.map((subject) => {
-    return {
-      value: subject.id.toString(),
-      label: subject.name,
-    };
-  });
+  const subjectOptions = useMemo(
+    () =>
+      subjects.map((subject, index) => {
+        return {
+          value: index.toString(),
+          label: subject.name,
+        };
+      }),
+    [subjects]
+  );
+
+  const subjectColors = useMemo(() => {
+    return subjects.map((subject) => {
+      return subject.color;
+    });
+  }, [subjects]);
+  console.log(subjectColors);
   return (
     <>
       <div className={styles['add-homework-form--container']}>
@@ -189,6 +204,7 @@ export const AddHomeworkPage: React.FC = () => {
             hasError={false}
             name='Subject'
             options={subjectOptions}
+            colors={subjectColors}
           />
           <Input
             errorMessage={durationErrorMessage}

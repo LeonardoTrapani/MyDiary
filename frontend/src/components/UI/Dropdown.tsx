@@ -1,5 +1,5 @@
 import React from 'react';
-import { GroupBase, NonceProvider, StylesConfig } from 'react-select';
+import { GroupBase, StylesConfig } from 'react-select';
 import ReactSelect from 'react-select/creatable';
 import styles from './Dropdown.module.css';
 
@@ -13,6 +13,7 @@ const Dropdown: React.FC<{
     value: string;
     label: string;
   }[];
+  colors: string[];
 }> = (props) => {
   const customStyles: StylesConfig<
     {
@@ -25,13 +26,13 @@ const Dropdown: React.FC<{
       label: string;
     }>
   > = {
-    container: (provided, state) => {
+    container: (provided) => {
       return {
         ...provided,
         border: !props.hasError ? '1px solid #000' : '2px solid #dd4848',
       };
     },
-    control: (provided, state) => {
+    control: (provided) => {
       return {
         ...provided,
         cursor: 'text',
@@ -56,7 +57,25 @@ const Dropdown: React.FC<{
         width: '100%',
         display: 'flex',
         justifyContent: 'center',
+        transform: 'translate(-7.5%, 0)',
         alignItems: 'center',
+        padding: '0 1rem',
+      };
+    },
+    option: (provided) => {
+      return {
+        ...provided,
+        cursor: 'pointer',
+      };
+    },
+    singleValue: (provided, state) => {
+      const color = props.colors[+state.data.value];
+      return {
+        ...provided,
+        padding: '0.2rem 0',
+        marginLeft: 'none',
+        transform: 'translate(-1%, 0)',
+        color: color,
       };
     },
   };
