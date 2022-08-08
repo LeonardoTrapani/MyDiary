@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { addDays, throwResponseError } from '../utilities';
+import { addDays, removeDays, throwResponseError } from '../utilities';
 import { prisma } from '../app';
 import { fetchFreeDays, fetchWeek, getFreeDaysArray } from './homework';
 
@@ -16,7 +16,7 @@ interface CalendarHomework {
   subject: string;
 }
 
-const daysInMonth = (month: number, year: number) => {
+const getDaysInMonth = (month: number, year: number) => {
   return new Date(year, month, 0).getDate();
 };
 const getFirstDayOfMonth = (year: number, month: number) => {
@@ -26,9 +26,10 @@ const getFirstDayOfMonth = (year: number, month: number) => {
 
 const getLastDayOfMonth = (year: number, month: number) => {
   const lastDay = new Date(year, month + 1, 0);
-  return lastDay;
+  return addDays(lastDay, 1);
 };
 
+const DAYS_PER_PAGE = 35;
 export const getCalendar = async (
   req: Request,
   res: Response,
@@ -39,19 +40,24 @@ export const getCalendar = async (
   const pageNumber = +page!;
   const currDate = new Date();
 
-  const daysPerPage = daysInMonth(
-    currDate.getMonth() + pageNumber - 1,
+  const firstDayInMonth = getFirstDayOfMonth(
+    currDate.getFullYear(),
+    currDate.getMonth() + pageNumber - 1
+  );
+  const lastDayInMonth = getLastDayOfMonth(
+    currDate.getFullYear(),
+    currDate.getMonth() + pageNumber - 1
+  );
+
+  const daysInMonth = getDaysInMonth(
+    currDate.getMonth() + pageNumber,
     currDate.getFullYear()
   );
-  const firstDay = getFirstDayOfMonth(
-    currDate.getFullYear(),
-    currDate.getMonth()
-  );
-  const lastDay = getLastDayOfMonth(
-    currDate.getFullYear(),
-    currDate.getMonth()
-  );
-  console.log({ firstDay, lastDay });
+  const daysToRemoveStart = firstDayInMonth.getDay() - 1;
+  const daysToAddEnd = DAYS_PER_PAGE - daysInMonth;
+  const firstDay = removeDays(firstDayInMonth, daysToRemoveStart);
+
+  const lastDay = addDays(lastDayInMonth, daysToAddEnd);
   let currentDate = new Date(firstDay);
   const homeworkInDays: CalendarHomework[][] = [];
   const calendar: Calendar = [];
@@ -118,9 +124,8 @@ export const getCalendar = async (
     lastDay,
     week,
     freeDays,
-    daysPerPage
+    DAYS_PER_PAGE
   );
-  console.log(calendarDays);
   calendarDays.forEach((calendarDay, i) => {
     calendar.push({
       date: calendarDay.date,
