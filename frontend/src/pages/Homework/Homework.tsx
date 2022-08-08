@@ -18,11 +18,18 @@ import {
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import FreeDays, { FreeDaysInformations } from './FreeDays';
 import { addDaysFromToday } from '../../utilities/utilities';
-import ReactSelect from 'react-select';
 import Dropdown from '../../components/UI/Dropdown';
-import { classNames } from 'react-select/dist/declarations/src/utils';
+import { fetchSubjects } from '../../store/subjects-slice';
 
 export const AddHomeworkPage: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const fetchAuthorized = useFetchAuthorized();
+
+  useEffect(() => {
+    dispatch(fetchSubjects(fetchAuthorized));
+  }, [dispatch, fetchAuthorized]);
+
   const {
     errorMessage: nameErrorMessage,
     hasError: nameHasError,
@@ -111,9 +118,6 @@ export const AddHomeworkPage: React.FC = () => {
     isDurationValid &&
     isExpirationDateValid;
 
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-
   const addHomeworkSubmitHandler = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
@@ -141,11 +145,14 @@ export const AddHomeworkPage: React.FC = () => {
     validateSubject();
   };
 
-  const subjectOptions = [
-    { value: 'sadwa', label: 'Tst2' },
-    { value: 'TEst', label: 'CIAO' },
-  ];
+  const subjects = useAppSelector((state) => state.subjects.subjects);
 
+  const subjectOptions = subjects.map((subject) => {
+    return {
+      value: subject.id.toString(),
+      label: subject.name,
+    };
+  });
   return (
     <>
       <div className={styles['add-homework-form--container']}>

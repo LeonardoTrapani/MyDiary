@@ -13,6 +13,7 @@ const initialState: SubjectsState = {
   hasError: false,
   isLoading: false,
 };
+
 const subjectsSlice = createSlice({
   name: 'subjects',
   initialState,
