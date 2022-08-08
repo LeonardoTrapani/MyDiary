@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { addDays, removeDays, throwResponseError } from '../utilities';
 import { prisma } from '../app';
 import { fetchFreeDays, fetchWeek, getFreeDaysArray } from './homework';

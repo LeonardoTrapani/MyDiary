@@ -87,13 +87,13 @@ export const FreeDayButtons: React.FC = () => {
   };
   return (
     <div className={styles['free-days--button-container']}>
-      <FreeDayButton
+      <CircularSmallButton
         onClick={buttonBackHandler}
         left
         disabled={+homeworkPage === 1}
       />
 
-      <FreeDayButton
+      <CircularSmallButton
         onClick={buttonForwardHandler}
         right
         disabled={freeDaysLength < 9}
@@ -101,7 +101,7 @@ export const FreeDayButtons: React.FC = () => {
     </div>
   );
 };
-export const FreeDayButton: React.FC<{
+export const CircularSmallButton: React.FC<{
   onClick: () => void;
   right?: boolean;
   left?: boolean;
@@ -249,7 +249,7 @@ export const FreeDaysInformations: React.FC = () => {
     <div className={styles['free-days--informations']}>
       <FreeDayTitle />
       <TimeToAssign />
-      <div className={styles['free-days--informations-actions']}>
+      <nav className={styles['free-days--informations-actions']}>
         <FreeDayButtons />
         <Button
           isLoading={false}
@@ -258,7 +258,7 @@ export const FreeDaysInformations: React.FC = () => {
         >
           Create Homework
         </Button>
-      </div>
+      </nav>
     </div>
   );
 };
