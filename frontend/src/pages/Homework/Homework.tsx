@@ -18,6 +18,9 @@ import {
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import FreeDays, { FreeDaysInformations } from './FreeDays';
 import { addDaysFromToday } from '../../utilities/utilities';
+import ReactSelect from 'react-select';
+import Dropdown from '../../components/UI/Dropdown';
+import { classNames } from 'react-select/dist/declarations/src/utils';
 
 export const AddHomeworkPage: React.FC = () => {
   const {
@@ -56,19 +59,6 @@ export const AddHomeworkPage: React.FC = () => {
     {
       check: (value) => value.length <= 400,
       errorMessage: 'insert maximum 400 character',
-    },
-  ]);
-  const {
-    errorMessage: subjectErrorMessage,
-    hasError: subjectHasError,
-    isValid: isSubjectValid,
-    onChangeValue: onChangeSubject,
-    validate: validateSubject,
-    value: subjectValue,
-  } = useInput([
-    {
-      check: (value) => !!value,
-      errorMessage: 'please insert a subject',
     },
   ]);
 
@@ -137,7 +127,7 @@ export const AddHomeworkPage: React.FC = () => {
         timeToAssign: +durationValue,
         expirationDate: expirationDateValue,
         name: nameValue,
-        subject: subjectValue,
+        subjectId: subjectId,
       })
     );
     navigate('/create-homework/free-days/' + defaultPage);
@@ -150,6 +140,12 @@ export const AddHomeworkPage: React.FC = () => {
     validateExpirationDate();
     validateSubject();
   };
+
+  const subjectOptions = [
+    { value: 'sadwa', label: 'Tst2' },
+    { value: 'TEst', label: 'CIAO' },
+  ];
+
   return (
     <>
       <div className={styles['add-homework-form--container']}>
@@ -180,15 +176,12 @@ export const AddHomeworkPage: React.FC = () => {
             value={descriptionValue}
             className={styles['description-input']}
           />
-          <Input
-            errorMessage={subjectErrorMessage}
-            hasError={subjectHasError}
+          <Dropdown
+            parentClassName={styles['subject-input']}
+            errorMessage='ERROR'
+            hasError={false}
             name='Subject'
-            onBlur={validateSubject}
-            onChange={onChangeSubject}
-            type='text'
-            value={subjectValue}
-            className={styles['subject-input']}
+            options={subjectOptions}
           />
           <Input
             errorMessage={durationErrorMessage}

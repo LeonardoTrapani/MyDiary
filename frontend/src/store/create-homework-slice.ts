@@ -31,7 +31,7 @@ export interface plannedDate {
 }
 export interface HomeworkCreating {
   name: string;
-  subject: string;
+  subjectId: number;
   description: string;
   duration: number;
   timeToAssign: number;
@@ -221,7 +221,7 @@ export const submitCreateHomework = (
       return;
     }
     dispatch(createHomeworkActions.setLoading(true));
-    const { name, description, duration, expirationDate, subject } =
+    const { name, description, duration, expirationDate, subjectId } =
       homeworkCreating;
 
     const formattedPlannedDates = plannedDates.map((selectedDay) => {
@@ -235,7 +235,7 @@ export const submitCreateHomework = (
           name,
           description,
           expirationDate,
-          subject,
+          subjectId,
           duration,
           plannedDates: formattedPlannedDates,
         },
