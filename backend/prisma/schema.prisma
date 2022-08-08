@@ -20,6 +20,7 @@ model User {
   homework       Homework[]
   days           Day[]
   week           Week?
+  subjects       Subject[]
   deleted        Boolean    @default(false)
 }
 
@@ -29,14 +30,27 @@ model Homework {
   userId         Int
   name           String
   description    String
-  subject        String
   expirationDate DateTime      @db.Date
   plannedDates   PlannedDate[]
+  subject        Subject       @relation(fields: [subjectId], references: [id])
+  subjectId      Int
   duration       Int
   completed      Boolean       @default(false)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   deleted        Boolean       @default(false)
+}
+
+model Subject {
+  id        Int        @id @default(autoincrement())
+  name      String
+  color     String
+  homework  Homework[]
+  user      User       @relation(fields: [userId], references: [id])
+  userId    Int
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  deleted   Boolean    @default(false)
 }
 
 model PlannedDate {

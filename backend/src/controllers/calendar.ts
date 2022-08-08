@@ -15,6 +15,7 @@ interface CalendarHomework {
   minutesOccupied: number;
   name: string;
   subject: string;
+  subjectColor: string;
 }
 
 const isCalendarDayDisabled = (date: Date, month: number) => {
@@ -103,7 +104,8 @@ export const getCalendar = async (req: Request, res: Response) => {
         homeworkId: hmk.id,
         minutesOccupied: hmk.plannedDates[0].minutes,
         name: hmk.name,
-        subject: hmk.subject,
+        subject: hmk.subject.name,
+        subjectColor: hmk.subject.color,
       };
     });
     homeworkInDays.push(formattedHomework);

@@ -30,7 +30,6 @@ router.post(
       .trim()
       .isLength({ min: 5, max: 400 })
       .notEmpty(),
-    body('subject', 'please enter a subject').trim().isString().notEmpty(),
     body('expirationDate', 'please insert a valid expiration date')
       .isISO8601()
       .notEmpty()
@@ -51,7 +50,8 @@ router.post(
         return isValid;
       })
       .withMessage('the dates of the planned dates are not valid'),
-    body('duration', 'please enter a valid duration').isNumeric(), //Validate dates and times etc...
+    body('duration', 'please enter a valid duration').isNumeric(),
+    body('subjectId', 'please enter a valid subject').isNumeric(),
   ],
   validateExpressValidation,
   plannedDatesAreValid,

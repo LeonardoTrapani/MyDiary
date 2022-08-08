@@ -9,13 +9,25 @@ export const createHomework = async (
   next: NextFunction
 ) => {
   const { userId } = req;
-  const { name, subject, duration, description, expirationDate } = req.body;
+  const { name, subjectId, duration, description, expirationDate } = req.body;
   const plannedDates = req.body.plannedDates as {
     minutes: number;
     date: string;
   }[];
 
   try {
+    const subject = await prisma.subject.findUnique({
+      where: {
+        id: +subjectId!,
+      },
+    });
+    if (!subject) {
+      return throwResponseError(
+        "can't find the subject you selected",
+        400,
+        res
+      );
+    }
     plannedDates.forEach(async (plannedDate) => {
       //Search a day with same userId and planned date
       const freeDay = await fetchFreeDay(plannedDate.date, +userId!);
@@ -44,7 +56,7 @@ export const createHomework = async (
         duration: duration,
         expirationDate: new Date(expirationDate),
         name: name,
-        subject: subject,
+        subjectId: subject.id,
         plannedDates: {
           createMany: {
             data: plannedDates,
@@ -52,55 +64,10 @@ export const createHomework = async (
         },
       },
     });
-    // const homework = await prisma.user.update({
-    //   where: {
-    //     id: userIdNumber,
-    //   },
-    //   select: {
-    //     homework: {
-    //       orderBy: {
-    //         createdAt: 'desc',
-    //       },
-    //       take: 1,
-    //       select: {
-    //         completed: true,
-    //         description: true,
-    //         duration: true,
-    //         expirationDate: true,
-    //         id: true,
-    //         name: true,
-    //         plannedDates: true,
-    //         subject: true,
-    //       },
-    //       where: {
-    //         user: {
-    //           deleted: false,
-    //         },
-    //         deleted: false,
-    //       },
-    //     },
-    //   },
-    //   data: {
-    //     homework: {
-    //       create: {
-    //         description,
-    //         duration: duration,
-    //         expirationDate: new Date(expirationDate),
-    //         name: name,
-    //         subject: subject,
-    //         plannedDates: {
-    //           createMany: {
-    //             data: plannedDates,
-    //           },
-    //         },
-    //       },
-    //     },
-    //   },
-    // });
-    res.json(homework);
+    return res.json(homework);
   } catch (err) {
     console.error(err);
-    throwResponseError('unable to create homework', 500, res);
+    return throwResponseError('unable to create homework', 500, res);
   }
 };
 
