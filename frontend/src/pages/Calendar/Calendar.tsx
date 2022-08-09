@@ -1,6 +1,10 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import LoadingSpinner from '../../components/UI/LoadingSpinner';
-import { fetchCalendar, CalendarDayType } from '../../store/calendar-slice';
+import {
+  fetchCalendar,
+  CalendarDayType,
+  CalendarHomeworkType,
+} from '../../store/calendar-slice';
 import styles from './Calendar.module.css';
 import {
   useAppDispatch,
@@ -9,8 +13,8 @@ import {
 } from '../../utilities/hooks';
 import { CircularSmallButton } from '../Homework/FreeDays';
 import Button from '../../components/UI/Button';
-import MinutesToHoursMinutes from '../../components/UI/MinutesFromHoursMinutes';
-import { MONTHS } from '../../utilities/contants';
+import { BAR_OPACITY, MONTHS } from '../../utilities/contants';
+import { addOpacity } from '../../utilities/utilities';
 
 const Calendar: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -39,7 +43,7 @@ const Calendar: React.FC = () => {
   }
 
   return (
-    <>
+    <div className={styles['calendar-page']}>
       <header className={styles.header}>
         <h1 className={styles.title}>
           <span className={styles.month}>August</span>{' '}
@@ -65,19 +69,38 @@ const Calendar: React.FC = () => {
           />
         </nav>
       </header>
-      <main>
+      <main className={styles['calendar-container']}>
         <DayTitles />
         <ul className={styles.calendar}>{calendarJsx}</ul>
       </main>
-    </>
+    </div>
   );
 };
 
-const CalendarDay: React.FC<{ day: CalendarDayType }> = ({ day }) => {
+const CalendarDay: React.FC<{
+  day: CalendarDayType;
+}> = ({ day }) => {
+  const calendarHomeworkRef = useRef<HTMLLIElement>(null);
+
+  const totalMinutes = useMemo(() => {
+    const totalMinsOccupied = day.homework.reduce(
+      (prev, curr) => prev + curr.minutesOccupied,
+      0
+    );
+    return totalMinsOccupied + day.freeTime;
+  }, [day.freeTime, day.homework]);
+
   return (
     <li
+      ref={calendarHomeworkRef}
       className={
-        styles['calendar-day'] + ' ' + (day.disabled ? styles.disabled : '')
+        styles['calendar-day'] +
+        ' ' +
+        styles['calendar-day'] +
+        ' ' +
+        (day.disabled || (day.freeTime === 0 && !day.homework.length)
+          ? styles.disabled
+          : '')
       }
     >
       {new Date(day.date).getDate() === 1 ? (
@@ -94,25 +117,71 @@ const CalendarDay: React.FC<{ day: CalendarDayType }> = ({ day }) => {
           <span className={styles.date}>{new Date(day.date).getDate()}</span>
         </h3>
       )}
-
-      <div>
-        Free time: <MinutesToHoursMinutes minutes={day.freeTime} />
-      </div>
-      <div>
-        {day.homework.map((hmk) => {
-          return (
-            <div key={hmk.homeworkId}>
-              <div>
-                <p>{hmk.name}</p>
-                <p>{hmk.subjectColor}</p>
-                <p>{hmk.subject}</p>
-                <p>{hmk.minutesOccupied}</p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      <CalendarHomework day={day} totalMinutes={totalMinutes} />
     </li>
+  );
+};
+
+const CalendarHomework: React.FC<{
+  day: CalendarDayType;
+
+  totalMinutes: number;
+}> = ({ day, totalMinutes }) => {
+  return (
+    <div className={styles['calendar-homework']}>
+      {day.homework.map((hmk) => {
+        return (
+          <HomeworkBar
+            key={hmk.homeworkId}
+            homework={hmk}
+            totalMinutes={totalMinutes}
+          />
+        );
+      })}
+      <FreeTimeBar
+        freeMinutes={day.freeTime}
+        color='#000'
+        totalMinutes={totalMinutes}
+      />
+    </div>
+  );
+};
+
+const HomeworkBar: React.FC<{
+  homework: CalendarHomeworkType;
+  totalMinutes: number;
+}> = ({ homework, totalMinutes }) => {
+  if (homework.minutesOccupied === 0 || totalMinutes === 0) {
+    return <></>;
+  }
+  const heightPercentage = (homework.minutesOccupied / totalMinutes) * 100;
+  return (
+    <div
+      className={styles.bar}
+      style={{
+        height: `${heightPercentage}%`,
+        backgroundColor: addOpacity(homework.subjectColor, BAR_OPACITY),
+      }}
+    />
+  );
+};
+
+const FreeTimeBar: React.FC<{
+  color: string;
+  totalMinutes: number;
+  freeMinutes: number;
+}> = ({ totalMinutes, freeMinutes }) => {
+  if (freeMinutes === 0) {
+    return <></>;
+  }
+  const heightPercentage = (freeMinutes / totalMinutes) * 100;
+  return (
+    <div
+      style={{
+        height: `${heightPercentage}%`,
+        backgroundColor: '#fff',
+      }}
+    />
   );
 };
 

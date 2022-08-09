@@ -31,3 +31,5 @@ export const MONTHS = [
   'November',
   'December',
 ];
+
+export const BAR_OPACITY = 0.5;

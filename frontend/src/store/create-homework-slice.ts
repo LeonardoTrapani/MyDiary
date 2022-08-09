@@ -80,6 +80,12 @@ const createHomeworkSlice = createSlice({
       state.freeDays = freeDays;
     },
     setHomeworkCreating(state, action: PayloadAction<HomeworkCreating>) {
+      state.freeDays = initialState.freeDays;
+      state.hasError = initialState.hasError;
+      state.homeworkCreating = initialState.homeworkCreating;
+      state.homeworkCreating = initialState.homeworkCreating;
+      state.isChoosingFreeDay = initialState.isChoosingFreeDay;
+      state.selectedDays = initialState.selectedDays;
       state.isChoosingFreeDay = true;
       state.homeworkCreating = action.payload;
     },

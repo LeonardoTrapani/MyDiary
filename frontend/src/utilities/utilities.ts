@@ -153,3 +153,8 @@ export const isHexColor = (hex: string) => {
   const hexcolor = /^#?([0-9A-F]{3}|[0-9A-F]{4}|[0-9A-F]{6}|[0-9A-F]{8})$/i;
   return hexcolor.test(hex);
 };
+
+export const addOpacity = (hex: string, opacity: number) => {
+  const _opacity = Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255);
+  return hex + _opacity.toString(16).toUpperCase();
+};

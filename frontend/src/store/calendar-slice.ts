@@ -12,12 +12,12 @@ export interface CalendarDayType {
   date: string;
   freeTime: number;
   disabled: boolean;
-  homework: CalendarHomework[];
+  homework: CalendarHomeworkType[];
 }
 
 type Calendar = CalendarDayType[];
 
-export interface CalendarHomework {
+export interface CalendarHomeworkType {
   homeworkId: number;
   subject: string;
   subjectColor: string;
