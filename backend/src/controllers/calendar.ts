@@ -18,9 +18,18 @@ interface CalendarHomework {
   subjectColor: string;
 }
 
-const isCalendarDayDisabled = (date: Date, month: number) => {
+const isCalendarDayDisabled = (
+  date: Date,
+  month: number,
+  freeMinutes: number,
+  homeworkInDays: CalendarHomework[]
+) => {
   const currDate = new Date();
-  if (date <= currDate || date.getMonth() !== month) {
+  if (
+    date < currDate ||
+    date.getMonth() !== month ||
+    (freeMinutes <= 0 && !homeworkInDays.length)
+  ) {
     return true;
   }
   return false;
@@ -131,13 +140,16 @@ export const getCalendar = async (req: Request, res: Response) => {
     freeDays,
     DAYS_PER_PAGE
   );
+  console.log(calendarDays);
   calendarDays.forEach((calendarDay, i) => {
     calendar.push({
       date: calendarDay.date,
       freeTime: calendarDay.freeMinutes,
       disabled: isCalendarDayDisabled(
         calendarDay.date,
-        firstDayInMonth.getMonth()
+        firstDayInMonth.getMonth(),
+        calendarDay.freeMinutes,
+        homeworkInDays[i]
       ),
       homework: homeworkInDays[i],
     });
