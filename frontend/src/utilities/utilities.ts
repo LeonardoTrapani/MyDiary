@@ -145,3 +145,11 @@ export const hexToRgb = (hex: string) => {
       }
     : null;
 };
+
+export const isHexColor = (hex: string) => {
+  if (hex[0] !== '#') {
+    return false;
+  }
+  const hexcolor = /^#?([0-9A-F]{3}|[0-9A-F]{4}|[0-9A-F]{6}|[0-9A-F]{8})$/i;
+  return hexcolor.test(hex);
+};

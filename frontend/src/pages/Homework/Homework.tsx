@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Form from '../../components/BurgerMenu/Form';
 import styles from './Homework.module.css';
 import Input from '../../components/UI/Input';
@@ -18,9 +18,15 @@ import {
 } from '../../store/create-homework-slice';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import FreeDays, { FreeDaysInformations } from './FreeDays';
-import { addDaysFromToday } from '../../utilities/utilities';
+import { addDaysFromToday, isHexColor } from '../../utilities/utilities';
 import Dropdown from '../../components/UI/Dropdown';
-import { fetchSubjects } from '../../store/subjects-slice';
+import {
+  createSubject,
+  fetchSubjects,
+  subjectsActions,
+} from '../../store/subjects-slice';
+import { Modal } from '../../components/UI/Overlays';
+import LoadingSpinner from '../../components/UI/LoadingSpinner';
 
 export const AddHomeworkPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -77,6 +83,7 @@ export const AddHomeworkPage: React.FC = () => {
     handleChange: onSubjectChange,
     validate: validateSubject,
     value: subjectIndex,
+    onCreateOption: onSubjectCreateOption,
   } = useDropdown([
     {
       check: (value) => !!value,
@@ -181,8 +188,10 @@ export const AddHomeworkPage: React.FC = () => {
 
   return (
     <>
+      <CreateSubjectModal />
       <div className={styles['add-homework-form--container']}>
         <Form
+          className=''
           onSubmit={addHomeworkSubmitHandler}
           buttonName='Add Homework'
           validateInputs={validateInputs}
@@ -218,6 +227,7 @@ export const AddHomeworkPage: React.FC = () => {
             colors={subjectColors}
             onBlur={validateSubject}
             onChange={onSubjectChange}
+            onCreateOption={onSubjectCreateOption}
           />
           <Input
             errorMessage={durationErrorMessage}
@@ -305,4 +315,131 @@ export const AddedHomeworkWrapper: React.FC = () => {
 
 export const EditHomeworkPage: React.FC = () => {
   return <div>Edit homework</div>;
+};
+
+export const CreateSubjectModal: React.FC = () => {
+  const creatingSubject = useAppSelector(
+    (state) => state.subjects.creatingSubject
+  );
+
+  const modalCloseHandler = () => {
+    dispatch(subjectsActions.removeCreatingSubject());
+  };
+
+  const creatingSubjectName = useAppSelector(
+    (state) => state.subjects.creatingSubjectName
+  );
+
+  const {
+    errorMessage: subjectNameErrorMessage,
+    hasError: subjectNameHasError,
+    isValid: isSubjectNameValid,
+    onChangeValue: onChangeSubjectName,
+    validate: validateSubjectName,
+    value: subjectNameValue,
+    manualSetValue: manualSubjectSetValue,
+    reset: resetSubjectName,
+  } = useInput([
+    {
+      check: (value) => !!value,
+      errorMessage: 'please enter a subject name',
+    },
+  ]);
+  const {
+    errorMessage: colorErrorMessage,
+    hasError: colorHasError,
+    isValid: IsColorValid,
+    onChangeValue: onColorChangeValue,
+    validate: validateColor,
+    value: colorValue,
+    reset: resetColor,
+  } = useInput([
+    {
+      check: (value) => !!value,
+      errorMessage: 'please insert a color',
+    },
+    {
+      check: (value) => {
+        return isHexColor(value);
+      },
+      errorMessage: 'insert a valid hex color',
+    },
+  ]);
+  useEffect(() => {
+    if (creatingSubjectName) {
+      manualSubjectSetValue(creatingSubjectName);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [creatingSubjectName]);
+
+  const fetchAuthorized = useFetchAuthorized();
+  const dispatch = useAppDispatch();
+
+  const modalFormSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    resetColor();
+    resetSubjectName();
+    dispatch(createSubject(fetchAuthorized, subjectNameValue, colorValue));
+  };
+  const isFormValid = isSubjectNameValid && IsColorValid;
+  const [color, setColor] = useState('#1f2937');
+  useEffect(() => {
+    if (IsColorValid) {
+      setColor(colorValue);
+    }
+  }, [colorValue, IsColorValid]);
+  const isLoading = useAppSelector((state) => state.subjects.isLoading);
+  const hasError = useAppSelector((state) => state.subjects.hasError);
+
+  return (
+    <Modal isOpen={creatingSubject} onClose={modalCloseHandler}>
+      <h2 className={styles['modal-title']}>Create Subject</h2>
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : hasError ? (
+        <h2 className={styles.error}>
+          An error has occurred creating the subject
+        </h2>
+      ) : (
+        <Form
+          isFormValid={isFormValid}
+          buttonName='Create subject'
+          isFormLoading={false}
+          onSubmit={modalFormSubmitHandler}
+          validateInputs={() => {
+            validateSubjectName();
+            validateColor();
+          }}
+          className={styles['modal-form']}
+        >
+          <Input
+            style={{
+              color,
+            }}
+            name='Subject Name'
+            errorMessage={subjectNameErrorMessage}
+            hasError={subjectNameHasError}
+            onBlur={validateSubjectName}
+            type='text'
+            value={subjectNameValue}
+            onChange={onChangeSubjectName}
+            className={styles['modal-input-name']}
+          />
+          <Input
+            style={{
+              color,
+            }}
+            name='Color'
+            errorMessage={colorErrorMessage}
+            hasError={colorHasError}
+            onBlur={validateColor}
+            value={colorValue}
+            type='text'
+            onChange={onColorChangeValue}
+            className={styles['modal-input-color']}
+          />
+        </Form>
+      )}
+    </Modal>
+  );
 };

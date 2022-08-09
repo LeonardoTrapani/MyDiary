@@ -42,6 +42,7 @@ export const createSubject = async (
       select: {
         color: true,
         name: true,
+        id: true,
       },
     });
     res.json(subject);

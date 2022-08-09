@@ -10,7 +10,8 @@ import React, {
 } from 'react';
 import { uiActions } from '../store/ui-slice';
 import { calculateShowBurger } from './utilities';
-import { ActionMeta, OnChangeValue, SingleValue } from 'react-select';
+import { ActionMeta, SingleValue } from 'react-select';
+import { subjectsActions } from '../store/subjects-slice';
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch: () => AppDispatch = useDispatch;
@@ -33,9 +34,10 @@ export const useInput = (
   checksToBeValid: {
     check: (value: string) => boolean;
     errorMessage: string;
-  }[]
+  }[],
+  defaultValue?: string
 ) => {
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(defaultValue || '');
   const [isValid, setIsValid] = useState(false);
   const [hasBeenTouched, setHasBeenTouched] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -79,6 +81,18 @@ export const useInput = (
     setIsValid(checksValidResult.isValid);
     return checksValidResult.isValid;
   };
+
+  const manualSetValue = (value: string) => {
+    setValue(value);
+  };
+
+  const reset = () => {
+    setValue(defaultValue || '');
+    isFirstTime.current = true;
+    setErrorMessage('');
+    setHasBeenTouched(false);
+    setIsValid(false);
+  };
   return {
     value,
     onChangeValue,
@@ -87,6 +101,8 @@ export const useInput = (
     hasError,
     validate,
     isValid,
+    manualSetValue,
+    reset,
   };
 };
 
@@ -288,6 +304,12 @@ export const useDropdown = (
     setIsValid(checksValidResult.isValid);
     return checksValidResult.isValid;
   };
+
+  const dispatch = useAppDispatch();
+  const onCreateOption = (inputValue: string) => {
+    dispatch(subjectsActions.setCreatingSubject(inputValue));
+  };
+
   return {
     value,
     handleChange,
@@ -295,5 +317,6 @@ export const useDropdown = (
     hasError,
     validate,
     isValid,
+    onCreateOption,
   };
 };

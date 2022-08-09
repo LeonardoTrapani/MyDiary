@@ -1,50 +1,28 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { GrClose } from 'react-icons/gr';
-
+import ReactModal from 'react-modal';
 import styles from './Overlays.module.css';
-
-export const Backdrop: React.FC<{
-  onClose: () => void;
-}> = (props) => {
-  return <div className={styles.backdrop} onClick={props.onClose} />;
-};
-
-const ModalOverlay: React.FC<{
-  children: React.ReactElement;
-  onClose: () => void;
-}> = (props) => {
-  return (
-    <div className={styles.modal}>
-      <div className={styles['modal--close-icon']} onClick={props.onClose}>
-        <GrClose />
-      </div>
-      <div className={styles.content}>{props.children}</div>
-    </div>
-  );
-};
-
-const portalElement = document.getElementById('overlays') as HTMLDivElement;
+import { GrClose } from 'react-icons/gr';
+ReactModal.setAppElement('#root');
 
 export const Modal: React.FC<{
-  children: React.ReactElement;
-  onClose: () => void;
   isOpen: boolean;
-}> = (props) => {
-  const modalOpened = props.isOpen;
-  return modalOpened ? (
-    <>
-      {ReactDOM.createPortal(
-        <Backdrop onClose={props.onClose} />,
-        portalElement
-      )}
-      {ReactDOM.createPortal(
-        <ModalOverlay onClose={props.onClose}>{props.children}</ModalOverlay>,
-        portalElement
-      )}
-    </>
-  ) : (
-    <></>
+  onClose: () => void;
+  children: React.ReactNode;
+}> = ({ isOpen, onClose, children }) => {
+  return (
+    <ReactModal
+      isOpen={isOpen}
+      onRequestClose={onClose}
+      contentLabel='Modal'
+      shouldCloseOnOverlayClick={true}
+      className={styles.modal}
+      overlayClassName={styles.overlay}
+    >
+      <div className={styles['modal--close-icon']} onClick={onClose}>
+        <GrClose />
+      </div>
+      {children}
+    </ReactModal>
   );
 };
 

@@ -7,11 +7,14 @@ interface SubjectsState {
   subjects: Subjects;
   hasError: boolean;
   isLoading: boolean;
+  creatingSubject: boolean;
+  creatingSubjectName?: string;
 }
 const initialState: SubjectsState = {
   subjects: [],
   hasError: false,
   isLoading: false,
+  creatingSubject: false,
 };
 
 const subjectsSlice = createSlice({
@@ -26,6 +29,25 @@ const subjectsSlice = createSlice({
     },
     setSubjects(state, action: PayloadAction<Subjects>) {
       state.subjects = action.payload;
+    },
+    setCreatingSubject(state, action: PayloadAction<string>) {
+      state.creatingSubject = true;
+      state.creatingSubjectName = action.payload;
+    },
+    removeCreatingSubject(state) {
+      console.log('CLOSinG CREATING SUBJEct');
+      state.creatingSubject = false;
+      state.creatingSubjectName = undefined;
+    },
+    addSubjectToExistingSubjects(
+      state,
+      action: PayloadAction<{
+        color: string;
+        name: string;
+        id: number;
+      }>
+    ) {
+      state.subjects.push(action.payload);
     },
   },
 });
@@ -46,6 +68,47 @@ export const fetchSubjects = (
       dispatch(subjectsActions.setSubjects(subjects));
       setTimeout(() => {
         dispatch(subjectsActions.setLoading(false));
+      }, 300);
+    } catch (err) {
+      dispatch(subjectsActions.setHasError(true));
+      dispatch(subjectsActions.setLoading(false));
+    }
+  };
+};
+
+interface CreateSubjectResponse {
+  color: string;
+  name: string;
+  id: number;
+}
+export const createSubject = (
+  fetchAuthorized: () => (
+    url: string,
+    options?: CustomRequestInit | undefined
+  ) => unknown,
+  name: string,
+  color: string
+) => {
+  return async (dispatch: Dispatch) => {
+    try {
+      dispatch(subjectsActions.setLoading(true));
+      dispatch(subjectsActions.setHasError(false));
+      const createSubjectResponse = (await fetchAuthorized()(
+        BACKEND_URL + '/subject/create',
+        {
+          method: 'POST',
+          requestBody: {
+            name,
+            color,
+          },
+        }
+      )) as CreateSubjectResponse;
+      dispatch(
+        subjectsActions.addSubjectToExistingSubjects(createSubjectResponse)
+      );
+      setTimeout(() => {
+        dispatch(subjectsActions.setLoading(false));
+        dispatch(subjectsActions.removeCreatingSubject());
       }, 300);
     } catch (err) {
       dispatch(subjectsActions.setHasError(true));

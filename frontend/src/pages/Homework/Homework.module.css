@@ -176,3 +176,20 @@
 .error {
   color: #dd4848;
 }
+
+.modal-title {
+  margin-top: 1rem;
+  color: #2563eb;
+}
+
+.modal-input-name {
+  grid-column: 1 / -1;
+}
+
+.modal-input-color {
+  grid-column: 1 / -1;
+}
+.modal-form {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}

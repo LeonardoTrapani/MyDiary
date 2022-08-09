@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { ActionMeta, GroupBase, SingleValue, StylesConfig } from 'react-select';
 import ReactSelect from 'react-select/creatable';
+
 import styles from './Dropdown.module.css';
 
 const Dropdown: React.FC<{
@@ -25,6 +26,7 @@ const Dropdown: React.FC<{
     }>
   ) => void;
   onBlur: () => void;
+  onCreateOption: (inputValue: string) => void;
 }> = (props) => {
   const customStyles: StylesConfig<
     {
@@ -40,7 +42,8 @@ const Dropdown: React.FC<{
     container: (provided) => {
       return {
         ...provided,
-        border: !props.hasError ? '1px solid #000' : '2px solid #dd4848',
+        border: !props.hasError ? '1px solid #000' : '1px solid #dd4848',
+        boxSizing: 'border-box',
       };
     },
     control: (provided) => {
@@ -90,7 +93,9 @@ const Dropdown: React.FC<{
       };
     },
   };
-
+  const [creating, setCreating] = useState<boolean>(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const selectRef = useRef<any>();
   return (
     <div
       className={
@@ -110,10 +115,21 @@ const Dropdown: React.FC<{
         )}
       </div>
       <ReactSelect
+        ref={selectRef}
         options={props.options}
         styles={customStyles}
         onChange={props.onChange}
-        onBlur={props.onBlur}
+        onBlur={() => {
+          if (creating) {
+            props.onBlur;
+          }
+        }}
+        onCreateOption={(inputVal) => {
+          setCreating(true);
+          selectRef.current.blur();
+          props.onCreateOption(inputVal);
+          setCreating(false);
+        }}
       />
     </div>
   );

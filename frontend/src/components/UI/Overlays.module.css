@@ -1,11 +1,11 @@
-.backdrop {
+.overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100vh;
   z-index: 20;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .modal {
@@ -14,9 +14,8 @@
   left: 5%;
   width: 90%;
   background-color: white;
-  padding: 1rem;
-  border-radius: 14px;
-  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+  padding: 1rem 4rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 30;
   animation: slide-down 300ms ease-out forwards;
 }
@@ -32,6 +31,11 @@
 .modal--close-icon:active {
   transform: scale(1.4);
 }
+
+.modal:focus {
+  outline: none;
+}
+
 @media (min-width: 768px) {
   .modal {
     width: 40rem;

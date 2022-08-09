@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { HTMLAttributes } from 'react';
 import styles from './Input.module.css';
 const Input: React.FC<{
   name: string;
@@ -11,6 +11,7 @@ const Input: React.FC<{
   type: string;
   other?: Record<string, unknown>;
   className?: string;
+  style?: React.CSSProperties;
 }> = (props) => {
   return (
     <div
@@ -50,6 +51,7 @@ const Input: React.FC<{
           placeholder='&nbsp;'
           type={props.type}
           {...props.other}
+          style={props.style}
         />
       )}
     </div>

@@ -9,6 +9,7 @@ const Form: React.FC<{
   buttonName: string;
   validateInputs: () => void;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  className: string;
 }> = (props) => {
   const formSubmitHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
     if (!props.isFormValid) {
@@ -17,7 +18,10 @@ const Form: React.FC<{
     }
   };
   return (
-    <form onSubmit={props.onSubmit} className={styles.form}>
+    <form
+      onSubmit={props.onSubmit}
+      className={styles.form + ' ' + props.className}
+    >
       {props.children}
       <Button
         onClick={formSubmitHandler}
