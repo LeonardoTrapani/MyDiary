@@ -94,13 +94,7 @@ const CalendarDay: React.FC<{
     <li
       ref={calendarHomeworkRef}
       className={
-        styles['calendar-day'] +
-        ' ' +
-        styles['calendar-day'] +
-        ' ' +
-        (day.disabled || (day.freeTime === 0 && !day.homework.length)
-          ? styles.disabled
-          : '')
+        styles['calendar-day'] + ' ' + (day.disabled ? styles.disabled : '')
       }
     >
       {new Date(day.date).getDate() === 1 ? (
@@ -117,7 +111,9 @@ const CalendarDay: React.FC<{
           <span className={styles.date}>{new Date(day.date).getDate()}</span>
         </h3>
       )}
-      <CalendarHomework day={day} totalMinutes={totalMinutes} />
+      {!day.disabled && (
+        <CalendarHomework day={day} totalMinutes={totalMinutes} />
+      )}
     </li>
   );
 };
