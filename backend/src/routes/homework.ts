@@ -9,7 +9,7 @@ import {
   plannedDatesAreValid,
   validateExpressValidation,
 } from '../middlewares';
-import { isValidDate } from '../utilities';
+import { isValidDate, minutesAreLessThanDay } from '../utilities';
 import { body, param } from 'express-validator';
 import moment from 'moment';
 const router = Router();
@@ -46,7 +46,11 @@ router.post(
       .custom((values: { date: string; minutes: number }[]) => {
         let isValid = true;
         values.forEach((value) => {
-          if (!isValidDate(value.date) || isNaN(value.minutes)) {
+          if (
+            !isValidDate(value.date) ||
+            isNaN(value.minutes) ||
+            !minutesAreLessThanDay(value.minutes)
+          ) {
             isValid = false;
           }
         });
@@ -78,7 +82,9 @@ router.post(
     body('duration', 'please enter a valid duration (min: 5)')
       .trim()
       .isNumeric()
-      .custom((value) => +value >= 5),
+      .custom((value) => +value >= 5)
+      .custom((value) => minutesAreLessThanDay(value))
+      .withMessage("you can't have more than 24 free hours in a day!"),
     param('pageNumber', 'page number not provided')
       .isNumeric()
       .custom((value) => value > 0)

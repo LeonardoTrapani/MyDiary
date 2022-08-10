@@ -54,3 +54,7 @@ export const isValidDate = (str: string) => {
 //   const date2 = new Date(date2ToFormat).setHours(0, 0, 0, 0);
 //   return date1 === date2;
 // };
+
+export const minutesAreLessThanDay = (minutes: number) => {
+  return minutes < 1339;
+};

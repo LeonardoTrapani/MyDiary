@@ -183,6 +183,10 @@ export const createOrUpdateDayCountingPreviousMinutes = async (
   });
 
   if (existingDay) {
+    if (existingDay.freeMinutes - freeMinutes < 0) {
+      throwResponseError('the minutes are less than 0 somehow', 400, res);
+      return;
+    }
     const editedDay = await prisma.day.updateMany({
       data: {
         freeMinutes: existingDay.freeMinutes - freeMinutes,
@@ -203,6 +207,10 @@ export const createOrUpdateDayCountingPreviousMinutes = async (
     moment(date).startOf('day'),
     week
   );
+  if (previousMinutes - freeMinutes < 0) {
+    throwResponseError('the minutes are less than 0 somehow', 400, res);
+    return;
+  }
   const day = await prisma.day.create({
     data: {
       date: moment(date).startOf('day').toDate(),
