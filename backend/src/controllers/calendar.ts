@@ -34,18 +34,18 @@ export const getCalendar = async (req: Request, res: Response) => {
     .endOf('month')
     .startOf('day');
 
-  console.log({ startOfMonth });
-  console.log({ endOfMonth });
-  // const daysInMonth = currDate.daysInMonth();
+  const daysInMonth = moment()
+    .add(pageNumber - 1, 'months')
+    .daysInMonth();
   // const daysToRemoveStart = startOfMonth.diff(currDate, 'days');
-  // const daysToAddEnd = DAYS_PER_PAGE - daysInMonth;
+  const daysToAddEnd = DAYS_PER_PAGE - daysInMonth;
   // const firstDay = startOfMonth.subtract(daysToRemoveStart, 'days');
-  // const lastDay = endOfMonth.add(daysToAddEnd, 'days');
+  const lastDay = endOfMonth.add(daysToAddEnd, 'days');
   let currentDate = moment(startOfMonth).startOf('day');
 
   const homeworkInDays: CalendarHomework[][] = [];
   const calendar: Calendar = [];
-  while (currentDate.isSameOrBefore(endOfMonth)) {
+  while (currentDate.isSameOrBefore(lastDay)) {
     const homework = await prisma.homework.findMany({
       where: {
         completed: false,
