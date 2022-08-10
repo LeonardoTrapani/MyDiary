@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
 import { throwResponseError } from '../utilities';
 import { prisma } from '../app';
-import { fetchFreeDays, fetchWeek, getFreeDaysArray } from './homework';
+import { fetchFreeDays, getFreeDaysArray } from './homework';
 import { Moment } from 'moment';
 import moment from 'moment';
+import { fetchWeek } from './week';
 
 type Calendar = {
   disabled: boolean;
@@ -131,7 +132,7 @@ const isCalendarDayDisabled = (
 ) => {
   const currDate = moment();
   if (
-    date.isBefore(currDate) ||
+    date.isBefore(currDate.subtract(1, 'days')) ||
     date.month() !== month ||
     (freeMinutes <= 0 && !homeworkInDays.length)
   ) {

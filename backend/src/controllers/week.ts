@@ -90,3 +90,61 @@ export const getWeek = async (
   });
   res.json(week);
 };
+
+export const findfreeMinutesInDay = (
+  date: moment.Moment,
+  week: {
+    id: number;
+    mondayFreeMinutes: number;
+    tuesdayFreeMinutes: number;
+    wednesdayFreeMinutes: number;
+    thursdayFreeMinutes: number;
+    fridayFreeMinutes: number;
+    saturdayFreeMinutes: number;
+    sundayFreeMinutes: number;
+  }
+) => {
+  const dayOfTheWeek = date.day();
+  switch (dayOfTheWeek) {
+    case 0: {
+      return week.sundayFreeMinutes;
+    }
+    case 1: {
+      return week.mondayFreeMinutes;
+    }
+    case 2: {
+      return week.tuesdayFreeMinutes;
+    }
+    case 3: {
+      return week.wednesdayFreeMinutes;
+    }
+    case 4: {
+      return week.thursdayFreeMinutes;
+    }
+    case 5: {
+      return week.fridayFreeMinutes;
+    }
+    case 6: {
+      return week.saturdayFreeMinutes;
+    }
+  }
+  return 0;
+};
+
+export const fetchWeek = async (userId: number) => {
+  return await prisma.week.findUnique({
+    where: {
+      userId: userId,
+    },
+    select: {
+      id: true,
+      mondayFreeMinutes: true,
+      tuesdayFreeMinutes: true,
+      wednesdayFreeMinutes: true,
+      thursdayFreeMinutes: true,
+      fridayFreeMinutes: true,
+      saturdayFreeMinutes: true,
+      sundayFreeMinutes: true,
+    },
+  });
+};

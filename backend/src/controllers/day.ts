@@ -3,6 +3,7 @@ import { throwResponseError } from '../utilities';
 import { prisma } from '../app';
 import moment from 'moment';
 import { PlannedDate } from '@prisma/client';
+import { fetchWeek, findfreeMinutesInDay } from './week';
 
 export const getAllDays = async (
   req: Request,
@@ -143,7 +144,6 @@ export const createOrUpdateDay = async (
   });
 
   if (existingDay) {
-    console.log({ date: moment(existingDay.date).startOf('day').toDate() });
     const editedDay = await prisma.day.updateMany({
       data: {
         freeMinutes,
@@ -158,6 +158,55 @@ export const createOrUpdateDay = async (
     data: {
       date: moment(date).startOf('day').toDate(),
       freeMinutes: freeMinutes,
+      userId: +userId!,
+    },
+  });
+  return day;
+};
+
+export const createOrUpdateDayCountingPreviousMinutes = async (
+  userId: number,
+  date: Date | string,
+  freeMinutes: number,
+  res: Response
+) => {
+  const existingDay = await prisma.day.findFirst({
+    where: {
+      userId: userId,
+      date: moment(date).startOf('day').toDate(),
+    },
+    select: {
+      date: true,
+      freeMinutes: true,
+      id: true,
+    },
+  });
+
+  if (existingDay) {
+    const editedDay = await prisma.day.updateMany({
+      data: {
+        freeMinutes: existingDay.freeMinutes - freeMinutes,
+      },
+      where: {
+        date: moment(date).startOf('day').toDate(),
+      },
+    });
+    return editedDay;
+  }
+
+  const week = await fetchWeek(userId);
+  if (!week) {
+    throwResponseError("could't find the week", 400, res);
+    return;
+  }
+  const previousMinutes = findfreeMinutesInDay(
+    moment(date).startOf('day'),
+    week
+  );
+  const day = await prisma.day.create({
+    data: {
+      date: moment(date).startOf('day').toDate(),
+      freeMinutes: previousMinutes - freeMinutes,
       userId: +userId!,
     },
   });

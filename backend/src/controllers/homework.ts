@@ -3,7 +3,8 @@ import { throwResponseError } from '../utilities';
 
 import { prisma } from '../app';
 import moment from 'moment';
-import { createOrUpdateDay } from './day';
+import { createOrUpdateDayCountingPreviousMinutes } from './day';
+import { fetchWeek, findfreeMinutesInDay } from './week';
 
 export const createHomework = async (
   req: Request,
@@ -30,9 +31,14 @@ export const createHomework = async (
         res
       );
     }
-    //Create or update days to count the minutes used in this homework
+
     plannedDates.forEach(async (plannedDate) => {
-      await createOrUpdateDay(+userId!, plannedDate.date, plannedDate.minutes);
+      await createOrUpdateDayCountingPreviousMinutes(
+        +userId!,
+        plannedDate.date,
+        plannedDate.minutes,
+        res
+      );
     });
 
     const formattedPlannedDates = plannedDates.map((plannedDate) => {
@@ -157,23 +163,6 @@ interface freeDays {
   }[];
 }
 
-export const fetchWeek = async (userId: number) => {
-  return await prisma.week.findUnique({
-    where: {
-      userId: userId,
-    },
-    select: {
-      id: true,
-      mondayFreeMinutes: true,
-      tuesdayFreeMinutes: true,
-      wednesdayFreeMinutes: true,
-      thursdayFreeMinutes: true,
-      fridayFreeMinutes: true,
-      saturdayFreeMinutes: true,
-      sundayFreeMinutes: true,
-    },
-  });
-};
 export const fetchFreeDays = async (userId: number) => {
   return await prisma.user.findFirst({
     where: {
@@ -231,46 +220,6 @@ export const getFreeDaysArray = (
     currentDate = currentDate.add(1, 'day');
   }
   return finalFreeDays;
-};
-
-const findfreeMinutesInDay = (
-  date: moment.Moment,
-  week: {
-    id: number;
-    mondayFreeMinutes: number;
-    tuesdayFreeMinutes: number;
-    wednesdayFreeMinutes: number;
-    thursdayFreeMinutes: number;
-    fridayFreeMinutes: number;
-    saturdayFreeMinutes: number;
-    sundayFreeMinutes: number;
-  }
-) => {
-  const dayOfTheWeek = date.day();
-  switch (dayOfTheWeek) {
-    case 0: {
-      return week.sundayFreeMinutes;
-    }
-    case 1: {
-      return week.mondayFreeMinutes;
-    }
-    case 2: {
-      return week.tuesdayFreeMinutes;
-    }
-    case 3: {
-      return week.wednesdayFreeMinutes;
-    }
-    case 4: {
-      return week.thursdayFreeMinutes;
-    }
-    case 5: {
-      return week.fridayFreeMinutes;
-    }
-    case 6: {
-      return week.saturdayFreeMinutes;
-    }
-  }
-  return 0;
 };
 
 // const calculateSubtractedDays = (

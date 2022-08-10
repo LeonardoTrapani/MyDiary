@@ -208,16 +208,6 @@ export const AddHomeworkPage: React.FC = () => {
             value={nameValue}
             className={styles['name-input']}
           />
-          <Input
-            errorMessage={descriptionErrorMessage}
-            hasError={descriptionHasError}
-            name='Description'
-            onBlur={validateDescription}
-            onChangeTextArea={onDescriptionChange}
-            type='textarea'
-            value={descriptionValue}
-            className={styles['description-input']}
-          />
           <Dropdown
             parentClassName={styles['subject-input']}
             errorMessage={subjectErrorMesssage}
@@ -228,6 +218,16 @@ export const AddHomeworkPage: React.FC = () => {
             onBlur={validateSubject}
             onChange={onSubjectChange}
             onCreateOption={onSubjectCreateOption}
+          />
+          <Input
+            errorMessage={descriptionErrorMessage}
+            hasError={descriptionHasError}
+            name='Description'
+            onBlur={validateDescription}
+            onChangeTextArea={onDescriptionChange}
+            type='textarea'
+            value={descriptionValue}
+            className={styles['description-input']}
           />
           <Input
             errorMessage={durationErrorMessage}
