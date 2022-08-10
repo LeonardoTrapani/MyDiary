@@ -6,6 +6,7 @@ interface CalendarState {
   isLoading: boolean;
   hasError: boolean;
   calendar: Calendar;
+  page: number;
 }
 
 export interface CalendarDayType {
@@ -29,6 +30,7 @@ const initialState: CalendarState = {
   calendar: [],
   hasError: false,
   isLoading: false,
+  page: 1,
 };
 const calendarSlice = createSlice({
   name: 'calendar',
@@ -42,6 +44,15 @@ const calendarSlice = createSlice({
     },
     setLoading(state, action: PayloadAction<boolean>) {
       state.isLoading = action.payload;
+    },
+    increatePage(state) {
+      state.page = state.page + 1;
+    },
+    decreasePage(state) {
+      state.page = state.page - 1;
+    },
+    setPage(state, action: PayloadAction<number>) {
+      state.page = action.payload;
     },
   },
 });

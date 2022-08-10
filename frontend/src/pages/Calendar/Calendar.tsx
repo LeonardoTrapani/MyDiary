@@ -4,6 +4,7 @@ import {
   fetchCalendar,
   CalendarDayType,
   CalendarHomeworkType,
+  calendarActions,
 } from '../../store/calendar-slice';
 import styles from './Calendar.module.css';
 import {
@@ -22,10 +23,10 @@ const Calendar: React.FC = () => {
   const calendar = useAppSelector((state) => state.calendar.calendar);
   const isLoading = useAppSelector((state) => state.calendar.isLoading);
   const hasError = useAppSelector((state) => state.calendar.hasError);
-
+  const page = useAppSelector((state) => state.calendar.page);
   useEffect(() => {
-    dispatch(fetchCalendar(fetchAuthorized, 1));
-  }, [dispatch, fetchAuthorized]);
+    dispatch(fetchCalendar(fetchAuthorized, page));
+  }, [dispatch, fetchAuthorized, page]);
 
   const calendarJsx = useMemo(
     () =>
@@ -41,6 +42,12 @@ const Calendar: React.FC = () => {
   if (hasError) {
     return <h1>An error has occurred fetching the calendar</h1>;
   }
+  const calendarNextPageHandler = () => {
+    dispatch(calendarActions.increatePage());
+  };
+  const calendarPreviousPageHandler = () => {
+    dispatch(calendarActions.decreasePage());
+  };
 
   return (
     <div className={styles['calendar-page']}>
@@ -52,9 +59,7 @@ const Calendar: React.FC = () => {
         <nav className={styles.nav}>
           <CircularSmallButton
             disabled={false}
-            onClick={() => {
-              console.log('nextpage');
-            }}
+            onClick={calendarPreviousPageHandler}
             left
           />
           <Button isLoading={false} isValid={true}>
@@ -62,9 +67,7 @@ const Calendar: React.FC = () => {
           </Button>
           <CircularSmallButton
             disabled={false}
-            onClick={() => {
-              console.log('nextpage');
-            }}
+            onClick={calendarNextPageHandler}
             right
           />
         </nav>
