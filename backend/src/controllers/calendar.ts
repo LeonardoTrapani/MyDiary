@@ -132,7 +132,7 @@ const isCalendarDayDisabled = (
   const currDate = moment();
   if (
     date.isBefore(currDate) ||
-    date.month() + 1 !== month ||
+    date.month() !== month ||
     (freeMinutes <= 0 && !homeworkInDays.length)
   ) {
     return true;
