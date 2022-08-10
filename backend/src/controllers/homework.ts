@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { addDays, addDaysFromToday, throwResponseError } from '../utilities';
+import { throwResponseError } from '../utilities';
 
 import { prisma } from '../app';
+import moment from 'moment';
 
 export const createHomework = async (
   req: Request,
@@ -30,7 +31,7 @@ export const createHomework = async (
     }
     plannedDates.forEach(async (plannedDate) => {
       //Search a day with same userId and planned date
-      const freeDay = await fetchFreeDay(plannedDate.date, +userId!);
+      const freeDay = await fetchFreeDay(moment(plannedDate.date), +userId!);
       if (freeDay) {
         //If it exists edit the minutes
         return await updateExistingDay(
@@ -339,15 +340,20 @@ const findfreeMinutesInDay = (
 //   return false;
 // };
 
-const fetchFreeDay = async (date: string, userId: number) => {
-  const freeDay = await prisma.day.findFirst({
+const fetchFreeDay = async (date: moment.Moment, userId: number) => {
+  const days = await prisma.day.findMany({
     where: {
       userId,
-      date,
+      date: {
+        gte: moment().startOf('day').toDate(),
+      },
       deleted: false,
     },
   });
-
+  const freeDay = days.find((day) => {
+    return moment(day.date).isSame(date, 'day');
+  });
+  console.log({ days, freeDay });
   return freeDay;
 };
 
@@ -360,7 +366,7 @@ const updateExistingDay = async (
   return await prisma.day.updateMany({
     where: {
       userId: userId,
-      date,
+      date: moment(date).startOf('day').toDate(),
       deleted: false,
     },
     data: {

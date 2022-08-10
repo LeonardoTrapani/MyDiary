@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import { addDays, throwResponseError } from '../utilities';
+import { throwResponseError } from '../utilities';
 import { prisma } from '../app';
-import { stringify } from 'querystring';
+import moment from 'moment';
+import { PlannedDate } from '@prisma/client';
 
 export const getAllDays = async (
   req: Request,
@@ -34,41 +35,8 @@ export const createDay = async (
   const { date, freeMinutes } = req.body;
   const { userId } = req;
   try {
-    const initialDate = new Date(new Date(date).setHours(0, 0, 0, 0));
-    const endDate = new Date(new Date(addDays(date, 1).setHours(0, 0, 0, 0)));
-
-    const existingDay = await prisma.day.findFirst({
-      where: {
-        userId: +userId!,
-        date: {
-          gte: initialDate,
-          lt: endDate,
-        },
-      },
-      select: {
-        id: true,
-      },
-    });
-    if (existingDay) {
-      const editedDay = await prisma.day.update({
-        data: {
-          freeMinutes: req.newFreeMinutes,
-        },
-        where: {
-          id: req.existingDayId,
-        },
-      });
-      res.json(editedDay);
-      return;
-    }
-    const day = await prisma.day.create({
-      data: {
-        date: new Date(date),
-        freeMinutes: freeMinutes,
-        userId: +userId!,
-      },
-    });
-    res.json(day);
+    const createDayRes = await createDayFunc(+userId!, date, +freeMinutes);
+    res.json(createDayRes);
   } catch (err) {
     console.log(err);
     throwResponseError('an error has occurred creating the day', 400, res);
@@ -93,7 +61,6 @@ export const editDay = async (
     });
     res.json(editedDay);
   } catch (err) {
-    console.log(err);
     throwResponseError('an error has occurred editing the day', 400, res);
   }
 };
@@ -103,8 +70,7 @@ export const areMoreMinutesAssigned = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { date, freeMinutes } = req.body;
-  let finalDate;
+  let { date, freeMinutes } = req.body;
   if (!date) {
     const { id } = req.body;
     if (!id) {
@@ -118,28 +84,29 @@ export const areMoreMinutesAssigned = async (
         date: true,
       },
     });
-    finalDate = dt?.date;
+    date = dt?.date;
   } else {
-    finalDate = date;
+    date = date;
   }
 
-  const initialDate = new Date(new Date(finalDate).setHours(0, 0, 0, 0));
-  const endDate = new Date(
-    new Date(addDays(finalDate, 1).setHours(0, 0, 0, 0))
-  );
   const { userId } = req;
 
-  const plannedDatesOnDate = await prisma.plannedDate.findMany({
+  const plannedDates = await prisma.plannedDate.findMany({
     where: {
       homework: {
         deleted: false,
         userId: +userId!,
       },
       date: {
-        gte: initialDate,
-        lt: endDate,
+        gte: moment().startOf('day').toDate(),
       },
     },
+  });
+  let plannedDatesOnDate: PlannedDate[] = [];
+  plannedDates.forEach((plannedDate) => {
+    if (moment(plannedDate.date).isSame(date, 'day')) {
+      plannedDatesOnDate.push(plannedDate);
+    }
   });
   const minutesAlreadyAssigned = plannedDatesOnDate.reduce((prev, curr) => {
     return prev + curr.minutes;
@@ -154,4 +121,45 @@ export const areMoreMinutesAssigned = async (
     return;
   }
   next();
+};
+
+export const createDayFunc = async (
+  userId: number,
+  date: Date | string,
+  freeMinutes: number
+) => {
+  const existingDay = await prisma.day.findFirst({
+    where: {
+      userId: +userId!,
+      date: moment(date).startOf('day').toDate(),
+      // date: {
+      //   gte: moment().startOf('day').toDate(),
+      // },
+    },
+    select: {
+      date: true,
+      id: true,
+    },
+  });
+
+  if (existingDay) {
+    console.log({ date: moment(existingDay.date).startOf('day').toDate() });
+    const editedDay = await prisma.day.updateMany({
+      data: {
+        freeMinutes,
+      },
+      where: {
+        date: moment(date).startOf('day').toDate(),
+      },
+    });
+    return editedDay;
+  }
+  const day = await prisma.day.create({
+    data: {
+      date: moment(date).startOf('day').toDate(),
+      freeMinutes: freeMinutes,
+      userId: +userId!,
+    },
+  });
+  return day;
 };
