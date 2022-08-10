@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { throwResponseError } from '../utilities';
 
 import { prisma } from '../app';
-import moment, { Moment } from 'moment';
+import moment from 'moment';
 import { createOrUpdateDay } from './day';
 
 export const createHomework = async (
@@ -120,15 +120,11 @@ export const calculateFreeDays = async (
 
     const daysFromToday = +pageNumber * DAYS_PER_PAGE - DAYS_PER_PAGE;
 
-    // const daysFromTodayWithSubtractedDays =
-    //   daysFromToday + calculateSubtractedDays(+pageNumber, week, freeDays);
-    // const startDate = addDaysFromToday(daysFromTodayWithSubtractedDays); //THIS DOESN'T SHOW DAYS WITH LESS THAN 1 MIN
-
     const startDate = moment().add(daysFromToday, 'days').startOf('days');
 
     const freeDaysArray = getFreeDaysArray(
-      startDate,
-      expirationDate,
+      startDate.clone(),
+      expirationDate.clone(),
       week,
       freeDays,
       DAYS_PER_PAGE
@@ -213,7 +209,7 @@ export const getFreeDaysArray = (
   }[] = [];
   let currentDate = startDate;
   while (
-    currentDate.isBefore(expirationDate, 'days') &&
+    currentDate.isSameOrBefore(expirationDate, 'days') &&
     finalFreeDays.length < daysPerPage
   ) {
     const freeMinutes = findfreeMinutesInDay(currentDate, week);
@@ -222,14 +218,11 @@ export const getFreeDaysArray = (
       return freeDaysDay.isSame(currentDate, 'days');
     });
     if (freeDayToPut) {
-      console.log({ freeDayToPut, freeMinutes });
       finalFreeDays.push({
         date: moment(freeDayToPut.date).toDate(),
         freeMinutes: freeDayToPut.freeMinutes,
       });
     } else {
-      console.log({ currentDate, freeMinutes });
-
       finalFreeDays.push({
         date: currentDate.toDate(),
         freeMinutes,
@@ -237,7 +230,6 @@ export const getFreeDaysArray = (
     }
     currentDate = currentDate.add(1, 'day');
   }
-  console.log({ finalFreeDays });
   return finalFreeDays;
 };
 

@@ -1,11 +1,13 @@
 import { Request, Response } from 'express';
-import { addDays, removeDays, throwResponseError } from '../utilities';
+import { throwResponseError } from '../utilities';
 import { prisma } from '../app';
 import { fetchFreeDays, fetchWeek, getFreeDaysArray } from './homework';
+import { Moment } from 'moment';
+import moment from 'moment';
 
 type Calendar = {
   disabled: boolean;
-  date: Date;
+  date: Moment;
   freeTime: number;
   homework: CalendarHomework[];
 }[];
@@ -18,75 +20,39 @@ interface CalendarHomework {
   subjectColor: string;
 }
 
-const isCalendarDayDisabled = (
-  date: Date,
-  month: number,
-  freeMinutes: number,
-  homeworkInDays: CalendarHomework[]
-) => {
-  const currDate = new Date();
-  if (
-    date < currDate ||
-    date.getMonth() !== month ||
-    (freeMinutes <= 0 && !homeworkInDays.length)
-  ) {
-    return true;
-  }
-  return false;
-};
-const getDaysInMonth = (month: number, year: number) => {
-  return new Date(year, month, 0).getDate();
-};
-const getFirstDayOfMonth = (year: number, month: number) => {
-  const firstDay = new Date(year, month, 1);
-  return firstDay;
-};
-
-const getLastDayOfMonth = (year: number, month: number) => {
-  const lastDay = new Date(year, month + 1, 0);
-  return addDays(lastDay, 1);
-};
-
 const DAYS_PER_PAGE = 35;
 export const getCalendar = async (req: Request, res: Response) => {
   const { userId } = req;
   const { page } = req.params;
   const pageNumber = +page!;
-  const currDate = new Date();
 
-  const firstDayInMonth = getFirstDayOfMonth(
-    currDate.getFullYear(),
-    currDate.getMonth() + pageNumber - 1
-  );
-  const lastDayInMonth = getLastDayOfMonth(
-    currDate.getFullYear(),
-    currDate.getMonth() + pageNumber - 1
-  );
+  const startOfMonth = moment()
+    .add(pageNumber - 1, 'months')
+    .startOf('month');
+  const endOfMonth = moment()
+    .add(pageNumber - 1, 'months')
+    .endOf('month')
+    .startOf('day');
 
-  const daysInMonth = getDaysInMonth(
-    currDate.getMonth() + pageNumber,
-    currDate.getFullYear()
-  );
-  const daysToRemoveStart = firstDayInMonth.getDay() - 1;
-  const daysToAddEnd = DAYS_PER_PAGE - daysInMonth;
-  const firstDay = removeDays(firstDayInMonth, daysToRemoveStart);
-  const lastDay = addDays(lastDayInMonth, daysToAddEnd);
-  let currentDate = new Date(firstDay);
+  console.log({ startOfMonth });
+  console.log({ endOfMonth });
+  // const daysInMonth = currDate.daysInMonth();
+  // const daysToRemoveStart = startOfMonth.diff(currDate, 'days');
+  // const daysToAddEnd = DAYS_PER_PAGE - daysInMonth;
+  // const firstDay = startOfMonth.subtract(daysToRemoveStart, 'days');
+  // const lastDay = endOfMonth.add(daysToAddEnd, 'days');
+  let currentDate = moment(startOfMonth).startOf('day');
+
   const homeworkInDays: CalendarHomework[][] = [];
   const calendar: Calendar = [];
-  while (currentDate <= lastDay) {
-    let initialDate = new Date(currentDate.setHours(0, 0, 0, 0));
-    let endDate = new Date(addDays(currentDate, 1).setHours(0, 0, 0, 0));
+  while (currentDate.isSameOrBefore(endOfMonth)) {
     const homework = await prisma.homework.findMany({
       where: {
         completed: false,
         userId: +userId!,
         plannedDates: {
           some: {
-            date: {
-              gte: initialDate,
-              lt: endDate,
-            },
+            date: currentDate.toDate(),
           },
         },
       },
@@ -97,10 +63,7 @@ export const getCalendar = async (req: Request, res: Response) => {
         plannedDates: {
           where: {
             deleted: false,
-            date: {
-              gte: initialDate,
-              lt: endDate,
-            },
+            date: currentDate.toDate(),
           },
           select: {
             minutes: true,
@@ -108,6 +71,7 @@ export const getCalendar = async (req: Request, res: Response) => {
         },
       },
     });
+
     const formattedHomework: CalendarHomework[] = homework.map((hmk) => {
       return {
         homeworkId: hmk.id,
@@ -117,8 +81,9 @@ export const getCalendar = async (req: Request, res: Response) => {
         subjectColor: hmk.subject.color,
       };
     });
+
     homeworkInDays.push(formattedHomework);
-    currentDate = addDays(currentDate, 1);
+    currentDate = currentDate.add(1, 'day');
   }
 
   const week = await fetchWeek(+userId!);
@@ -134,20 +99,20 @@ export const getCalendar = async (req: Request, res: Response) => {
   }
 
   const calendarDays = getFreeDaysArray(
-    firstDay,
-    lastDay,
+    startOfMonth.clone(),
+    endOfMonth.clone(),
     week,
     freeDays,
     DAYS_PER_PAGE
   );
-  console.log(calendarDays);
+
   calendarDays.forEach((calendarDay, i) => {
     calendar.push({
-      date: calendarDay.date,
+      date: moment(calendarDay.date),
       freeTime: calendarDay.freeMinutes,
       disabled: isCalendarDayDisabled(
-        calendarDay.date,
-        firstDayInMonth.getMonth(),
+        moment(calendarDay.date),
+        startOfMonth.month(),
         calendarDay.freeMinutes,
         homeworkInDays[i]
       ),
@@ -156,4 +121,21 @@ export const getCalendar = async (req: Request, res: Response) => {
   });
 
   res.json(calendar);
+};
+
+const isCalendarDayDisabled = (
+  date: Moment,
+  month: number,
+  freeMinutes: number,
+  homeworkInDays: CalendarHomework[]
+) => {
+  const currDate = moment();
+  if (
+    date.isBefore(currDate) ||
+    date.month() + 1 !== month ||
+    (freeMinutes <= 0 && !homeworkInDays.length)
+  ) {
+    return true;
+  }
+  return false;
 };
