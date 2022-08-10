@@ -9,9 +9,9 @@ import {
   plannedDatesAreValid,
   validateExpressValidation,
 } from '../middlewares';
-import { dateLessThanDays, isValidDate } from '../utilities';
+import { isValidDate } from '../utilities';
 import { body, param } from 'express-validator';
-
+import moment from 'moment';
 const router = Router();
 
 router.post(
@@ -33,7 +33,10 @@ router.post(
     body('expirationDate', 'please insert a valid expiration date')
       .isISO8601()
       .notEmpty()
-      .custom((value) => dateLessThanDays(365, new Date(value)))
+      .custom((value: string) => {
+        const daysFromNow = moment(value).diff(moment(), 'days');
+        return daysFromNow < 365;
+      })
       .withMessage('the expiration date is too far (max 1 year)'),
     body('plannedDates', 'please enter valid planned dates')
       .custom((value) => {
@@ -67,7 +70,10 @@ router.post(
     body('expirationDate', 'please insert a valid expiration date')
       .notEmpty()
       .isISO8601()
-      .custom((value) => dateLessThanDays(365, new Date(value)))
+      .custom((value: string) => {
+        const daysFromNow = moment(value).diff(moment(), 'days');
+        return daysFromNow < 365;
+      })
       .withMessage('the expiration date is too far (max 1 year)'),
     body('duration', 'please enter a valid duration (min: 5)')
       .trim()

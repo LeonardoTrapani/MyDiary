@@ -35,7 +35,7 @@ export const createDay = async (
   const { date, freeMinutes } = req.body;
   const { userId } = req;
   try {
-    const createDayRes = await createDayFunc(+userId!, date, +freeMinutes);
+    const createDayRes = await createOrUpdateDay(+userId!, date, +freeMinutes);
     res.json(createDayRes);
   } catch (err) {
     console.log(err);
@@ -123,7 +123,7 @@ export const areMoreMinutesAssigned = async (
   next();
 };
 
-export const createDayFunc = async (
+export const createOrUpdateDay = async (
   userId: number,
   date: Date | string,
   freeMinutes: number
