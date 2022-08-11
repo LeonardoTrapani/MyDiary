@@ -11,7 +11,8 @@ interface CalendarState {
 
 export interface CalendarDayType {
   date: string;
-  freeTime: number;
+  freeMins: number;
+  minutesToAssign: number;
   disabled: boolean;
   homework: CalendarHomeworkType[];
 }

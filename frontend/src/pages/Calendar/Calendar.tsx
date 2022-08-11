@@ -85,14 +85,6 @@ const CalendarDay: React.FC<{
 }> = ({ day }) => {
   const calendarHomeworkRef = useRef<HTMLLIElement>(null);
 
-  const totalMinutes = useMemo(() => {
-    const totalMinsOccupied = day.homework.reduce(
-      (prev, curr) => prev + curr.minutesOccupied,
-      0
-    );
-    return totalMinsOccupied + day.freeTime;
-  }, [day.freeTime, day.homework]);
-
   return (
     <li
       ref={calendarHomeworkRef}
@@ -115,7 +107,7 @@ const CalendarDay: React.FC<{
         </h3>
       )}
       {!day.disabled && (
-        <CalendarHomework day={day} totalMinutes={totalMinutes} />
+        <CalendarHomework day={day} totalMinutes={day.freeMins} />
       )}
     </li>
   );
@@ -138,7 +130,7 @@ const CalendarHomework: React.FC<{
         );
       })}
       <FreeTimeBar
-        freeMinutes={day.freeTime}
+        freeMinutes={day.minutesToAssign}
         color='#000'
         totalMinutes={totalMinutes}
       />

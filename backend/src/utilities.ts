@@ -58,3 +58,10 @@ export const isValidDate = (str: string) => {
 export const minutesAreLessThanDay = (minutes: number) => {
   return minutes < 1339;
 };
+
+export const isPositiveNotZero = (value: number) => {
+  if (value > 0) {
+    return value;
+  }
+  return null;
+};

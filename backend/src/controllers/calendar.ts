@@ -6,12 +6,15 @@ import { Moment } from 'moment';
 import moment from 'moment';
 import { fetchWeek } from './week';
 
-type Calendar = {
+type Calendar = CalendarDay[];
+
+interface CalendarDay {
   disabled: boolean;
   date: Moment;
-  freeTime: number;
+  freeMins: number;
+  minutesToAssign: number;
   homework: CalendarHomework[];
-}[];
+}
 
 interface CalendarHomework {
   homeworkId: number;
@@ -67,7 +70,7 @@ export const getCalendar = async (req: Request, res: Response) => {
             date: currentDate.toDate(),
           },
           select: {
-            minutes: true,
+            minutesAssigned: true,
           },
         },
       },
@@ -76,7 +79,7 @@ export const getCalendar = async (req: Request, res: Response) => {
     const formattedHomework: CalendarHomework[] = homework.map((hmk) => {
       return {
         homeworkId: hmk.id,
-        minutesOccupied: hmk.plannedDates[0].minutes,
+        minutesOccupied: hmk.plannedDates[0].minutesAssigned,
         name: hmk.name,
         subject: hmk.subject.name,
         subjectColor: hmk.subject.color,
@@ -110,11 +113,12 @@ export const getCalendar = async (req: Request, res: Response) => {
   calendarDays.forEach((calendarDay, i) => {
     calendar.push({
       date: moment(calendarDay.date),
-      freeTime: calendarDay.freeMinutes,
+      freeMins: calendarDay.freMins,
+      minutesToAssign: calendarDay.minutesToAssign,
       disabled: isCalendarDayDisabled(
         moment(calendarDay.date),
         startOfMonth.month(),
-        calendarDay.freeMinutes,
+        calendarDay.freMins,
         homeworkInDays[i]
       ),
       homework: homeworkInDays[i],

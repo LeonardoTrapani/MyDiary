@@ -39,10 +39,10 @@ export const FreeDays: React.FC<{
         return (
           <FreeDay
             date={freeDay.date}
-            freeTime={freeDay.freeMinutes}
+            minutesToAssign={freeDay.minutesToAssign}
             key={freeDay.date}
             assignedTime={freeDay.assignedTime}
-            freeMinutes={freeDay.freeMinutes}
+            freeMinutes={freeDay.minutesToAssign}
           />
         );
       }),
@@ -140,7 +140,7 @@ export const CircularSmallButton: React.FC<{
 
 export const FreeDay: React.FC<{
   date: string;
-  freeTime: number;
+  minutesToAssign: number;
   assignedTime: number;
   freeMinutes: number;
 }> = (props) => {
@@ -158,7 +158,7 @@ export const FreeDay: React.FC<{
         freeDay: {
           date: props.date,
           assignedTime: props.assignedTime,
-          freeMinutes: props.freeTime,
+          minutesToAssign: props.minutesToAssign,
         },
       })
     );
@@ -169,7 +169,7 @@ export const FreeDay: React.FC<{
     <div className={styles['free-day']}>
       <FreeDayDate formattedDate={formattedDate} />
       <div className={styles['free-day--informations']}>
-        <FreeDayMinutes freeTime={props.freeTime} />
+        <FreeDayMinutes freeTime={props.minutesToAssign} />
         <AssignTime timeAssigned={props.assignedTime} />
       </div>
       <Slider

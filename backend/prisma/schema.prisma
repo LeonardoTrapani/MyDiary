@@ -59,23 +59,24 @@ model Subject {
 }
 
 model PlannedDate {
-  id         Int      @id @default(autoincrement())
-  date       DateTime
-  minutes    Int
-  homework   Homework @relation(fields: [homeworkId], references: [id])
-  homeworkId Int
-  deleted    Boolean  @default(false)
+  id              Int      @id @default(autoincrement())
+  date            DateTime
+  minutesAssigned Int      @default(0)
+  homework        Homework @relation(fields: [homeworkId], references: [id])
+  homeworkId      Int
+  deleted         Boolean  @default(false)
 }
 
 model Day {
-  id          Int      @id @default(autoincrement())
-  freeMinutes Int
-  date        DateTime
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  user        User     @relation(fields: [userId], references: [id])
-  userId      Int
-  deleted     Boolean  @default(false)
+  id              Int      @id @default(autoincrement())
+  freeMins        Int
+  minutesToAssign Int
+  date            DateTime
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id])
+  userId          Int
+  deleted         Boolean  @default(false)
 }
 
 model Week {

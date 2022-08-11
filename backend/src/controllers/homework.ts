@@ -43,7 +43,7 @@ export const createHomework = async (
 
     const formattedPlannedDates = plannedDates.map((plannedDate) => {
       return {
-        minutes: plannedDate.minutes,
+        minutesAssigned: plannedDate.minutes,
         date: moment(plannedDate.date).startOf('day').toISOString(),
       };
     });
@@ -159,7 +159,8 @@ interface week {
 interface freeDays {
   days: {
     date: Date;
-    freeMinutes: number;
+    freeMins: number;
+    minutesToAssign: number;
   }[];
 }
 
@@ -173,7 +174,8 @@ export const fetchFreeDays = async (userId: number) => {
       days: {
         select: {
           date: true,
-          freeMinutes: true,
+          freeMins: true,
+          minutesToAssign: true,
         },
         where: {
           deleted: false,
@@ -194,7 +196,8 @@ export const getFreeDaysArray = (
 ) => {
   const finalFreeDays: {
     date: Date;
-    freeMinutes: number;
+    freMins: number;
+    minutesToAssign: number;
   }[] = [];
   let currentDate = startDate;
   while (
@@ -209,121 +212,17 @@ export const getFreeDaysArray = (
     if (freeDayToPut) {
       finalFreeDays.push({
         date: moment(freeDayToPut.date).toDate(),
-        freeMinutes: freeDayToPut.freeMinutes,
+        freMins: freeDayToPut.freeMins,
+        minutesToAssign: freeDayToPut.minutesToAssign,
       });
     } else {
       finalFreeDays.push({
         date: currentDate.toDate(),
-        freeMinutes,
+        freMins: freeMinutes,
+        minutesToAssign: freeMinutes,
       });
     }
     currentDate = currentDate.add(1, 'day');
   }
   return finalFreeDays;
 };
-
-// const calculateSubtractedDays = (
-//   pageNumber: number,
-//   week: week,
-//   freeDays: freeDays
-// ) => {
-//   if (pageNumber === 1) {
-//     return 0;
-//   }
-//   const maxLength = pageNumber * DAYS_PER_PAGE - DAYS_PER_PAGE;
-//   let currentDate = new Date();
-//   let daysToSkip = 0;
-//   let length = 0;
-//   while (length < maxLength) {
-//     const freeMinutes = findfreeMinutesInDay(currentDate, week);
-//     const freeDayToPut = freeDays.days.find((day) => {
-//       return day.date.toDateString() === currentDate.toDateString();
-//     });
-//     const isDayValid = calculateIsDayValid(
-//       freeDayToPut,
-//       // homeworkDuration,
-//       freeMinutes
-//     );
-//     if (isDayValid) {
-//       length++;
-//     } else {
-//       daysToSkip++;
-//     }
-//     currentDate = addDays(currentDate, 1);
-//   }
-
-//   return daysToSkip;
-// };
-
-// const calculateIsDayValid = (
-//   freeDayToPut:
-//     | {
-//         date: Date;
-//         freeMinutes: number;
-//       }
-//     | undefined,
-//   // homeworkDuration: number,
-//   freeMinutes: number
-// ) => {
-//   if (freeDayToPut) {
-//     if (freeDayToPut.freeMinutes > 0) {
-//       return true;
-//     }
-//   }
-//   if (freeMinutes > 0) {
-//     return true;
-//   }
-//   return false;
-// };
-
-// const fetchFreeDay = async (date: moment.Moment, userId: number) => {
-//   const freeDay = await prisma.day.findFirst({
-//     where: {
-//       userId,
-//       date: date.startOf('day').toDate(),
-//     },
-//   });
-//   return freeDay;
-// };
-
-// const updateExistingDay = async (
-//   date: string,
-//   previousMinutes: number,
-//   assignedMinutes: number,
-//   userId: number
-// ) => {
-//   return await prisma.day.updateMany({
-//     where: {
-//       userId: userId,
-//       date: moment(date).startOf('day').toDate(),
-//       deleted: false,
-//     },
-//     data: {
-//       freeMinutes: previousMinutes - assignedMinutes,
-//     },
-//   });
-// };
-
-// const createDayWithUpdatedDuration = async (
-//   date: string,
-//   userId: number,
-//   assignedMinutes: number
-// ) => {
-//   const week = await prisma.week.findUnique({
-//     where: {
-//       userId: userId,
-//     },
-//   });
-//   if (!week) {
-//     console.error("can't find the week", userId);
-//     return;
-//   }
-//   const freeMinutesInDay = findfreeMinutesInDay(new Date(date), week);
-//   return await prisma.day.create({
-//     data: {
-//       userId: userId,
-//       date,
-//       freeMinutes: freeMinutesInDay - assignedMinutes,
-//     },
-//   });
-// };

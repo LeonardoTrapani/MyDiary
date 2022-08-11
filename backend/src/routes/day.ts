@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
 import {
-  areMoreMinutesAssigned,
+  // areMoreMinutesAssigned,
   createDay,
   editDay,
   getAllDays,
@@ -25,7 +25,7 @@ router.put(
       .withMessage('you can\t have more than 24 free hours in a day!'),
   ],
   validateExpressValidation,
-  areMoreMinutesAssigned,
+  // areMoreMinutesAssigned,
   editDay
 );
 
@@ -41,7 +41,7 @@ router.post(
       .withMessage('you can\t have more than 24 free hours in a day!'),
   ],
   validateExpressValidation,
-  areMoreMinutesAssigned,
+  // areMoreMinutesAssigned,
   createDay
 );
 

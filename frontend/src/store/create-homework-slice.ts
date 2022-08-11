@@ -16,7 +16,7 @@ interface createHomeworkState {
 
 export interface freeDay {
   date: string;
-  freeMinutes: number;
+  minutesToAssign: number;
   assignedTime: number;
 }
 
@@ -60,7 +60,9 @@ const createHomeworkSlice = createSlice({
       for (let i = 0; i < selectedDays.length; i++) {
         for (let j = 0; j < freeDays.length; j++) {
           if (datesEqualOnDay(selectedDays[i].date, freeDays[j].date)) {
-            if (selectedDays[i].freeMinutes === freeDays[j].freeMinutes) {
+            if (
+              selectedDays[i].minutesToAssign === freeDays[j].minutesToAssign
+            ) {
               freeDays[j] = selectedDays[i];
             } else {
               reset = true;
@@ -195,7 +197,6 @@ export const searchFreeDays = (
           },
         }
       );
-      console.log({ res });
       const freeDays = res.map((freeDay) => {
         const freeDayModified = { ...freeDay, assignedTime: 0 };
         return freeDayModified;

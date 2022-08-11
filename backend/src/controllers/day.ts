@@ -1,8 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import { throwResponseError } from '../utilities';
+import { isPositiveNotZero, throwResponseError } from '../utilities';
 import { prisma } from '../app';
 import moment from 'moment';
-import { PlannedDate } from '@prisma/client';
 import { fetchWeek, findfreeMinutesInDay } from './week';
 
 export const getAllDays = async (
@@ -18,7 +17,8 @@ export const getAllDays = async (
       },
       select: {
         date: true,
-        freeMinutes: true,
+        freeMins: true,
+        minutesToAssign: true,
         id: true,
       },
     });
@@ -36,10 +36,15 @@ export const createDay = async (
   const { date, freeMinutes } = req.body;
   const { userId } = req;
   try {
-    const createDayRes = await createOrUpdateDay(+userId!, date, +freeMinutes);
+    const createDayRes = await createOrUpdateDay(
+      +userId!,
+      date,
+      +freeMinutes,
+      res
+    );
     res.json(createDayRes);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     throwResponseError('an error has occurred creating the day', 400, res);
   }
 };
@@ -51,113 +56,59 @@ export const editDay = async (
 ) => {
   try {
     const { id, freeMinutes } = req.body;
-
-    const editedDay = await prisma.day.update({
-      data: {
-        freeMinutes,
-      },
+    const day = await prisma.day.findUnique({
       where: {
-        id: id,
+        id: +id!,
+      },
+      select: {
+        date: true,
+        freeMins: true,
+        minutesToAssign: true,
+        id: true,
       },
     });
+    if (!day) {
+      throwResponseError("couldn't find the day you wanted to edit", 400, res);
+      return;
+    }
+    const editedDay = await editExistingDay(day, freeMinutes);
     res.json(editedDay);
+    return;
   } catch (err) {
     throwResponseError('an error has occurred editing the day', 400, res);
   }
 };
 
-export const areMoreMinutesAssigned = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  let { date, freeMinutes } = req.body;
-  if (!date) {
-    const { id } = req.body;
-    if (!id) {
-      throwResponseError('id or date not specified', 400, res);
-    }
-    const dt = await prisma.day.findUnique({
-      where: {
-        id,
-      },
-      select: {
-        date: true,
-      },
-    });
-    date = dt?.date;
-  } else {
-    date = date;
-  }
-
-  const { userId } = req;
-
-  const plannedDates = await prisma.plannedDate.findMany({
-    where: {
-      homework: {
-        deleted: false,
-        userId: +userId!,
-      },
-      date: {
-        gte: moment().startOf('day').toDate(),
-      },
-    },
-  });
-  let plannedDatesOnDate: PlannedDate[] = [];
-  plannedDates.forEach((plannedDate) => {
-    if (moment(plannedDate.date).isSame(date, 'day')) {
-      plannedDatesOnDate.push(plannedDate);
-    }
-  });
-  const minutesAlreadyAssigned = plannedDatesOnDate.reduce((prev, curr) => {
-    return prev + curr.minutes;
-  }, 0);
-
-  if (freeMinutes - minutesAlreadyAssigned < 0) {
-    throwResponseError(
-      'you already assigned more minutes to this day than what you are specifying, please remove some homework and try again',
-      400,
-      res
-    );
-    return;
-  }
-  next();
-};
-
 export const createOrUpdateDay = async (
   userId: number,
   date: Date | string,
-  freeMinutes: number
+  freeMinutes: number,
+  res: Response
 ) => {
   const existingDay = await prisma.day.findFirst({
     where: {
       userId: +userId!,
       date: moment(date).startOf('day').toDate(),
-      // date: {
-      //   gte: moment().startOf('day').toDate(),
-      // },
     },
     select: {
+      freeMins: true,
+      minutesToAssign: true,
       date: true,
       id: true,
     },
   });
 
   if (existingDay) {
-    const editedDay = await prisma.day.updateMany({
-      data: {
-        freeMinutes,
-      },
-      where: {
-        date: moment(date).startOf('day').toDate(),
-      },
-    });
-    return editedDay;
+    const editedDay = await editExistingDay(existingDay, freeMinutes);
+    res.json(editedDay);
+    return;
   }
+
   const day = await prisma.day.create({
     data: {
       date: moment(date).startOf('day').toDate(),
-      freeMinutes: freeMinutes,
+      minutesToAssign: freeMinutes,
+      freeMins: freeMinutes,
       userId: +userId!,
     },
   });
@@ -176,26 +127,13 @@ export const createOrUpdateDayCountingPreviousMinutes = async (
       date: moment(date).startOf('day').toDate(),
     },
     select: {
-      date: true,
-      freeMinutes: true,
       id: true,
     },
   });
 
   if (existingDay) {
-    if (existingDay.freeMinutes - freeMinutes < 0) {
-      throwResponseError('the minutes are less than 0 somehow', 400, res);
-      return;
-    }
-    const editedDay = await prisma.day.updateMany({
-      data: {
-        freeMinutes: existingDay.freeMinutes - freeMinutes,
-      },
-      where: {
-        date: moment(date).startOf('day').toDate(),
-      },
-    });
-    return editedDay;
+    await decrementMinutesToAssignToExistingDay(freeMinutes, existingDay.id);
+    return;
   }
 
   const week = await fetchWeek(userId);
@@ -203,20 +141,88 @@ export const createOrUpdateDayCountingPreviousMinutes = async (
     throwResponseError("could't find the week", 400, res);
     return;
   }
-  const previousMinutes = findfreeMinutesInDay(
-    moment(date).startOf('day'),
-    week
-  );
-  if (previousMinutes - freeMinutes < 0) {
+  const minutesInDay = findfreeMinutesInDay(moment(date).startOf('day'), week);
+  if (minutesInDay - freeMinutes < 0) {
     throwResponseError('the minutes are less than 0 somehow', 400, res);
     return;
   }
   const day = await prisma.day.create({
     data: {
       date: moment(date).startOf('day').toDate(),
-      freeMinutes: previousMinutes - freeMinutes,
+      freeMins: minutesInDay,
+      minutesToAssign: minutesInDay - freeMinutes,
       userId: +userId!,
     },
   });
   return day;
+};
+
+export const editExistingDay = async (
+  existingDay: {
+    date: Date;
+    freeMins: number;
+    minutesToAssign: number;
+    id: number;
+  },
+  freeMinutes: number
+) => {
+  const timeRemoved = isPositiveNotZero(existingDay.freeMins - freeMinutes);
+  const timeAdded = isPositiveNotZero(-(existingDay.freeMins - freeMinutes));
+
+  if (timeRemoved) {
+    if (existingDay.minutesToAssign - timeRemoved < 0) {
+      throw new Error(
+        'the free minutes would be less than the minutes already assigned'
+      );
+    }
+
+    const editedDay = await prisma.day.update({
+      data: {
+        freeMins: freeMinutes,
+        minutesToAssign: {
+          decrement: timeRemoved,
+        },
+      },
+      where: {
+        id: existingDay.id,
+        // date: moment(date).startOf('day').toDate(),
+      },
+    });
+    return editedDay;
+  }
+  if (timeAdded) {
+    const editedDay = await prisma.day.update({
+      data: {
+        freeMins: freeMinutes,
+        minutesToAssign: {
+          increment: timeAdded,
+        },
+      },
+      where: {
+        id: existingDay.id,
+        // date: moment(date).startOf('day').toDate(),
+      },
+    });
+    return editedDay;
+  }
+  console.log('responding with nothing');
+
+  return existingDay;
+};
+
+export const decrementMinutesToAssignToExistingDay = async (
+  existingDayId: number,
+  freeMinutes: number
+) => {
+  await prisma.day.update({
+    where: {
+      id: existingDayId,
+    },
+    data: {
+      minutesToAssign: {
+        decrement: freeMinutes,
+      },
+    },
+  });
+  return;
 };
