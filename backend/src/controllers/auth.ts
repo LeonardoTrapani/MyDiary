@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
 import { prisma } from '../app';
@@ -113,5 +113,30 @@ export const getUserInfo = async (
     res.json(user);
   } catch (err) {
     throwResponseError('unable to find the user', 400, res);
+  }
+};
+
+export const validateToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const token = req.get('Authorization')?.split(' ')[1];
+    if (!token) {
+      throw new Error();
+    }
+    token.split(' ')[1];
+    const decodedToken = jwt.verify(
+      token,
+      process.env.JWT_SECRET!
+    ) as JwtPayload;
+    if (decodedToken) {
+      res.json(true);
+    } else {
+      res.json(false);
+    }
+  } catch (err) {
+    res.json(false);
   }
 };

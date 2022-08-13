@@ -18,7 +18,7 @@ import LinkingConfiguration from './LinkingConfiguration';
 import { Login, Signup } from '../screens/Auth';
 
 import useInitialLoading from '../util/useInitialLoading';
-import { useUserId } from '../util/react-query-hooks';
+import { useIsTokenValid } from '../util/react-query-hooks';
 
 export default function Main({
   colorScheme,
@@ -45,10 +45,10 @@ export default function Main({
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
-  const { data: userId } = useUserId();
+  const { data: isTokenValid, error: isTokenValidError } = useIsTokenValid();
   return (
     <Stack.Navigator>
-      {userId ? (
+      {isTokenValid && !isTokenValidError ? (
         <Stack.Screen
           name='Root'
           component={BottomTabNavigator}

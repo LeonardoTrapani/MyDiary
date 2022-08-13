@@ -1,10 +1,9 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
 import { isAuthenticated, validateExpressValidation } from '../middlewares';
+import { signup, login, getUserInfo, validateToken } from '../controllers/auth';
 
 const router = Router();
-
-import { signup, login, getUserInfo } from '../controllers/auth';
 
 router.post(
   '/login',
@@ -33,5 +32,6 @@ router.post(
   signup
 );
 
+router.get('/validateToken', validateToken);
 router.get('/userInfo', isAuthenticated, getUserInfo);
 export default router;

@@ -6,12 +6,12 @@ export const useGetToken = () =>
     refetchOnMount: false,
   });
 
-export const useUserId = () => {
+export const useIsTokenValid = () => {
   const { data: token } = useQuery<string | null>(['token'], getToken, {
     refetchOnMount: false,
   });
-  return useQuery<number | null>(['userId', token], validateToken, {
+  return useQuery<boolean>(['isTokenValid', token], validateToken, {
     refetchOnMount: false,
-    enabled: typeof token === 'string' || token === null,
+    enabled: typeof token !== 'undefined',
   });
 };

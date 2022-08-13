@@ -6,14 +6,14 @@ export const validateToken = async ({ queryKey }: any) => {
   console.log('validating token');
   const [_, token] = queryKey;
   if (token) {
-    const res = await axios.get<number | null>(BACKEND_URL + '/', {
+    const res = await axios.get<boolean>(BACKEND_URL + '/', {
       headers: {
         Authorization: token,
       },
     });
     return res.data;
   } else {
-    return null;
+    return false;
   }
 };
 

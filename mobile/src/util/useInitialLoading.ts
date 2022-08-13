@@ -2,13 +2,13 @@ import { FontAwesome } from '@expo/vector-icons';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
-import { useUserId } from './react-query-hooks';
+import { useIsTokenValid } from './react-query-hooks';
 
 export default function useInitialLoading() {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
 
   // Load any resources or data that we need prior to rendering the app
-  const { isLoading: isUserIdLoading } = useUserId();
+  const { isLoading: isUserIdLoading } = useIsTokenValid();
 
   useEffect(() => {
     async function loadResourcesAndDataAsync() {

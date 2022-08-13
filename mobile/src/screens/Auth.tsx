@@ -2,7 +2,7 @@ import React from 'react';
 import { Text } from 'react-native';
 
 export const Login: React.FC = () => {
-  return <Text>LGIN</Text>;
+  return <Text>LOGIN</Text>;
 };
 
 export const Signup: React.FC = () => {
