@@ -8,10 +8,8 @@ import {
 } from 'react-native';
 
 import React from 'react';
-import { BoldText, MediumText } from './StyledText';
+import { BoldText } from './StyledText';
 import { useTheme } from '@react-navigation/native';
-import useColorScheme from '../util/useColorScheme';
-import Colors from '../constants/Colors';
 
 interface CustomTouchableOpacityProps extends TouchableHighlightProps {
   title: string;
@@ -21,13 +19,14 @@ const SolidButton: React.FC<CustomTouchableOpacityProps> = (props) => {
   const { primary, background } = useTheme().colors;
   return (
     <TouchableOpacity
-      activeOpacity={0.4}
       {...props}
+      activeOpacity={0.4}
       style={[
         styles.button,
         {
           backgroundColor: primary,
         },
+        props.style,
       ]}
     >
       <BoldText

@@ -1,16 +1,32 @@
-import React from 'react';
-import { Text } from 'react-native';
-
 import { RootStackScreenProps } from '../../types';
 import AuthForm, { AuthInputType } from '../components/AuthForm';
-import LoginSvg from '../components/svgs/LoginSvg';
-
+import React from 'react';
 import useInput, {
   emailValidCheck,
   passwordInputChecks,
 } from '../util/useInput';
+import SignupSvg from '../components/svgs/SignupSvg';
 
-export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
+export const SignupScreen = ({
+  navigation,
+}: RootStackScreenProps<'Signup'>) => {
+  const {
+    errorMessage: usernameErrorMessage,
+    hasError: usernameHasError,
+    isValid: usernameIsValid,
+    onChangeText: usernameOnChangeText,
+    validate: usernameValidate,
+    value: usernameValue,
+  } = useInput([
+    {
+      check: (value) => !!value,
+      errorMessage: 'please enter a username',
+    },
+    {
+      check: (value) => value.length >= 5,
+      errorMessage: 'at least 5 characters',
+    },
+  ]);
   const {
     errorMessage: emailErrorMessage,
     hasError: emailHasError,
@@ -38,23 +54,37 @@ export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
     value: passwordValue,
   } = useInput(passwordInputChecks);
 
-  const isFormValid = passwordIsValid && emailIsValid;
-  const submitLoginHandler = () => {
+  const isFormValid = passwordIsValid && emailIsValid && usernameIsValid;
+  const submitSignupHandler = () => {
     if (isFormValid) {
-      console.log({ emailValue, passwordValue });
+      console.log({ usernameValue, emailValue, passwordValue });
     } else {
+      usernameValidate();
       emailValidate();
       passwordValidate();
     }
   };
-  const signupInsteadHandler = () => {
+  const loginInsteadHandler = () => {
     if (navigation.canGoBack()) {
       navigation.goBack();
     } else {
-      navigation.push('Signup');
+      navigation.push('Login');
     }
   };
+
   const inputs: AuthInputType[] = [
+    {
+      name: 'username',
+      errorMessage: usernameErrorMessage,
+      hasError: usernameHasError,
+      keyboardType: 'default',
+      value: usernameValue,
+      onChangeText: usernameOnChangeText,
+      autoComplete: 'username',
+      validate: usernameValidate,
+      autoCapitalize: 'none',
+      secureTextEntry: false,
+    },
     {
       name: 'email',
       errorMessage: emailErrorMessage,
@@ -83,16 +113,12 @@ export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
 
   return (
     <AuthForm
-      insteadHandler={signupInsteadHandler}
-      insteadTitle='signup instead'
-      title='Login'
+      insteadHandler={loginInsteadHandler}
+      insteadTitle='login instead'
+      title='Signup'
       inputs={inputs}
-      submitHandler={submitLoginHandler}
-      svg={<LoginSvg />}
+      submitHandler={submitSignupHandler}
+      svg={<SignupSvg />}
     />
   );
-};
-
-export const Signup: React.FC = () => {
-  return <Text>SIGNUP</Text>;
 };

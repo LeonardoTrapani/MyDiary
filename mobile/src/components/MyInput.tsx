@@ -35,7 +35,7 @@ const MyInput: React.FC<CustomInputProps> = (props) => {
         ]}
         placeholder={props.name}
       />
-      {props.hasError && (
+      {/* {props.hasError && (
         <RegularText
           style={{
             color: Colors[colorScheme].errorColor,
@@ -43,14 +43,15 @@ const MyInput: React.FC<CustomInputProps> = (props) => {
         >
           {props.errorMessage}
         </RegularText>
-      )}
+      )} */}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   input: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 22,
     borderColor: '#0000005e',
     borderWidth: 0.5,
     borderRadius: 4,

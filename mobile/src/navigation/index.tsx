@@ -9,7 +9,8 @@ import TabOneScreen from '../screens/TabOneScreen';
 import TabTwoScreen from '../screens/TabTwoScreen';
 import { RootStackParamList, RootTabParamList } from '../../types';
 import LinkingConfiguration from './LinkingConfiguration';
-import { Login, Signup } from '../screens/LoginScreen';
+import { LoginScreen } from '../screens/LoginScreen';
+import { SignupScreen } from '../screens/SignupScreen';
 
 import useInitialLoading from '../util/useInitialLoading';
 import { useIsTokenValid } from '../util/react-query-hooks';
@@ -53,12 +54,12 @@ function RootNavigator() {
         <>
           <Stack.Screen
             name='Login'
-            component={Login}
+            component={LoginScreen}
             options={{ headerShown: false }}
           />
           <Stack.Screen
             name='Signup'
-            component={Signup}
+            component={SignupScreen}
             options={{ headerShown: false }}
           />
         </>

@@ -10,14 +10,13 @@ interface CustomTouchableOpacityProps extends TouchableOpacityProps {
 const TextButton: React.FC<CustomTouchableOpacityProps> = (props) => {
   const { primary } = useTheme().colors;
   return (
-    <TouchableOpacity>
+    <TouchableOpacity {...props}>
       <RegularText
         style={[
           props.style,
           {
             color: primary,
             fontSize: 16,
-            marginLeft: 'auto',
             padding: 0,
           },
         ]}
