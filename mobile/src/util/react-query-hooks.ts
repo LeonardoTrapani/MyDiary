@@ -3,11 +3,11 @@ import { getToken, validateToken } from '../api/auth';
 
 export const useGetToken = () =>
   useQuery<string | null>(['token'], getToken, {
-    refetchOnMount: false,
+    staleTime: Infinity,
   });
 
 export const useIsTokenValid = () => {
   return useQuery<boolean>(['isTokenValid'], validateToken, {
-    refetchOnMount: false,
+    staleTime: Infinity,
   });
 };

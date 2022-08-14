@@ -1,12 +1,9 @@
 import * as React from 'react';
-import { View } from 'react-native';
 import Svg, { Path, Circle, SvgProps } from 'react-native-svg';
-import { BoldText } from '../StyledText';
 
 const AuthSvg: React.FC<SvgProps> = (props) => {
   const originalWidth = 744;
   const originalHeight = 539.286;
-  const aspectRatio = originalWidth / originalHeight;
 
   return (
     <Svg

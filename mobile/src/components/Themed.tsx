@@ -45,10 +45,10 @@ export function View(props: ViewProps) {
   return (
     <DefaultView
       style={[
-        style,
         {
           backgroundColor: background,
         },
+        style,
       ]}
       {...otherProps}
     />

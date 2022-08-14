@@ -1,8 +1,6 @@
 import {
-  Pressable,
-  PressableProps,
+  ActivityIndicator,
   StyleSheet,
-  TouchableHighlight,
   TouchableHighlightProps,
   TouchableOpacity,
 } from 'react-native';
@@ -10,9 +8,11 @@ import {
 import React from 'react';
 import { BoldText } from './StyledText';
 import { useTheme } from '@react-navigation/native';
+import { View } from './Themed';
 
 interface CustomTouchableOpacityProps extends TouchableHighlightProps {
   title: string;
+  isLoading: boolean;
 }
 
 const SolidButton: React.FC<CustomTouchableOpacityProps> = (props) => {
@@ -29,16 +29,26 @@ const SolidButton: React.FC<CustomTouchableOpacityProps> = (props) => {
         props.style,
       ]}
     >
-      <BoldText
+      <View
         style={[
-          styles.text,
+          styles.buttonContent,
           {
-            color: background,
+            backgroundColor: primary,
           },
         ]}
       >
-        {props.title}
-      </BoldText>
+        {props.isLoading && <ActivityIndicator color='#fff' />}
+        <BoldText
+          style={[
+            styles.text,
+            {
+              color: background,
+            },
+          ]}
+        >
+          {props.title}
+        </BoldText>
+      </View>
     </TouchableOpacity>
   );
 };
@@ -54,6 +64,10 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 23,
     textTransform: 'uppercase',
+    marginLeft: 10,
+  },
+  buttonContent: {
+    flexDirection: 'row',
   },
 });
 

@@ -13,6 +13,7 @@ const AuthForm: React.FC<{
   inputs: AuthInputType[];
   submitHandler: () => void;
   svg: JSX.Element;
+  isLoading: boolean;
 }> = (props) => {
   return (
     <SafeAreaView>
@@ -44,6 +45,7 @@ const AuthForm: React.FC<{
             </View>
 
             <SolidButton
+              isLoading={props.isLoading}
               title={props.title}
               onPress={props.submitHandler}
               style={styles.submitButton}
