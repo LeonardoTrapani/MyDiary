@@ -6,10 +6,23 @@ import useInput, {
   passwordInputChecks,
 } from '../util/useInput';
 import SignupSvg from '../components/svgs/SignupSvg';
+import { useMutation } from '@tanstack/react-query';
+import { signup } from '../api/auth';
 
 export const SignupScreen = ({
   navigation,
 }: RootStackScreenProps<'Signup'>) => {
+  const mutateSignup = useMutation(
+    (signupInfo: { email: string; password: string; username: string }) => {
+      return signup(signupInfo.username, signupInfo.email, signupInfo.password);
+    },
+    {
+      onSuccess: () => {
+        navigation.navigate('Login');
+      },
+    }
+  );
+
   const {
     errorMessage: usernameErrorMessage,
     hasError: usernameHasError,
@@ -57,7 +70,11 @@ export const SignupScreen = ({
   const isFormValid = passwordIsValid && emailIsValid && usernameIsValid;
   const submitSignupHandler = () => {
     if (isFormValid) {
-      console.log({ usernameValue, emailValue, passwordValue });
+      mutateSignup.mutate({
+        email: emailValue,
+        password: passwordValue,
+        username: usernameValue,
+      });
     } else {
       usernameValidate();
       emailValidate();
@@ -119,6 +136,7 @@ export const SignupScreen = ({
       inputs={inputs}
       submitHandler={submitSignupHandler}
       svg={<SignupSvg />}
+      isLoading={mutateSignup.isLoading}
     />
   );
 };

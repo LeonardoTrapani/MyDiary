@@ -11,7 +11,7 @@ export const validateToken = async () => {
         Authorization: `bearer ${token}`,
       },
     });
-    console.log(res.data);
+
     if (res.data === false) {
       await SecureStore.deleteItemAsync('token');
     }
@@ -34,4 +34,17 @@ export const login = async (email: string, password: string) => {
   });
   await SecureStore.setItemAsync('token', res.data.token);
   return;
+};
+
+export const signup = async (
+  username: string,
+  email: string,
+  password: string
+) => {
+  const res = await axios.post(BACKEND_URL + '/signup', {
+    email,
+    username,
+    password,
+  });
+  return res;
 };
