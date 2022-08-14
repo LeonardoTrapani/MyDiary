@@ -2,8 +2,8 @@ import * as WebBrowser from 'expo-web-browser';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 import Colors from '../constants/Colors';
-import { MonoText } from './StyledText';
 import { Text, View } from './Themed';
+import { RegularText } from './StyledText';
 
 export default function EditScreenInfo({ path }: { path: string }) {
   return (
@@ -22,7 +22,7 @@ export default function EditScreenInfo({ path }: { path: string }) {
           darkColor='rgba(255,255,255,0.05)'
           lightColor='rgba(0,0,0,0.05)'
         >
-          <MonoText>{path}</MonoText>
+          <RegularText>{path}</RegularText>
         </View>
 
         <Text
