@@ -7,11 +7,7 @@ export const useGetToken = () =>
   });
 
 export const useIsTokenValid = () => {
-  const { data: token } = useQuery<string | null>(['token'], getToken, {
+  return useQuery<boolean>(['isTokenValid'], validateToken, {
     refetchOnMount: false,
-  });
-  return useQuery<boolean>(['isTokenValid', token], validateToken, {
-    refetchOnMount: false,
-    enabled: typeof token !== 'undefined',
   });
 };

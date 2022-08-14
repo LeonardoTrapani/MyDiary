@@ -10,7 +10,6 @@ import SignupSvg from '../components/svgs/SignupSvg';
 export const SignupScreen = ({
   navigation,
 }: RootStackScreenProps<'Signup'>) => {
-  console.log('RERENDEr');
   const {
     errorMessage: usernameErrorMessage,
     hasError: usernameHasError,

@@ -1,19 +1,20 @@
 import * as SecureStore from 'expo-secure-store';
 import axios from 'axios';
 import { BACKEND_URL } from '../constants/constants';
-import { QueryFunctionContext } from '@tanstack/react-query';
 
-export const validateToken = async ({
-  queryKey,
-}: QueryFunctionContext<[string, string | null | undefined]>) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_, token] = queryKey;
+export const validateToken = async () => {
+  const token = await getToken();
+
   if (token) {
-    const res = await axios.get<boolean>(BACKEND_URL + '/', {
+    const res = await axios.get<boolean>(BACKEND_URL + '/validateToken', {
       headers: {
-        Authorization: token,
+        Authorization: `bearer ${token}`,
       },
     });
+    console.log(res.data);
+    if (res.data === false) {
+      await SecureStore.deleteItemAsync('token');
+    }
     return res.data;
   } else {
     return false;
@@ -21,6 +22,16 @@ export const validateToken = async ({
 };
 
 export const getToken = async () => {
-  console.log('getting token');
   return await SecureStore.getItemAsync('token');
+};
+
+export const login = async (email: string, password: string) => {
+  const res = await axios.post<{
+    token: string;
+  }>(BACKEND_URL + '/login', {
+    email,
+    password,
+  });
+  await SecureStore.setItemAsync('token', res.data.token);
+  return;
 };

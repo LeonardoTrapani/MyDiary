@@ -123,6 +123,7 @@ export const validateToken = async (
 ) => {
   try {
     const token = req.get('Authorization')?.split(' ')[1];
+
     if (!token) {
       throw new Error();
     }

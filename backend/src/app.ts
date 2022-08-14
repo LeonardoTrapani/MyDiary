@@ -31,9 +31,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get('/', (req: Request, res: Response) => {
-  res.json('test');
-});
+// app.use((req: Request, res: Response, next: NextFunction) => {
+//   console.log('request arrived');
+//   next();
+// });
 
 app.use(authRoutes);
 app.use('/homework', homeworkRoutes);

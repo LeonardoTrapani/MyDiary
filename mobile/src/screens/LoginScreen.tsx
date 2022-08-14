@@ -1,7 +1,9 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 import { Text } from 'react-native';
 
 import { RootStackScreenProps } from '../../types';
+import { login } from '../api/auth';
 import AuthForm, { AuthInputType } from '../components/AuthForm';
 import LoginSvg from '../components/svgs/LoginSvg';
 
@@ -11,6 +13,18 @@ import useInput, {
 } from '../util/useInput';
 
 export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
+  const queryClient = useQueryClient();
+  const loginMutation = useMutation(
+    (loginInfo: { email: string; password: string }) => {
+      return login(loginInfo.email, loginInfo.password);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['token', 'isTokenValid']);
+      },
+    }
+  );
+
   const {
     errorMessage: emailErrorMessage,
     hasError: emailHasError,
@@ -39,9 +53,12 @@ export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
   } = useInput(passwordInputChecks);
 
   const isFormValid = passwordIsValid && emailIsValid;
-  const submitLoginHandler = () => {
+  const submitLoginHandler = async () => {
     if (isFormValid) {
-      console.log({ emailValue, passwordValue });
+      loginMutation.mutate({
+        email: emailValue,
+        password: passwordValue,
+      });
     } else {
       emailValidate();
       passwordValidate();
