@@ -137,6 +137,8 @@ export const SignupScreen = ({
       submitHandler={submitSignupHandler}
       svg={<SignupSvg />}
       isLoading={mutateSignup.isLoading}
+      hasError={mutateSignup.isError}
+      error={mutateSignup.error}
     />
   );
 };

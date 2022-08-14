@@ -109,6 +109,8 @@ export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
       submitHandler={submitLoginHandler}
       svg={<LoginSvg />}
       isLoading={loginMutation.isLoading}
+      hasError={loginMutation.isError}
+      error={loginMutation.error as string}
     />
   );
 };

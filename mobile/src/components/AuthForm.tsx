@@ -1,7 +1,10 @@
 import React from 'react';
 import { SafeAreaView, View, StyleSheet, KeyboardType } from 'react-native';
 import { AutoCapitalize, AutoComplete } from '../../types';
+import Colors from '../constants/Colors';
+import useColorScheme from '../util/useColorScheme';
 import MyInput from './MyInput';
+import Snackbar from './Snackbar';
 import SolidButton from './SolidButton';
 import { BoldText } from './StyledText';
 import TextButton from './TextButton';
@@ -14,9 +17,16 @@ const AuthForm: React.FC<{
   submitHandler: () => void;
   svg: JSX.Element;
   isLoading: boolean;
+  hasError: boolean;
+  error: string;
 }> = (props) => {
+  const colorScheme = useColorScheme();
   return (
     <SafeAreaView>
+      {props.hasError && (
+        <Snackbar color={Colors[colorScheme].errorColor} text={props.error} />
+      )}
+
       <View style={styles.container}>
         <View style={styles.svgContainer}>{props.svg}</View>
         <View style={styles.body}>
