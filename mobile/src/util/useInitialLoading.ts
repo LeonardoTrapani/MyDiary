@@ -1,8 +1,12 @@
-import { FontAwesome } from '@expo/vector-icons';
-import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import { useIsTokenValid } from './react-query-hooks';
+import {
+  Roboto_400Regular,
+  Roboto_500Medium,
+  Roboto_700Bold,
+  useFonts,
+} from '@expo-google-fonts/roboto';
 
 export default function useInitialLoading() {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
@@ -10,16 +14,16 @@ export default function useInitialLoading() {
   // Load any resources or data that we need prior to rendering the app
   const { isLoading: isUserIdLoading } = useIsTokenValid();
 
+  const [fontsLoaded] = useFonts({
+    regular: Roboto_400Regular,
+    medium: Roboto_500Medium,
+    bold: Roboto_700Bold,
+  });
+
   useEffect(() => {
     async function loadResourcesAndDataAsync() {
       try {
         SplashScreen.preventAutoHideAsync();
-
-        // Load fonts
-        await Font.loadAsync({
-          ...FontAwesome.font,
-          'space-mono': require('../../assets/fonts/SpaceMono-Regular.ttf'),
-        });
       } catch (e) {
         console.warn(e);
         // We might want to provide this error information to an error reporting service
@@ -29,10 +33,10 @@ export default function useInitialLoading() {
       }
     }
 
-    if (isUserIdLoading === false) {
+    if (isUserIdLoading === false && fontsLoaded) {
       loadResourcesAndDataAsync();
     }
-  }, [isUserIdLoading]);
+  }, [isUserIdLoading, fontsLoaded]);
 
   return isLoadingComplete;
 }

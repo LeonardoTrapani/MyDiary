@@ -1,5 +1,9 @@
-const tintColorLight = '#2f95dc';
-const tintColorDark = '#fff';
+import { DefaultTheme, Theme, DarkTheme } from '@react-navigation/native';
+
+const tintColorLight = '#3F68E0';
+const opaqueColorLight = '#1841ba';
+const tintColorDark = '#3F68E0';
+const opaqueColorDark = '#1841ba';
 
 export default {
   light: {
@@ -8,6 +12,8 @@ export default {
     tint: tintColorLight,
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorLight,
+    errorColor: '#E03F68',
+    opaqueColor: opaqueColorLight,
   },
   dark: {
     text: '#fff',
@@ -15,5 +21,24 @@ export default {
     tint: tintColorDark,
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorDark,
+    errorColor: '#E03F68',
+    opaqueColor: opaqueColorDark,
+  },
+};
+
+export const MyLightTheme: Theme = {
+  ...DefaultTheme,
+  dark: false,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: tintColorLight,
+  },
+};
+export const MyDarkTheme: Theme = {
+  ...DarkTheme,
+  dark: true,
+  colors: {
+    ...DarkTheme.colors,
+    primary: tintColorDark,
   },
 };

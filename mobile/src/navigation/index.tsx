@@ -1,24 +1,19 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import {
-  NavigationContainer,
-  DefaultTheme,
-  DarkTheme,
-} from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 import { ColorSchemeName } from 'react-native';
 import { Text } from 'react-native';
-import Colors from '../constants/Colors';
-import useColorScheme from '../util/useColorScheme';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import TabOneScreen from '../screens/TabOneScreen';
 import TabTwoScreen from '../screens/TabTwoScreen';
 import { RootStackParamList, RootTabParamList } from '../../types';
 import LinkingConfiguration from './LinkingConfiguration';
-import { Login, Signup } from '../screens/Auth';
+import { Login, Signup } from '../screens/LoginScreen';
 
 import useInitialLoading from '../util/useInitialLoading';
 import { useIsTokenValid } from '../util/react-query-hooks';
+import { MyDarkTheme, MyLightTheme } from '../constants/Colors';
 
 export default function Main({
   colorScheme,
@@ -34,7 +29,7 @@ export default function Main({
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
-      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+      theme={colorScheme === 'dark' ? MyDarkTheme : MyLightTheme}
       fallback={<Text>Splash screen...</Text>}
     >
       <RootNavigator />
@@ -81,21 +76,13 @@ function RootNavigator() {
 const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
 const BottomTabNavigator = () => {
-  const colorScheme = useColorScheme();
-
   return (
-    <BottomTab.Navigator
-      initialRouteName='TabOne'
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].tint,
-      }}
-    >
+    <BottomTab.Navigator initialRouteName='TabOne'>
       <BottomTab.Screen
         name='TabOne'
         component={TabOneScreen}
         options={() => ({
           title: 'Tab One',
-          // tabBarIcon: ({ color }) => <TabBarIcon name='code' color={color} />,
         })}
       />
       <BottomTab.Screen
@@ -103,7 +90,6 @@ const BottomTabNavigator = () => {
         component={TabTwoScreen}
         options={{
           title: 'Tab Two',
-          // tabBarIcon: ({ color }) => <TabBarIcon name='code' color={color} />,
         }}
       />
     </BottomTab.Navigator>
