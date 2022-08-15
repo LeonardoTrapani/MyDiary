@@ -1,13 +1,32 @@
 import { useQuery } from '@tanstack/react-query';
-import { getToken, validateToken } from '../api/auth';
+import {
+  getIsWeekCreated,
+  getToken,
+  getWeek,
+  validateToken,
+} from '../api/auth';
 
-export const useGetToken = () =>
-  useQuery<string | null>(['token'], getToken, {
-    staleTime: Infinity,
-  });
+export const useGetToken = () => useQuery<string | null>(['token'], getToken);
 
 export const useIsTokenValid = () => {
-  return useQuery<boolean>(['isTokenValid'], validateToken, {
-    staleTime: Infinity,
-  });
+  return useQuery<boolean>(['isTokenValid'], validateToken);
+};
+
+export const useIsWeekCreated = () => {
+  return useQuery<boolean>(['isWeekCreated'], getIsWeekCreated);
+};
+
+export type Week = {
+  id: number;
+  mondayFreeMinutes: number;
+  tuesdayFreeMinutes: number;
+  wednesdayFreeMinutes: number;
+  thursdayFreeMinutes: number;
+  fridayFreeMinutes: number;
+  saturdayFreeMinutes: number;
+  sundayFreeMinutes: number;
+};
+
+export const useWeek = () => {
+  return useQuery<Week | null>(['week'], getWeek);
 };

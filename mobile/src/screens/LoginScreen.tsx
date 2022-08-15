@@ -14,15 +14,15 @@ import useInput, {
 
 export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
   const queryClient = useQueryClient();
-
   const loginMutation = useMutation(
     (loginInfo: { email: string; password: string }) => {
       return login(loginInfo.email, loginInfo.password);
     },
     {
-      onSuccess: () => {
-        console.log('INVALIDATING QUERIES');
+      onSuccess: async () => {
         queryClient.invalidateQueries(['isTokenValid']);
+        queryClient.invalidateQueries(['isWeekCreated']);
+        queryClient.invalidateQueries(['token']);
       },
     }
   );

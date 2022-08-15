@@ -1,6 +1,6 @@
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
-import { useIsTokenValid } from './react-query-hooks';
+import { useIsTokenValid, useIsWeekCreated } from './react-query-hooks';
 import {
   Roboto_400Regular,
   Roboto_500Medium,
@@ -13,7 +13,7 @@ export default function useInitialLoading() {
 
   // Load any resources or data that we need prior to rendering the app
   const { isLoading: isUserIdLoading } = useIsTokenValid();
-
+  const { isLoading: isWeekCreatedLoading } = useIsWeekCreated();
   const [fontsLoaded] = useFonts({
     regular: Roboto_400Regular,
     medium: Roboto_500Medium,
@@ -33,10 +33,14 @@ export default function useInitialLoading() {
       }
     }
 
-    if (isUserIdLoading === false && fontsLoaded) {
+    if (
+      isUserIdLoading === false &&
+      isWeekCreatedLoading === false &&
+      fontsLoaded
+    ) {
       loadResourcesAndDataAsync();
     }
-  }, [isUserIdLoading, fontsLoaded]);
+  }, [isUserIdLoading, fontsLoaded, isWeekCreatedLoading]);
 
   return isLoadingComplete;
 }

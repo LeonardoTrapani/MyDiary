@@ -13,8 +13,9 @@ import { LoginScreen } from '../screens/LoginScreen';
 import { SignupScreen } from '../screens/SignupScreen';
 
 import useInitialLoading from '../util/useInitialLoading';
-import { useIsTokenValid } from '../util/react-query-hooks';
+import { useIsTokenValid, useIsWeekCreated } from '../util/react-query-hooks';
 import { MyDarkTheme, MyLightTheme } from '../constants/Colors';
+import CreateWeekScreen from '../screens/CreateWeekScreen';
 
 export default function Main({
   colorScheme,
@@ -23,7 +24,6 @@ export default function Main({
 }) {
   const isLoadingComplete = useInitialLoading();
   if (!isLoadingComplete) {
-    //SPLASH SCREEN
     return null;
   }
 
@@ -42,14 +42,24 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
   const { data: isTokenValid, error: isTokenValidError } = useIsTokenValid();
+
+  const { data: isWeekCreated, error: isWeekCreatedError } = useIsWeekCreated();
   return (
     <Stack.Navigator>
       {isTokenValid && !isTokenValidError ? (
-        <Stack.Screen
-          name='Root'
-          component={BottomTabNavigator}
-          options={{ headerShown: false }}
-        />
+        isWeekCreated && !isWeekCreatedError ? (
+          <Stack.Screen
+            name='Root'
+            component={BottomTabNavigator}
+            options={{ headerShown: false }}
+          />
+        ) : (
+          <Stack.Screen
+            name='CreateWeek'
+            component={CreateWeekScreen}
+            options={{ headerShown: false }}
+          />
+        )
       ) : (
         <>
           <Stack.Screen

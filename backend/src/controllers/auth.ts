@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 import { prisma } from '../app';
 import { CustomRequest } from '../models';
 import { throwResponseError } from '../utilities';
+import { fetchWeek } from './week';
 
 export const signup = async (
   req: CustomRequest<{
@@ -83,11 +84,10 @@ export const login = async (
       { email: user.email, userId: user.id },
       process.env.JWT_SECRET!
     );
+    const week = await fetchWeek(user.id);
     return res.status(200).json({
       token,
-      userId: user.id,
-      username: user.username,
-      email: user.email,
+      weekCreated: !!week,
     });
   } catch (err) {
     return throwResponseError('unable to login', 400, res);

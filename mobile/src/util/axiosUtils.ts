@@ -6,8 +6,11 @@ export const useGetDataFromAxiosError = (
   defaultMessage: string | undefined = 'an error has occurred'
 ) =>
   useCallback(() => {
-    if (!err || !err.response) {
+    if (!err) {
       return null;
+    }
+    if (!err.response) {
+      return defaultMessage;
     }
     const data = err.response.data as {
       message: string;

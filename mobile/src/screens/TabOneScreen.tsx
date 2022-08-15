@@ -2,11 +2,33 @@ import { StyleSheet } from 'react-native';
 import React from 'react';
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
+import TextButton from '../components/TextButton';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { logout } from '../api/auth';
 
 export default function TabOneScreen() {
+  const queryClient = useQueryClient();
+  const logoutMutation = useMutation(
+    () => {
+      return logout();
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['isTokenValid']);
+        queryClient.invalidateQueries(['isWeekCreated']);
+        queryClient.invalidateQueries(['token']);
+      },
+    }
+  );
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tab One</Text>
+      <TextButton
+        title='logout'
+        onPress={() => {
+          logoutMutation.mutate();
+        }}
+      />
       <View
         style={styles.separator}
         lightColor='#eee'
