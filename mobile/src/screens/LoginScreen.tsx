@@ -7,10 +7,7 @@ import { login } from '../api/auth';
 import AuthForm, { AuthInputType } from '../components/AuthForm';
 import LoginSvg from '../components/svgs/LoginSvg';
 
-import useInput, {
-  emailValidCheck,
-  // passwordInputChecks,
-} from '../util/useInput';
+import useInput, { emailValidCheck } from '../util/useInput';
 
 export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
   const queryClient = useQueryClient();
