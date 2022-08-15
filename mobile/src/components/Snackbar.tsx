@@ -5,22 +5,26 @@ import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
 import { MediumText } from './StyledText';
 
 const Snackbar: React.FC<{
-  text: string;
   color: string;
+  text: string | null;
+  isActive: boolean;
 }> = (props) => {
-  return (
-    <SafeAreaInsetsContext.Consumer>
-      {(insets) => (
-        <View style={[styles.container, { marginBottom: insets?.bottom }]}>
-          <View style={[styles.snackbar]}>
-            <MediumText style={[{ color: props.color }, styles.text]}>
-              {props.text}
-            </MediumText>
+  if (props.isActive) {
+    return (
+      <SafeAreaInsetsContext.Consumer>
+        {(insets) => (
+          <View style={[styles.container, { marginBottom: insets?.bottom }]}>
+            <View style={[styles.snackbar]}>
+              <MediumText style={[{ color: props.color }, styles.text]}>
+                {props.text}
+              </MediumText>
+            </View>
           </View>
-        </View>
-      )}
-    </SafeAreaInsetsContext.Consumer>
-  );
+        )}
+      </SafeAreaInsetsContext.Consumer>
+    );
+  }
+  return <></>;
 };
 
 const styles = StyleSheet.create({

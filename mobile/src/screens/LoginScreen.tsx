@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 import React from 'react';
 import { Text } from 'react-native';
 
@@ -110,7 +111,7 @@ export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
       svg={<LoginSvg />}
       isLoading={loginMutation.isLoading}
       hasError={loginMutation.isError}
-      error={loginMutation.error as string}
+      error={loginMutation.error as AxiosError}
     />
   );
 };

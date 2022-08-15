@@ -1,13 +1,18 @@
+import { AxiosError } from 'axios';
 import React from 'react';
 import { SafeAreaView, View, StyleSheet, KeyboardType } from 'react-native';
 import { AutoCapitalize, AutoComplete } from '../../types';
-import Colors from '../constants/Colors';
-import useColorScheme from '../util/useColorScheme';
 import MyInput from './MyInput';
-import Snackbar from './Snackbar';
+
 import SolidButton from './SolidButton';
-import { BoldText } from './StyledText';
+import { BoldText, MediumText } from './StyledText';
 import TextButton from './TextButton';
+import { useGetDataFromAxiosError } from '../util/axiosUtils';
+import useColorScheme from '../util/useColorScheme';
+import Colors from '../constants/Colors';
+import { Roboto_100Thin } from '@expo-google-fonts/roboto';
+import globalStyles from '../constants/Syles';
+import Error from './Error';
 
 const AuthForm: React.FC<{
   title: string;
@@ -18,15 +23,16 @@ const AuthForm: React.FC<{
   svg: JSX.Element;
   isLoading: boolean;
   hasError: boolean;
-  error: string;
+  error: AxiosError;
 }> = (props) => {
+  const getDataFromAxiosError = useGetDataFromAxiosError(
+    props.error,
+    "counldn't authenticate"
+  );
+
   const colorScheme = useColorScheme();
   return (
     <SafeAreaView>
-      {props.hasError && (
-        <Snackbar color={Colors[colorScheme].errorColor} text={props.error} />
-      )}
-
       <View style={styles.container}>
         <View style={styles.svgContainer}>{props.svg}</View>
         <View style={styles.body}>
@@ -61,6 +67,7 @@ const AuthForm: React.FC<{
               style={styles.submitButton}
             />
           </View>
+          {props.hasError && <Error text={getDataFromAxiosError()} />}
           <TextButton
             title={props.insteadTitle}
             style={[styles.instead]}

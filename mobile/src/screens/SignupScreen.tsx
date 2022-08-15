@@ -8,6 +8,7 @@ import useInput, {
 import SignupSvg from '../components/svgs/SignupSvg';
 import { useMutation } from '@tanstack/react-query';
 import { signup } from '../api/auth';
+import { AxiosError } from 'axios';
 
 export const SignupScreen = ({
   navigation,
@@ -138,7 +139,7 @@ export const SignupScreen = ({
       svg={<SignupSvg />}
       isLoading={mutateSignup.isLoading}
       hasError={mutateSignup.isError}
-      error={mutateSignup.error}
+      error={mutateSignup.error as AxiosError}
     />
   );
 };

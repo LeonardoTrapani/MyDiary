@@ -9,6 +9,7 @@ import React from 'react';
 import { BoldText } from './StyledText';
 import { useTheme } from '@react-navigation/native';
 import { View } from './Themed';
+import globalStyles from '../constants/Syles';
 
 interface CustomTouchableOpacityProps extends TouchableHighlightProps {
   title: string;
@@ -23,6 +24,7 @@ const SolidButton: React.FC<CustomTouchableOpacityProps> = (props) => {
       activeOpacity={0.4}
       style={[
         styles.button,
+        globalStyles.shadow,
         {
           backgroundColor: primary,
         },
