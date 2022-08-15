@@ -22,7 +22,8 @@ export const signup = async (
 
     const hashedPassword = await bcrypt.hash(password, 12);
     if (await mailAlreadyExists(email)) {
-      throw new Error();
+      throwResponseError('This email is already in use', 400, res);
+      return;
     }
     await prisma.user.create({
       data: {

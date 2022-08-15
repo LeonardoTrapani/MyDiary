@@ -5,13 +5,10 @@ import { AutoCapitalize, AutoComplete } from '../../types';
 import MyInput from './MyInput';
 
 import SolidButton from './SolidButton';
-import { BoldText, MediumText } from './StyledText';
+import { BoldText } from './StyledText';
 import TextButton from './TextButton';
 import { useGetDataFromAxiosError } from '../util/axiosUtils';
-import useColorScheme from '../util/useColorScheme';
-import Colors from '../constants/Colors';
-import { Roboto_100Thin } from '@expo-google-fonts/roboto';
-import globalStyles from '../constants/Syles';
+
 import Error from './Error';
 
 const AuthForm: React.FC<{
@@ -30,13 +27,13 @@ const AuthForm: React.FC<{
     "counldn't authenticate"
   );
 
-  const colorScheme = useColorScheme();
   return (
     <SafeAreaView>
       <View style={styles.container}>
         <View style={styles.svgContainer}>{props.svg}</View>
         <View style={styles.body}>
           <View>
+            {props.hasError && <Error text={getDataFromAxiosError()} />}
             <BoldText style={[styles.title]}>{props.title}</BoldText>
             <View>
               {props.inputs.map((input) => {
@@ -67,7 +64,6 @@ const AuthForm: React.FC<{
               style={styles.submitButton}
             />
           </View>
-          {props.hasError && <Error text={getDataFromAxiosError()} />}
           <TextButton
             title={props.insteadTitle}
             style={[styles.instead]}

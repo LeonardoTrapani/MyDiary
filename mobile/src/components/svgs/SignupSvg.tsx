@@ -1,11 +1,9 @@
 import * as React from 'react';
 import Svg, { SvgProps, Path, Circle } from 'react-native-svg';
-import { View } from '../Themed';
 
 const SvgComponent = (props: SvgProps) => {
   const originalWidth = 794.235;
   const originalHeight = 458.828;
-  const aspectRatio = originalWidth / originalHeight;
 
   return (
     <Svg

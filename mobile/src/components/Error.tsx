@@ -28,10 +28,11 @@ const Error: React.FC<{
 const styles = StyleSheet.create({
   errorText: {
     fontSize: 17,
-    alignSelf: 'center',
+    textAlign: 'center',
     color: '#fff',
   },
   errorContainer: {
+    marginBottom: 20,
     padding: 15,
   },
 });

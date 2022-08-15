@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import React from 'react';
-import { Text } from 'react-native';
 
 import { RootStackScreenProps } from '../../types';
 import { login } from '../api/auth';
@@ -114,8 +113,4 @@ export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
       error={loginMutation.error as AxiosError}
     />
   );
-};
-
-export const Signup: React.FC = () => {
-  return <Text>SIGNUP</Text>;
 };

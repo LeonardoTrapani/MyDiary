@@ -13,7 +13,7 @@ import { AxiosError } from 'axios';
 export const SignupScreen = ({
   navigation,
 }: RootStackScreenProps<'Signup'>) => {
-  const mutateSignup = useMutation(
+  const signupMutation = useMutation(
     (signupInfo: { email: string; password: string; username: string }) => {
       return signup(signupInfo.username, signupInfo.email, signupInfo.password);
     },
@@ -71,7 +71,7 @@ export const SignupScreen = ({
   const isFormValid = passwordIsValid && emailIsValid && usernameIsValid;
   const submitSignupHandler = () => {
     if (isFormValid) {
-      mutateSignup.mutate({
+      signupMutation.mutate({
         email: emailValue,
         password: passwordValue,
         username: usernameValue,
@@ -137,9 +137,9 @@ export const SignupScreen = ({
       inputs={inputs}
       submitHandler={submitSignupHandler}
       svg={<SignupSvg />}
-      isLoading={mutateSignup.isLoading}
-      hasError={mutateSignup.isError}
-      error={mutateSignup.error as AxiosError}
+      isLoading={signupMutation.isLoading}
+      hasError={signupMutation.isError}
+      error={signupMutation.error as AxiosError}
     />
   );
 };
