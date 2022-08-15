@@ -9,7 +9,7 @@ import LoginSvg from '../components/svgs/LoginSvg';
 
 import useInput, {
   emailValidCheck,
-  passwordInputChecks,
+  // passwordInputChecks,
 } from '../util/useInput';
 
 export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
@@ -52,7 +52,13 @@ export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
     onChangeText: passwordOnChangeText,
     validate: passwordValidate,
     value: passwordValue,
-  } = useInput(passwordInputChecks);
+  } = useInput([
+    {
+      check: (value) => !!value,
+      errorMessage: 'please enter a password',
+    },
+  ]);
+  // } = useInput(passwordInputChecks);
 
   const isFormValid = passwordIsValid && emailIsValid;
   const submitLoginHandler = async () => {

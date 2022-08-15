@@ -1,6 +1,12 @@
 import { AxiosError } from 'axios';
 import React from 'react';
-import { SafeAreaView, View, StyleSheet, KeyboardType } from 'react-native';
+import {
+  SafeAreaView,
+  View,
+  StyleSheet,
+  KeyboardType,
+  KeyboardAvoidingView,
+} from 'react-native';
 import { AutoCapitalize, AutoComplete } from '../../types';
 import MyInput from './MyInput';
 
@@ -10,6 +16,7 @@ import TextButton from './TextButton';
 import { useGetDataFromAxiosError } from '../util/axiosUtils';
 
 import Error from './Error';
+import useKeyboardOpened from '../util/useKeyboardOpened';
 
 const AuthForm: React.FC<{
   title: string;
@@ -26,52 +33,63 @@ const AuthForm: React.FC<{
     props.error,
     "counldn't authenticate"
   );
-
+  const isKeyboardOpened = useKeyboardOpened();
   return (
-    <SafeAreaView>
-      <View style={styles.container}>
-        <View style={styles.svgContainer}>{props.svg}</View>
-        <View style={styles.body}>
-          <View>
-            {props.hasError && <Error text={getDataFromAxiosError()} />}
-            <BoldText style={[styles.title]}>{props.title}</BoldText>
-            <View>
-              {props.inputs.map((input) => {
-                return (
-                  <MyInput
-                    key={input.name}
-                    name={input.name}
-                    errorMessage={input.errorMessage}
-                    hasError={input.hasError}
-                    keyboardType={input.keyboardType}
-                    value={input.value}
-                    onChangeText={input.onChangeText}
-                    autoComplete={input.autoComplete}
-                    autoCorrect={false}
-                    onBlur={input.validate}
-                    autoCapitalize={input.autoCapitalize}
-                    secureTextEntry={input.secureTextEntry}
-                    style={styles.applyGap}
-                  />
-                );
-              })}
-            </View>
-
-            <SolidButton
-              isLoading={props.isLoading}
-              title={props.title}
-              onPress={props.submitHandler}
-              style={styles.submitButton}
-            />
+    <KeyboardAvoidingView behavior='padding'>
+      <SafeAreaView>
+        <View style={styles.container}>
+          <View
+            style={[
+              styles.svgContainer,
+              isKeyboardOpened ? { height: '30%' } : {},
+            ]}
+          >
+            {props.svg}
           </View>
-          <TextButton
-            title={props.insteadTitle}
-            style={[styles.instead]}
-            onPress={props.insteadHandler}
-          />
+          <View style={styles.body}>
+            <View>
+              {props.hasError && <Error text={getDataFromAxiosError()} />}
+              <BoldText style={[styles.title]}>{props.title}</BoldText>
+              <View>
+                {props.inputs.map((input) => {
+                  return (
+                    <MyInput
+                      key={input.name}
+                      name={input.name}
+                      errorMessage={input.errorMessage}
+                      hasError={input.hasError}
+                      keyboardType={input.keyboardType}
+                      value={input.value}
+                      onChangeText={input.onChangeText}
+                      autoComplete={input.autoComplete}
+                      autoCorrect={false}
+                      onBlur={input.validate}
+                      autoCapitalize={input.autoCapitalize}
+                      secureTextEntry={input.secureTextEntry}
+                      style={styles.applyGap}
+                    />
+                  );
+                })}
+              </View>
+
+              <SolidButton
+                isLoading={props.isLoading}
+                title={props.title}
+                onPress={props.submitHandler}
+                style={styles.submitButton}
+              />
+            </View>
+            {!isKeyboardOpened && (
+              <TextButton
+                title={props.insteadTitle}
+                style={[styles.instead]}
+                onPress={props.insteadHandler}
+              />
+            )}
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 
