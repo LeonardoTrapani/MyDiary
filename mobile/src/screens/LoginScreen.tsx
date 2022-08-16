@@ -1,12 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { RootStackScreenProps } from '../../types';
 import { login } from '../api/auth';
 import AuthForm, { AuthInputType } from '../components/AuthForm';
 import LoginSvg from '../components/svgs/LoginSvg';
-import { useIsWeekCreated } from '../util/react-query-hooks';
 
 import useInput, { emailValidCheck } from '../util/useInput';
 
@@ -22,7 +21,13 @@ export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
       },
     }
   );
-  const { isLoading: isWeekLoading } = useIsWeekCreated();
+  const [loginHasLoaded, setLoginHasLoaded] = useState(false);
+
+  useEffect(() => {
+    if (loginMutation.isLoading) {
+      setLoginHasLoaded(true);
+    }
+  }, [loginMutation.isLoading]);
   const {
     errorMessage: emailErrorMessage,
     hasError: emailHasError,
@@ -107,7 +112,7 @@ export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
       inputs={inputs}
       submitHandler={submitLoginHandler}
       svg={<LoginSvg />}
-      isLoading={loginMutation.isLoading || isWeekLoading}
+      isLoading={loginHasLoaded}
       hasError={loginMutation.isError}
       error={loginMutation.error as AxiosError}
     />
