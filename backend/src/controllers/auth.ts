@@ -26,7 +26,7 @@ export const signup = async (
       throwResponseError('This email is already in use', 400, res);
       return;
     }
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         email,
         hashedPassword,
@@ -34,8 +34,14 @@ export const signup = async (
       },
     });
 
+    const token = jwt.sign(
+      { email: user.email, userId: user.id },
+      process.env.JWT_SECRET!
+    );
+
     res.json({
       email,
+      token,
       username,
     });
   } catch (err) {

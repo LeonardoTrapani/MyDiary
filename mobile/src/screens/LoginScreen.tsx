@@ -23,7 +23,6 @@ export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
       },
     }
   );
-
   const {
     errorMessage: emailErrorMessage,
     hasError: emailHasError,
@@ -32,10 +31,7 @@ export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
     validate: emailValidate,
     value: emailValue,
   } = useInput([
-    {
-      check: (value) => !!value,
-      errorMessage: 'please enter an email',
-    },
+    { check: (value) => !!value, errorMessage: 'please enter an email' },
     {
       check: emailValidCheck,
       errorMessage: 'please enter a valid email',

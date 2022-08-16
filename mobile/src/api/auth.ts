@@ -57,6 +57,13 @@ export const signup = async (
     username,
     password,
   });
+
+  try {
+    await SecureStore.setItemAsync('token', res.data.token);
+    await SecureStore.setItemAsync('weekCreated', JSON.stringify(false));
+  } catch (error) {
+    throw new Error("Couldn't login");
+  }
   return res;
 };
 

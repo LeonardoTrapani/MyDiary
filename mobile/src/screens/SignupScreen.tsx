@@ -6,20 +6,23 @@ import useInput, {
   passwordInputChecks,
 } from '../util/useInput';
 import SignupSvg from '../components/svgs/SignupSvg';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { signup } from '../api/auth';
 import { AxiosError } from 'axios';
 
 export const SignupScreen = ({
   navigation,
 }: RootStackScreenProps<'Signup'>) => {
+  const queryClient = useQueryClient();
   const signupMutation = useMutation(
     (signupInfo: { email: string; password: string; username: string }) => {
       return signup(signupInfo.username, signupInfo.email, signupInfo.password);
     },
     {
-      onSuccess: () => {
-        navigation.navigate('Login');
+      onSuccess: async () => {
+        queryClient.invalidateQueries(['isWeekCreated']);
+        queryClient.invalidateQueries(['isTokenValid']);
+        queryClient.invalidateQueries(['token']);
       },
     }
   );
