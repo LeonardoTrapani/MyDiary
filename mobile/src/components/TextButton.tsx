@@ -10,7 +10,7 @@ import { RegularText } from './StyledText';
 
 interface CustomTouchableOpacityProps extends TouchableOpacityProps {
   title: string;
-  textStyle: StyleProp<TextStyle>;
+  textStyle?: StyleProp<TextStyle>;
 }
 
 const TextButton: React.FC<CustomTouchableOpacityProps> = (props) => {

@@ -56,6 +56,7 @@ export const createWeek = async (
     });
     return res.json(week);
   } catch (err) {
+    console.log(err);
     return throwResponseError(
       'an error has occurred creating the week',
       400,

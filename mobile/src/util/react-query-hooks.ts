@@ -17,7 +17,6 @@ export const useIsWeekCreated = () => {
 };
 
 export type Week = {
-  id: number;
   mondayFreeMinutes: number;
   tuesdayFreeMinutes: number;
   wednesdayFreeMinutes: number;

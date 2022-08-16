@@ -19,10 +19,10 @@ export const SignupScreen = ({
       return signup(signupInfo.username, signupInfo.email, signupInfo.password);
     },
     {
-      onSuccess: async () => {
-        queryClient.invalidateQueries(['isWeekCreated']);
+      onSuccess: () => {
         queryClient.invalidateQueries(['isTokenValid']);
         queryClient.invalidateQueries(['token']);
+        queryClient.invalidateQueries(['isWeekCreated']);
       },
     }
   );

@@ -5,11 +5,10 @@ import { Week } from '../util/react-query-hooks';
 
 export const validateToken = async () => {
   const token = await getToken();
-
   if (token) {
     const res = await axios.get<boolean>(BACKEND_URL + '/validateToken', {
       headers: {
-        Authorization: `bearer ${token}`,
+        Authorization: token,
       },
     });
 
@@ -23,7 +22,7 @@ export const validateToken = async () => {
 };
 
 export const getToken = async () => {
-  return await SecureStore.getItemAsync('token');
+  return 'Bearer ' + (await SecureStore.getItemAsync('token'));
 };
 
 export const login = async (email: string, password: string) => {
@@ -82,11 +81,13 @@ export const getWeek = async () => {
 
 export const getIsWeekCreated = async () => {
   const res = await SecureStore.getItemAsync('weekCreated');
+  console.log('weekCreated: ', res);
   if (!res) {
     return false;
   }
   const weekCreated = JSON.parse(res);
   if (typeof weekCreated !== 'boolean') {
+    console.log(weekCreated, ' is not a boolean, deleting everything');
     await SecureStore.deleteItemAsync('weekCreated');
     return false;
   }
