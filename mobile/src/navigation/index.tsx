@@ -16,6 +16,7 @@ import useInitialLoading from '../util/useInitialLoading';
 import { useIsWeekCreated, useValidToken } from '../util/react-query-hooks';
 import { MyDarkTheme, MyLightTheme } from '../constants/Colors';
 import CreateWeekScreen from '../screens/CreateWeekScreen';
+import { createIconSetFromFontello } from '@expo/vector-icons';
 
 export default function Main({
   colorScheme,
@@ -51,17 +52,13 @@ const NavigatorBody: React.FC = () => {
   const { data: isWeekCreated, isFetching: isWeekFetching } =
     useIsWeekCreated();
 
-  if (!validToken || (isWeekFetching && !validToken)) {
+  if (validToken && !isWeekCreated && !isWeekFetching) {
+    console.log('RENDERING WEEK');
     return (
       <Stack.Navigator>
         <Stack.Screen
-          name='Login'
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name='Signup'
-          component={SignupScreen}
+          name='CreateWeek'
+          component={CreateWeekScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen
@@ -72,7 +69,9 @@ const NavigatorBody: React.FC = () => {
       </Stack.Navigator>
     );
   }
+
   if (validToken && isWeekCreated) {
+    console.log('RENDERING ROOT');
     return (
       <Stack.Navigator>
         <Stack.Screen
@@ -89,28 +88,24 @@ const NavigatorBody: React.FC = () => {
     );
   }
 
-  if (validToken && !isWeekCreated) {
-    return (
-      <Stack.Navigator>
-        <Stack.Screen
-          name='CreateWeek'
-          component={CreateWeekScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name='NotFound'
-          component={NotFoundScreen}
-          options={{ title: 'Oops!' }}
-        />
-      </Stack.Navigator>
-    );
-  }
   return (
-    <Stack.Screen
-      name='NotFound'
-      component={NotFoundScreen}
-      options={{ title: 'Oops!' }}
-    />
+    <Stack.Navigator>
+      <Stack.Screen
+        name='Login'
+        component={LoginScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name='Signup'
+        component={SignupScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name='NotFound'
+        component={NotFoundScreen}
+        options={{ title: 'Oops!' }}
+      />
+    </Stack.Navigator>
   );
 };
 
