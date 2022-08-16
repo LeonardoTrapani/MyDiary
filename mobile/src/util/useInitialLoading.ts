@@ -1,46 +1,68 @@
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
-import { useIsTokenValid, useIsWeekCreated } from './react-query-hooks';
+import { useValidToken } from './react-query-hooks';
 import {
   Roboto_400Regular,
   Roboto_500Medium,
   Roboto_700Bold,
   useFonts,
 } from '@expo-google-fonts/roboto';
+import { useQuery } from '@tanstack/react-query';
+import { getIsWeekCreatedWithToken } from '../api/auth';
 
 export default function useInitialLoading() {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
 
   // Load any resources or data that we need prior to rendering the app
-  const { isLoading: isUserIdLoading } = useIsTokenValid();
-  const { isLoading: isWeekCreatedLoading } = useIsWeekCreated();
+
+  const { data: validToken, isFetched: isValidTokenFetched } = useValidToken();
+  console.log({ validToken });
+  const { isFetched: isWeekCreatedFetched } = useQuery<boolean>(
+    ['isWeekCreated', validToken],
+    getIsWeekCreatedWithToken,
+    {
+      enabled: !!validToken,
+    }
+  );
   const [fontsLoaded] = useFonts({
     regular: Roboto_400Regular,
     medium: Roboto_500Medium,
     bold: Roboto_700Bold,
   });
 
-  useEffect(() => {
-    async function loadResourcesAndDataAsync() {
-      try {
-        SplashScreen.preventAutoHideAsync();
-      } catch (e) {
-        console.warn(e);
-        // We might want to provide this error information to an error reporting service
-      } finally {
-        setLoadingComplete(true);
-        SplashScreen.hideAsync();
-      }
+  const loadResourcesAndDataAsync = async () => {
+    try {
+      SplashScreen.preventAutoHideAsync();
+    } catch (e) {
+      console.warn(e);
+      // We might want to provide this error information to an error reporting service
+    } finally {
+      console.log('LOADING RESOURCES');
+      setLoadingComplete(true);
+      SplashScreen.hideAsync();
     }
+  };
 
-    if (
-      isUserIdLoading === false &&
-      isWeekCreatedLoading === false &&
-      fontsLoaded
-    ) {
-      loadResourcesAndDataAsync();
+  useEffect(() => {
+    if (isLoadingComplete) {
+      return;
     }
-  }, [isUserIdLoading, fontsLoaded, isWeekCreatedLoading]);
+    if (
+      !isValidTokenFetched ||
+      (!isWeekCreatedFetched && !!validToken) ||
+      !fontsLoaded
+    ) {
+      console.log('RETURNING');
+      return;
+    }
+    loadResourcesAndDataAsync();
+  }, [
+    fontsLoaded,
+    isLoadingComplete,
+    isValidTokenFetched,
+    isWeekCreatedFetched,
+    validToken,
+  ]);
 
   return isLoadingComplete;
 }

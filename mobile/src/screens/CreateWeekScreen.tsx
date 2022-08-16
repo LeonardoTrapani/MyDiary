@@ -31,8 +31,6 @@ const CreateWeekScreen = () => {
       onSuccess: async () => {
         await SecureStore.setItemAsync('weekCreated', JSON.stringify(true));
 
-        console.log('SET week created token to true');
-
         queryClient.invalidateQueries(['isWeekCreated']);
       },
     }

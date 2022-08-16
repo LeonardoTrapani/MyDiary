@@ -1,15 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import {
-  getIsWeekCreated,
-  getToken,
-  getWeek,
-  validateToken,
-} from '../api/auth';
+import { getIsWeekCreated, getWeek, validateToken } from '../api/auth';
 
-export const useGetToken = () => useQuery<string | null>(['token'], getToken);
-
-export const useIsTokenValid = () => {
-  return useQuery<boolean>(['isTokenValid'], validateToken);
+export const useValidToken = () => {
+  return useQuery<string | null>(['isTokenValid'], validateToken);
 };
 
 export const useIsWeekCreated = () => {

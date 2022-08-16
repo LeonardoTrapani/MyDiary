@@ -13,7 +13,7 @@ import { LoginScreen } from '../screens/LoginScreen';
 import { SignupScreen } from '../screens/SignupScreen';
 
 import useInitialLoading from '../util/useInitialLoading';
-import { useIsTokenValid, useIsWeekCreated } from '../util/react-query-hooks';
+import { useIsWeekCreated, useValidToken } from '../util/react-query-hooks';
 import { MyDarkTheme, MyLightTheme } from '../constants/Colors';
 import CreateWeekScreen from '../screens/CreateWeekScreen';
 
@@ -41,12 +41,11 @@ export default function Main({
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
-  const { data: isTokenValid, error: isTokenValidError } = useIsTokenValid();
-
+  const { data: validToken, error: validTokenError } = useValidToken();
   const { data: isWeekCreated, error: isWeekCreatedError } = useIsWeekCreated();
   return (
     <Stack.Navigator>
-      {isTokenValid && !isTokenValidError ? (
+      {!!validToken && !validTokenError ? (
         isWeekCreated && !isWeekCreatedError ? (
           <Stack.Screen
             name='Root'
