@@ -17,9 +17,7 @@ export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
     },
     {
       onSuccess: async () => {
-        queryClient.invalidateQueries(['isTokenValid']);
-        queryClient.invalidateQueries(['isWeekCreated']);
-        queryClient.invalidateQueries(['token']);
+        queryClient.invalidateQueries(['validToken']);
       },
     }
   );

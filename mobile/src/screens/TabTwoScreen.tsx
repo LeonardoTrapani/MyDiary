@@ -1,14 +1,10 @@
 import { StyleSheet } from 'react-native';
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import EditScreenInfo from '../components/EditScreenInfo';
 import { Text, View } from '../components/Themed';
 
 export default function TabTwoScreen() {
-  const a = 'b';
-  useEffect(() => {
-    console.log(a);
-  }, []);
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tab Two</Text>

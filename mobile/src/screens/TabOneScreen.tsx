@@ -14,9 +14,7 @@ export default function TabOneScreen() {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(['isWeekCreated']);
-        queryClient.invalidateQueries(['isTokenValid']);
-        queryClient.invalidateQueries(['token']);
+        queryClient.invalidateQueries(['validToken']);
       },
     }
   );

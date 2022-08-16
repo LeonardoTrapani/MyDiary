@@ -20,9 +20,7 @@ export const SignupScreen = ({
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(['isTokenValid']);
-        queryClient.invalidateQueries(['token']);
-        queryClient.invalidateQueries(['isWeekCreated']);
+        queryClient.invalidateQueries(['validToken']);
       },
     }
   );

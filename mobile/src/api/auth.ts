@@ -1,5 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { BACKEND_URL } from '../constants/constants';
 import { Week } from '../util/react-query-hooks';
 
@@ -87,16 +87,15 @@ export const getWeek = async () => {
 };
 
 export const getWeekWithToken = async (token: string) => {
-  const res = await axios.get<Week>(BACKEND_URL + '/week/get', {
+  const res = await axios.get<{ week: Week }>(BACKEND_URL + '/week/get', {
     headers: {
-      Authentication: token,
+      Authorization: token,
     },
   });
-  return res.data;
+  return res.data.week;
 };
 
 export const getIsWeekCreated = async () => {
-  console.log('NORMAL GET IS WEEK CREATED');
   const res = await SecureStore.getItemAsync('weekCreated');
   if (!res) {
     return false;
@@ -115,10 +114,10 @@ export const getIsWeekCreatedWithToken = async ({
   queryKey,
 }: // eslint-disable-next-line @typescript-eslint/no-explicit-any
 any) => {
-  console.log('GET IS WEEK CREATED WITH TOKEN');
   try {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, token] = queryKey;
+
     const res = await SecureStore.getItemAsync('weekCreated');
     if (!res) {
       return false;
@@ -131,17 +130,16 @@ any) => {
     }
     if (weekCreated === false && token) {
       const week = await getWeekWithToken(token);
+
       if (week) {
-        console.log('WEEK WAS CREATED (' + week + ')');
         return true;
       }
-      console.log('WEEK WAS ACTUALLY NOT CREATED');
       return false;
     }
-    console.log('returning: ' + { weekCreated });
     return weekCreated;
   } catch (err) {
-    console.warn(err);
+    const error = err as AxiosError;
+    console.warn(error.response?.data);
     return false;
   }
 };

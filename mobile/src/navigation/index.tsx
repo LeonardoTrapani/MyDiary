@@ -45,36 +45,69 @@ function RootNavigator() {
   const { data: isWeekCreated, error: isWeekCreatedError } = useIsWeekCreated();
 
   return (
-    <Stack.Navigator>
-      {!!validToken && !validTokenError ? (
-        isWeekCreated && !isWeekCreatedError ? (
-          <Stack.Screen
-            name='Root'
-            component={BottomTabNavigator}
-            options={{ headerShown: false }}
-          />
-        ) : (
-          <Stack.Screen
-            name='CreateWeek'
-            component={CreateWeekScreen}
-            options={{ headerShown: false }}
-          />
-        )
-      ) : (
-        <>
-          <Stack.Screen
-            name='Login'
-            component={LoginScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name='Signup'
-            component={SignupScreen}
-            options={{ headerShown: false }}
-          />
-        </>
-      )}
+    <NavigatorBody
+      isWeekCreated={isWeekCreated}
+      isWeekCreatedError={isWeekCreatedError}
+      validToken={validToken}
+      validTokenError={validTokenError}
+    />
+  );
+}
 
+const BottomTab = createBottomTabNavigator<RootTabParamList>();
+
+const NavigatorBody: React.FC<{
+  validToken: string | null | undefined;
+  isWeekCreated: boolean | undefined;
+  validTokenError: unknown;
+  isWeekCreatedError: unknown;
+}> = (props) => {
+  if (props.validToken && props.isWeekCreated) {
+    return (
+      <Stack.Navigator>
+        <Stack.Screen
+          name='Root'
+          component={BottomTabNavigator}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name='NotFound'
+          component={NotFoundScreen}
+          options={{ title: 'Oops!' }}
+        />
+      </Stack.Navigator>
+    );
+  }
+
+  if (props.validToken && !props.isWeekCreated) {
+    return (
+      <Stack.Navigator>
+        <Stack.Screen
+          name='CreateWeek'
+          component={CreateWeekScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name='NotFound'
+          component={NotFoundScreen}
+          options={{ title: 'Oops!' }}
+        />
+      </Stack.Navigator>
+    );
+  }
+
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name='Login'
+        component={LoginScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name='Signup'
+        component={SignupScreen}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen
         name='NotFound'
         component={NotFoundScreen}
@@ -82,9 +115,13 @@ function RootNavigator() {
       />
     </Stack.Navigator>
   );
-}
+};
 
-const BottomTab = createBottomTabNavigator<RootTabParamList>();
+<Stack.Screen
+  name='NotFound'
+  component={NotFoundScreen}
+  options={{ title: 'Oops!' }}
+/>;
 
 const BottomTabNavigator = () => {
   return (

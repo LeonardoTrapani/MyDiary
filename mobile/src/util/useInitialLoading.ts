@@ -1,15 +1,12 @@
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
-import { useIsWeekCreated, useValidToken } from './react-query-hooks';
+import { useIsWeekCreated } from './react-query-hooks';
 import {
   Roboto_400Regular,
   Roboto_500Medium,
   Roboto_700Bold,
   useFonts,
 } from '@expo-google-fonts/roboto';
-import { useQuery } from '@tanstack/react-query';
-import { getIsWeekCreatedWithToken } from '../api/auth';
-
 export default function useInitialLoading() {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
 
@@ -34,8 +31,8 @@ export default function useInitialLoading() {
       // We might want to provide this error information to an error reporting service
     } finally {
       console.log('LOADING RESOURCES');
+      await SplashScreen.hideAsync();
       setLoadingComplete(true);
-      SplashScreen.hideAsync();
     }
   };
 
