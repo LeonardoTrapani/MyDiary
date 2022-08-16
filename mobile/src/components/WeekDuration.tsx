@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import globalStyles from '../constants/Syles';
 import MyTimePicker from './MyTimePicker';
 import { RegularText } from './StyledText';
@@ -24,35 +24,39 @@ const WeekDuration: React.FC<{
   const m = useMemo(() => minutes % 60, [minutes]);
 
   return (
-    <View style={[styles.container, globalStyles.smallShadow]}>
-      <RegularText style={styles.name}>{name}</RegularText>
-      <TextButton
-        title={`${h}h ${m}m`}
-        textStyle={styles.time}
-        onPress={open}
-      />
-      <MyTimePicker
-        isVisible={isOpened}
-        onCancel={onCancel}
-        onConfirm={(date) => {
-          setIsOpened(false);
-          const minutes = date.getMinutes() + date.getHours() * 60;
-          onSetValue(minutes);
-        }}
-        defaultMinutes={m}
-        deafaultHours={h}
-      />
+    <View style={[globalStyles.smallShadow, styles.container]}>
+      <TouchableOpacity style={styles.touchable} onPress={open}>
+        <RegularText style={styles.name}>{name}</RegularText>
+        <TextButton
+          title={`${h}h ${m}m`}
+          textStyle={styles.time}
+          onPress={open}
+        />
+        <MyTimePicker
+          isVisible={isOpened}
+          onCancel={onCancel}
+          onConfirm={(date) => {
+            setIsOpened(false);
+            const minutes = date.getMinutes() + date.getHours() * 60;
+            onSetValue(minutes);
+          }}
+          defaultMinutes={m}
+          deafaultHours={h}
+        />
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    padding: 13,
-    borderRadius: 6,
+    borderRadius: 10,
+  },
+  touchable: {
     alignItems: 'center',
     justifyContent: 'space-between',
+    padding: 13,
+    flexDirection: 'row',
   },
   name: {
     fontSize: 17,
