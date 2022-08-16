@@ -41,28 +41,40 @@ export default function Main({
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
-  const { data: validToken, error: validTokenError } = useValidToken();
-  const { data: isWeekCreated, error: isWeekCreatedError } = useIsWeekCreated();
-
-  return (
-    <NavigatorBody
-      isWeekCreated={isWeekCreated}
-      isWeekCreatedError={isWeekCreatedError}
-      validToken={validToken}
-      validTokenError={validTokenError}
-    />
-  );
+  return <NavigatorBody />;
 }
 
 const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
-const NavigatorBody: React.FC<{
-  validToken: string | null | undefined;
-  isWeekCreated: boolean | undefined;
-  validTokenError: unknown;
-  isWeekCreatedError: unknown;
-}> = (props) => {
-  if (props.validToken && props.isWeekCreated) {
+const NavigatorBody: React.FC = () => {
+  const { data: validToken } = useValidToken();
+  const { data: isWeekCreated, isFetching: isWeekFetching } =
+    useIsWeekCreated();
+
+  if (!validToken || isWeekFetching) {
+    console.log('RENDERING AUTH');
+    return (
+      <Stack.Navigator>
+        <Stack.Screen
+          name='Login'
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name='Signup'
+          component={SignupScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name='NotFound'
+          component={NotFoundScreen}
+          options={{ title: 'Oops!' }}
+        />
+      </Stack.Navigator>
+    );
+  }
+  if (validToken && isWeekCreated) {
+    console.log('RENDERING MAIN STUFF');
     return (
       <Stack.Navigator>
         <Stack.Screen
@@ -79,7 +91,8 @@ const NavigatorBody: React.FC<{
     );
   }
 
-  if (props.validToken && !props.isWeekCreated) {
+  if (validToken && !isWeekCreated) {
+    console.log('RENDERING CREATE WEEK');
     return (
       <Stack.Navigator>
         <Stack.Screen
@@ -95,33 +108,15 @@ const NavigatorBody: React.FC<{
       </Stack.Navigator>
     );
   }
-
+  console.log('RENDERING NOT FOUND');
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name='Login'
-        component={LoginScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name='Signup'
-        component={SignupScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name='NotFound'
-        component={NotFoundScreen}
-        options={{ title: 'Oops!' }}
-      />
-    </Stack.Navigator>
+    <Stack.Screen
+      name='NotFound'
+      component={NotFoundScreen}
+      options={{ title: 'Oops!' }}
+    />
   );
 };
-
-<Stack.Screen
-  name='NotFound'
-  component={NotFoundScreen}
-  options={{ title: 'Oops!' }}
-/>;
 
 const BottomTabNavigator = () => {
   return (
