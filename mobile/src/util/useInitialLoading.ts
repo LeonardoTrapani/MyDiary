@@ -1,6 +1,6 @@
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
-import { useValidToken } from './react-query-hooks';
+import { useIsWeekCreated, useValidToken } from './react-query-hooks';
 import {
   Roboto_400Regular,
   Roboto_500Medium,
@@ -15,16 +15,11 @@ export default function useInitialLoading() {
 
   // Load any resources or data that we need prior to rendering the app
 
-  const { data: validToken, isFetched: isValidTokenFetched } = useValidToken();
+  // const { data: validToken, isFetched: isValidTokenFetched } = useValidToken();
 
   const { isFetched: isWeekCreatedFetched, data: weekCreated } =
-    useQuery<boolean>(
-      ['isWeekCreated', validToken],
-      getIsWeekCreatedWithToken,
-      {
-        enabled: isValidTokenFetched,
-      }
-    );
+    useIsWeekCreated();
+
   const [fontsLoaded] = useFonts({
     regular: Roboto_400Regular,
     medium: Roboto_500Medium,
