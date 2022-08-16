@@ -51,8 +51,7 @@ const NavigatorBody: React.FC = () => {
   const { data: isWeekCreated, isFetching: isWeekFetching } =
     useIsWeekCreated();
 
-  if (!validToken || isWeekFetching) {
-    console.log('RENDERING AUTH');
+  if (!validToken || (isWeekFetching && !validToken)) {
     return (
       <Stack.Navigator>
         <Stack.Screen
@@ -74,7 +73,6 @@ const NavigatorBody: React.FC = () => {
     );
   }
   if (validToken && isWeekCreated) {
-    console.log('RENDERING MAIN STUFF');
     return (
       <Stack.Navigator>
         <Stack.Screen
@@ -92,7 +90,6 @@ const NavigatorBody: React.FC = () => {
   }
 
   if (validToken && !isWeekCreated) {
-    console.log('RENDERING CREATE WEEK');
     return (
       <Stack.Navigator>
         <Stack.Screen
@@ -108,7 +105,6 @@ const NavigatorBody: React.FC = () => {
       </Stack.Navigator>
     );
   }
-  console.log('RENDERING NOT FOUND');
   return (
     <Stack.Screen
       name='NotFound'
