@@ -13,7 +13,7 @@ const KeyboardWrapper: React.FC<{ children: React.ReactNode }> = (props) => {
       <SafeAreaView>
         <ScrollView
           scrollEnabled={false}
-          style={[{ backgroundColor: 'red', height: '100%' }]}
+          style={[{ height: '100%' }]}
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps='always'
         >

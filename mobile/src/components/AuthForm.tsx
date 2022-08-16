@@ -1,12 +1,6 @@
 import { AxiosError } from 'axios';
 import React from 'react';
-import {
-  SafeAreaView,
-  View,
-  StyleSheet,
-  KeyboardType,
-  KeyboardAvoidingView,
-} from 'react-native';
+import { View, StyleSheet, KeyboardType } from 'react-native';
 import { AutoCapitalize, AutoComplete } from '../../types';
 import KeyboardWrapper from './KeyboardWrapper';
 import MyInput from './MyInput';
@@ -97,7 +91,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     height: '100%',
-    backgroundColor: 'yellow',
   },
   title: {
     fontSize: 50,
