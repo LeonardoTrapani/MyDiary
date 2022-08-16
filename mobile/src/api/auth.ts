@@ -5,14 +5,12 @@ import { Week } from '../util/react-query-hooks';
 
 export const validateToken = async () => {
   const token = await getToken();
-  console.log('VALIDATING TOKEN: ' + token);
   if (token) {
     const res = await axios.get<boolean>(BACKEND_URL + '/validateToken', {
       headers: {
         Authorization: token,
       },
     });
-    console.log(res.data);
     if (res.data === false) {
       console.warn(
         'token was not valid, so deleting (' + res.data,
@@ -98,6 +96,7 @@ export const getWeekWithToken = async (token: string) => {
 };
 
 export const getIsWeekCreated = async () => {
+  console.log('NORMAL GET IS WEEK CREATED');
   const res = await SecureStore.getItemAsync('weekCreated');
   if (!res) {
     return false;
@@ -112,29 +111,39 @@ export const getIsWeekCreated = async () => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getIsWeekCreatedWithToken = async ({ key }: any) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_, token] = key;
-  const res = await SecureStore.getItemAsync('weekCreated');
-  if (!res) {
-    return false;
-  }
-  const weekCreated = JSON.parse(res);
-  if (typeof weekCreated !== 'boolean') {
-    console.warn(weekCreated, ' is not a boolean, deleting everything');
-    await SecureStore.deleteItemAsync('weekCreated');
-    return false;
-  }
-  if (weekCreated === false && token) {
-    const week = await getWeekWithToken(token);
-    if (week) {
-      console.log('WEEK WAS CREATED (' + week + ')');
-      return true;
+export const getIsWeekCreatedWithToken = async ({
+  queryKey,
+}: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+any) => {
+  console.log('GET IS WEEK CREATED WITH TOKEN');
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_, token] = queryKey;
+    const res = await SecureStore.getItemAsync('weekCreated');
+    if (!res) {
+      return false;
     }
-    console.log('WEEK WAS ACTUALLY NOT CREATED');
+    const weekCreated = JSON.parse(res);
+    if (typeof weekCreated !== 'boolean') {
+      console.warn(weekCreated, ' is not a boolean, deleting everything');
+      await SecureStore.deleteItemAsync('weekCreated');
+      return false;
+    }
+    if (weekCreated === false && token) {
+      const week = await getWeekWithToken(token);
+      if (week) {
+        console.log('WEEK WAS CREATED (' + week + ')');
+        return true;
+      }
+      console.log('WEEK WAS ACTUALLY NOT CREATED');
+      return false;
+    }
+    console.log('returning: ' + { weekCreated });
+    return weekCreated;
+  } catch (err) {
+    console.warn(err);
     return false;
   }
-  return weekCreated;
 };
 export const logout = async () => {
   await SecureStore.deleteItemAsync('weekCreated');

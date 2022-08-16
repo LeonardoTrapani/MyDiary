@@ -43,6 +43,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 function RootNavigator() {
   const { data: validToken, error: validTokenError } = useValidToken();
   const { data: isWeekCreated, error: isWeekCreatedError } = useIsWeekCreated();
+
   return (
     <Stack.Navigator>
       {!!validToken && !validTokenError ? (

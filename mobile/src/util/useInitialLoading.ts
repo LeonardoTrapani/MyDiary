@@ -16,14 +16,15 @@ export default function useInitialLoading() {
   // Load any resources or data that we need prior to rendering the app
 
   const { data: validToken, isFetched: isValidTokenFetched } = useValidToken();
-  console.log({ validToken });
-  const { isFetched: isWeekCreatedFetched } = useQuery<boolean>(
-    ['isWeekCreated', validToken],
-    getIsWeekCreatedWithToken,
-    {
-      enabled: !!validToken,
-    }
-  );
+
+  const { isFetched: isWeekCreatedFetched, data: weekCreated } =
+    useQuery<boolean>(
+      ['isWeekCreated', validToken],
+      getIsWeekCreatedWithToken,
+      {
+        enabled: isValidTokenFetched,
+      }
+    );
   const [fontsLoaded] = useFonts({
     regular: Roboto_400Regular,
     medium: Roboto_500Medium,
@@ -47,22 +48,11 @@ export default function useInitialLoading() {
     if (isLoadingComplete) {
       return;
     }
-    if (
-      !isValidTokenFetched ||
-      (!isWeekCreatedFetched && !!validToken) ||
-      !fontsLoaded
-    ) {
-      console.log('RETURNING');
+    if (!isWeekCreatedFetched || !fontsLoaded) {
       return;
     }
     loadResourcesAndDataAsync();
-  }, [
-    fontsLoaded,
-    isLoadingComplete,
-    isValidTokenFetched,
-    isWeekCreatedFetched,
-    validToken,
-  ]);
+  }, [fontsLoaded, isLoadingComplete, isWeekCreatedFetched, weekCreated]);
 
   return isLoadingComplete;
 }
