@@ -73,14 +73,14 @@ const AuthForm: React.FC<{
               style={styles.submitButton}
             />
           </View>
-          {!isKeyboardOpened && (
-            <TextButton
-              title={props.insteadTitle}
-              style={[styles.instead]}
-              onPress={props.insteadHandler}
-            />
-          )}
         </View>
+        {!isKeyboardOpened && (
+          <TextButton
+            title={props.insteadTitle}
+            style={[styles.instead]}
+            onPress={props.insteadHandler}
+          />
+        )}
       </View>
     </KeyboardWrapper>
   );
@@ -97,11 +97,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   svgContainer: {
-    height: '40%',
+    height: '25%',
   },
   body: {
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: 'center',
   },
   instead: {
     alignSelf: 'center',

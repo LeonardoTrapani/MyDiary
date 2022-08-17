@@ -69,7 +69,26 @@ export const SignupScreen = ({
     value: passwordValue,
   } = useInput(passwordInputChecks);
 
-  const isFormValid = passwordIsValid && emailIsValid && usernameIsValid;
+  const {
+    errorMessage: confirmPasswordErrorMessage,
+    hasError: confirmPasswordHasError,
+    isValid: confirmPasswordIsValid,
+    onChangeText: confirmPasswordOnChangeText,
+    validate: confirmPasswordValidate,
+    value: confirmPasswordValue,
+  } = useInput([
+    {
+      check: (value) => value === passwordValue && !!value,
+      errorMessage: "password don't match",
+    },
+  ]);
+
+  const isFormValid =
+    passwordIsValid &&
+    emailIsValid &&
+    usernameIsValid &&
+    confirmPasswordIsValid;
+
   const submitSignupHandler = () => {
     if (isFormValid) {
       signupMutation.mutate({
@@ -81,6 +100,7 @@ export const SignupScreen = ({
       usernameValidate();
       emailValidate();
       passwordValidate();
+      confirmPasswordValidate();
     }
   };
   const loginInsteadHandler = () => {
@@ -128,8 +148,19 @@ export const SignupScreen = ({
       validate: passwordValidate,
       value: passwordValue,
     },
+    {
+      name: 'confirm password',
+      errorMessage: confirmPasswordErrorMessage,
+      hasError: confirmPasswordHasError,
+      autoCapitalize: 'none',
+      autoComplete: 'password',
+      keyboardType: 'default',
+      onChangeText: confirmPasswordOnChangeText,
+      secureTextEntry: true,
+      validate: confirmPasswordValidate,
+      value: confirmPasswordValue,
+    },
   ];
-
   return (
     <AuthForm
       insteadHandler={loginInsteadHandler}
