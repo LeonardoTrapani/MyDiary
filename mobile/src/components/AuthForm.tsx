@@ -32,14 +32,9 @@ const AuthForm: React.FC<{
   return (
     <KeyboardWrapper>
       <View style={styles.container}>
-        <View
-          style={[
-            styles.svgContainer,
-            isKeyboardOpened ? { height: '30%' } : {},
-          ]}
-        >
-          {props.svg}
-        </View>
+        {!isKeyboardOpened && (
+          <View style={[styles.svgContainer]}>{props.svg}</View>
+        )}
         <View style={styles.body}>
           <View>
             {props.hasError && <Error text={getDataFromAxiosError()} />}
@@ -97,7 +92,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   svgContainer: {
-    height: '25%',
+    height: '30%',
   },
   body: {
     flex: 1,
