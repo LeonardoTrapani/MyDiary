@@ -9,7 +9,7 @@ import {
 
 const KeyboardWrapper: React.FC<{ children: React.ReactNode }> = (props) => {
   return (
-    <KeyboardAvoidingView behavior='height'>
+    <KeyboardAvoidingView behavior='padding'>
       <SafeAreaView>
         <ScrollView
           scrollEnabled={false}
