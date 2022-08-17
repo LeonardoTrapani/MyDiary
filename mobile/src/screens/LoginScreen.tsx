@@ -19,6 +19,9 @@ export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
       onSuccess: async () => {
         queryClient.invalidateQueries(['validToken']);
       },
+      onError: () => {
+        setLoginHasLoaded(false);
+      },
     }
   );
   const [loginHasLoaded, setLoginHasLoaded] = useState(false);
