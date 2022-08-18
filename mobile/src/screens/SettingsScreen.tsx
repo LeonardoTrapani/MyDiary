@@ -1,16 +1,9 @@
-import { useTheme } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import FloatingButton from '../components/FloatingButton';
 import { View } from '../components/Themed';
 
 const SettingsScreen: React.FC = () => {
-  const { primary } = useTheme().colors;
-  return (
-    <View style={styles.container}>
-      <FloatingButton color={primary} ionIconName='ios-add'></FloatingButton>
-    </View>
-  );
+  return <View style={styles.container}></View>;
 };
 
 const styles = StyleSheet.create({

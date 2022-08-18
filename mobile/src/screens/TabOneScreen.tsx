@@ -5,9 +5,13 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { logout } from '../api/auth';
 import { useTheme } from '@react-navigation/native';
 import FloatingButton from '../components/FloatingButton';
+import { RootTabScreenProps } from '../../types';
 
-export default function TabOneScreen() {
+export default function TabOneScreen({
+  navigation,
+}: RootTabScreenProps<'TabThree'>) {
   const queryClient = useQueryClient();
+
   const logoutMutation = useMutation(
     () => {
       return logout();
@@ -19,9 +23,18 @@ export default function TabOneScreen() {
     }
   );
   const { primary } = useTheme().colors;
+
+  const addHomeworkHandler = () => {
+    navigation.navigate('AddHomework');
+  };
+
   return (
     <View style={styles.container}>
-      <FloatingButton color={primary} ionIconName='ios-add'></FloatingButton>
+      <FloatingButton
+        color={primary}
+        ionIconName='ios-add'
+        onPress={addHomeworkHandler}
+      />
       <TextButton title='logout' onPress={() => logoutMutation.mutate()} />
     </View>
   );

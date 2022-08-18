@@ -24,6 +24,7 @@ export type RootStackParamList = {
   Login: undefined;
   CreateWeek: undefined;
   Signup: undefined;
+  AddHomework: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =

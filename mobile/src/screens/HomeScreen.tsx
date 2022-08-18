@@ -1,14 +1,22 @@
 import { useTheme } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet } from 'react-native';
+import { RootTabScreenProps } from '../../types';
 import FloatingButton from '../components/FloatingButton';
 import { View } from '../components/Themed';
 
-const HomeScreen: React.FC = () => {
+const HomeScreen = ({ navigation }: RootTabScreenProps<'Home'>) => {
   const { primary } = useTheme().colors;
+  const addHomeworkHandler = () => {
+    navigation.navigate('AddHomework');
+  };
   return (
     <View style={styles.container}>
-      <FloatingButton color={primary} ionIconName='ios-add'></FloatingButton>
+      <FloatingButton
+        color={primary}
+        ionIconName='ios-add'
+        onPress={addHomeworkHandler}
+      />
     </View>
   );
 };

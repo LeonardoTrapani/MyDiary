@@ -19,6 +19,7 @@ import HomeScreen from '../screens/HomeScreen';
 import HomeworkScreen from '../screens/HomeworkScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import { Ionicons } from '@expo/vector-icons';
+import AddHomeworkModal from '../screens/AddHomeworkModal';
 
 export default function Main({
   colorScheme,
@@ -104,6 +105,9 @@ const NavigatorBody: React.FC = () => {
           component={NotFoundScreen}
           options={{ title: 'Oops!' }}
         />
+        <Stack.Group screenOptions={{ presentation: 'modal' }}>
+          <Stack.Screen name='AddHomework' component={AddHomeworkModal} />
+        </Stack.Group>
       </Stack.Navigator>
     );
   }
