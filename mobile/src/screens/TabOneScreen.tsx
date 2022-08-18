@@ -1,10 +1,10 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import React from 'react';
-import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
 import TextButton from '../components/TextButton';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { logout } from '../api/auth';
+import { useTheme } from '@react-navigation/native';
+import FloatingButton from '../components/FloatingButton';
 
 export default function TabOneScreen() {
   const queryClient = useQueryClient();
@@ -18,21 +18,11 @@ export default function TabOneScreen() {
       },
     }
   );
+  const { primary } = useTheme().colors;
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <TextButton
-        title='logout'
-        onPress={() => {
-          logoutMutation.mutate();
-        }}
-      />
-      <View
-        style={styles.separator}
-        lightColor='#eee'
-        darkColor='rgba(255,255,255,0.1)'
-      />
-      <EditScreenInfo path='/screens/TabOneScreen.tsx' />
+      <FloatingButton color={primary} ionIconName='ios-add'></FloatingButton>
+      <TextButton title='logout' onPress={() => logoutMutation.mutate()} />
     </View>
   );
 }
@@ -40,16 +30,5 @@ export default function TabOneScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
   },
 });
