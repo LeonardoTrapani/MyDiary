@@ -57,11 +57,12 @@ const CreateWeekScreen = () => {
     createWeekMutation.error as AxiosError,
     'an error has occurred creating the week'
   );
+
   return (
     <SafeAreaView style={styles.container}>
       {!createWeekMutation.isError && (
         <BoldText style={styles.title}>
-          How much free time do you have on...
+          How much time you can devote to homework each day?
         </BoldText>
       )}
       {createWeekMutation.isError && <Error text={getDataFromAxiosError()} />}
