@@ -6,7 +6,6 @@ import { ColorSchemeName } from 'react-native';
 import { Text } from 'react-native';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import TabOneScreen from '../screens/TabOneScreen';
-import TabTwoScreen from '../screens/TabTwoScreen';
 import { RootStackParamList, RootTabParamList } from '../../types';
 import LinkingConfiguration from './LinkingConfiguration';
 import { LoginScreen } from '../screens/LoginScreen';
@@ -16,6 +15,10 @@ import useInitialLoading from '../util/useInitialLoading';
 import { useIsWeekCreated, useValidToken } from '../util/react-query-hooks';
 import { MyDarkTheme, MyLightTheme } from '../constants/Colors';
 import CreateWeekScreen from '../screens/CreateWeekScreen';
+import HomeScreen from '../screens/HomeScreen';
+import HomeworkScreen from '../screens/HomeworkScreen';
+import SettingsScreen from '../screens/SettingsScreen';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function Main({
   colorScheme,
@@ -117,19 +120,51 @@ const NavigatorBody: React.FC = () => {
 
 const BottomTabNavigator = () => {
   return (
-    <BottomTab.Navigator initialRouteName='TabOne'>
+    <BottomTab.Navigator initialRouteName='Home'>
       <BottomTab.Screen
-        name='TabOne'
-        component={TabOneScreen}
+        name='Home'
+        component={HomeScreen}
         options={() => ({
-          title: 'Tab One',
+          title: 'Logo',
+          tabBarIcon: ({ color, size }) => {
+            return <Ionicons name='home' size={size} color={color} />;
+          },
+          tabBarShowLabel: false,
         })}
       />
       <BottomTab.Screen
-        name='TabTwo'
-        component={TabTwoScreen}
+        name='Homework'
+        component={HomeworkScreen}
         options={{
-          title: 'Tab Two',
+          title: 'Homework',
+          tabBarIcon: ({ color, size }) => {
+            return <Ionicons name='book' size={size} color={color} />;
+          },
+          tabBarShowLabel: false,
+        }}
+      />
+      <BottomTab.Screen
+        name='TabThree'
+        component={TabOneScreen}
+        options={{
+          title: 'TabThree',
+          tabBarIcon: ({ color, size }) => {
+            return (
+              <Ionicons name='stats-chart-sharp' size={size} color={color} />
+            );
+          },
+          tabBarShowLabel: false,
+        }}
+      />
+      <BottomTab.Screen
+        name='Settings'
+        component={SettingsScreen}
+        options={{
+          title: 'Settings',
+          tabBarIcon: ({ color, size }) => {
+            return <Ionicons name='settings' size={size} color={color} />;
+          },
+          tabBarShowLabel: false,
         }}
       />
     </BottomTab.Navigator>
