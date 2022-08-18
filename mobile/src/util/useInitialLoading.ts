@@ -10,10 +10,6 @@ import {
 export default function useInitialLoading() {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
 
-  // Load any resources or data that we need prior to rendering the app
-
-  // const { data: validToken, isFetched: isValidTokenFetched } = useValidToken();
-
   const { isFetched: isWeekCreatedFetched, data: weekCreated } =
     useIsWeekCreated();
 
@@ -23,20 +19,20 @@ export default function useInitialLoading() {
     bold: Roboto_700Bold,
   });
 
-  const loadResourcesAndDataAsync = async () => {
-    try {
-      SplashScreen.preventAutoHideAsync();
-    } catch (e) {
-      console.warn(e);
-      // We might want to provide this error information to an error reporting service
-    } finally {
-      console.log('LOADING RESOURCES');
-      await SplashScreen.hideAsync();
-      setLoadingComplete(true);
-    }
-  };
-
   useEffect(() => {
+    const loadResourcesAndDataAsync = async () => {
+      console.log('TRY');
+      try {
+        SplashScreen.preventAutoHideAsync();
+      } catch (e) {
+        console.warn(e);
+        // We might want to provide this error information to an error reporting service
+      } finally {
+        console.log('LOADING RESOURCES, week created: ', weekCreated);
+        await SplashScreen.hideAsync();
+        setLoadingComplete(true);
+      }
+    };
     if (isLoadingComplete) {
       return;
     }
