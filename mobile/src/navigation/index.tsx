@@ -22,157 +22,156 @@ import { Ionicons } from '@expo/vector-icons';
 import AddHomeworkModal from '../screens/AddHomeworkModal';
 
 export default function Main({
-  colorScheme,
+    colorScheme,
 }: {
-  colorScheme: ColorSchemeName;
+    colorScheme: ColorSchemeName;
 }) {
-  const isLoadingComplete = useInitialLoading();
-  if (!isLoadingComplete) {
-    return null;
-  }
-
-  return (
-    <NavigationContainer
-      linking={LinkingConfiguration}
-      theme={colorScheme === 'dark' ? MyDarkTheme : MyLightTheme}
-      fallback={<Text>Splash screen...</Text>}
-    >
-      <RootNavigator />
-    </NavigationContainer>
-  );
+    const isLoadingComplete = useInitialLoading();
+    if (!isLoadingComplete) {
+        return null;
+    }
+    return (
+        <NavigationContainer
+            linking={LinkingConfiguration}
+            theme={colorScheme === 'dark' ? MyDarkTheme : MyLightTheme}
+            fallback={<Text>Splash screen...</Text>}
+        >
+            <RootNavigator />
+        </NavigationContainer>
+    );
 }
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
-  return <NavigatorBody />;
+    return <NavigatorBody />;
 }
 
 const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
 const NavigatorBody: React.FC = () => {
-  const { data: validToken } = useValidToken();
-  const { data: isWeekCreated, isLoading: isWeekLoading } = useIsWeekCreated();
+    const { data: validToken } = useValidToken();
+    const { data: isWeekCreated, isLoading: isWeekLoading } = useIsWeekCreated();
 
-  if (!validToken || (isWeekLoading && !isWeekCreated)) {
-    return (
-      <Stack.Navigator>
-        <Stack.Screen
-          name='Login'
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name='Signup'
-          component={SignupScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name='NotFound'
-          component={NotFoundScreen}
-          options={{ title: 'Oops!' }}
-        />
-      </Stack.Navigator>
-    );
-  }
-  if (validToken && !isWeekCreated) {
-    return (
-      <Stack.Navigator>
-        <Stack.Screen
-          name='CreateWeek'
-          component={CreateWeekScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name='NotFound'
-          component={NotFoundScreen}
-          options={{ title: 'Oops!' }}
-        />
-      </Stack.Navigator>
-    );
-  }
+    if (!validToken || (isWeekLoading && !isWeekCreated)) {
+        return (
+            <Stack.Navigator>
+                <Stack.Screen
+                    name='Login'
+                    component={LoginScreen}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name='Signup'
+                    component={SignupScreen}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name='NotFound'
+                    component={NotFoundScreen}
+                    options={{ title: 'Oops!' }}
+                />
+            </Stack.Navigator>
+        );
+    }
+    if (validToken && !isWeekCreated) {
+        return (
+            <Stack.Navigator>
+                <Stack.Screen
+                    name='CreateWeek'
+                    component={CreateWeekScreen}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name='NotFound'
+                    component={NotFoundScreen}
+                    options={{ title: 'Oops!' }}
+                />
+            </Stack.Navigator>
+        );
+    }
 
-  if (validToken && isWeekCreated) {
+    if (validToken && isWeekCreated) {
+        return (
+            <Stack.Navigator>
+                <Stack.Screen
+                    name='Root'
+                    component={BottomTabNavigator}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name='NotFound'
+                    component={NotFoundScreen}
+                    options={{ title: 'Oops!' }}
+                />
+                <Stack.Group screenOptions={{ presentation: 'modal' }}>
+                    <Stack.Screen name='AddHomework' component={AddHomeworkModal} />
+                </Stack.Group>
+            </Stack.Navigator>
+        );
+    }
     return (
-      <Stack.Navigator>
-        <Stack.Screen
-          name='Root'
-          component={BottomTabNavigator}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name='NotFound'
-          component={NotFoundScreen}
-          options={{ title: 'Oops!' }}
-        />
-        <Stack.Group screenOptions={{ presentation: 'modal' }}>
-          <Stack.Screen name='AddHomework' component={AddHomeworkModal} />
-        </Stack.Group>
-      </Stack.Navigator>
+        <Stack.Navigator>
+            <Stack.Screen
+                name='NotFound'
+                component={NotFoundScreen}
+                options={{ title: 'Oops!' }}
+            />
+        </Stack.Navigator>
     );
-  }
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name='NotFound'
-        component={NotFoundScreen}
-        options={{ title: 'Oops!' }}
-      />
-    </Stack.Navigator>
-  );
 };
 
 const BottomTabNavigator = () => {
-  return (
-    <BottomTab.Navigator initialRouteName='Home'>
-      <BottomTab.Screen
-        name='Home'
-        component={HomeScreen}
-        options={() => ({
-          title: 'Logo',
-          tabBarIcon: ({ color, size }) => {
-            return <Ionicons name='home' size={size} color={color} />;
-          },
-          tabBarShowLabel: false,
-        })}
-      />
-      <BottomTab.Screen
-        name='Homework'
-        component={HomeworkScreen}
-        options={{
-          title: 'Homework',
-          tabBarIcon: ({ color, size }) => {
-            return <Ionicons name='book' size={size} color={color} />;
-          },
-          tabBarShowLabel: false,
-        }}
-      />
-      <BottomTab.Screen
-        name='TabThree'
-        component={TabOneScreen}
-        options={{
-          title: 'TabThree',
-          tabBarIcon: ({ color, size }) => {
-            return (
-              <Ionicons name='stats-chart-sharp' size={size} color={color} />
-            );
-          },
-          tabBarShowLabel: false,
-        }}
-      />
-      <BottomTab.Screen
-        name='Settings'
-        component={SettingsScreen}
-        options={{
-          title: 'Settings',
-          tabBarIcon: ({ color, size }) => {
-            return <Ionicons name='settings' size={size} color={color} />;
-          },
-          tabBarShowLabel: false,
-        }}
-      />
-    </BottomTab.Navigator>
-  );
+    return (
+        <BottomTab.Navigator initialRouteName='Home'>
+            <BottomTab.Screen
+                name='Home'
+                component={HomeScreen}
+                options={() => ({
+                    title: 'Logo',
+                    tabBarIcon: ({ color, size }) => {
+                        return <Ionicons name='home' size={size} color={color} />;
+                    },
+                    tabBarShowLabel: false,
+                })}
+            />
+            <BottomTab.Screen
+                name='Homework'
+                component={HomeworkScreen}
+                options={{
+                    title: 'Homework',
+                    tabBarIcon: ({ color, size }) => {
+                        return <Ionicons name='book' size={size} color={color} />;
+                    },
+                    tabBarShowLabel: false,
+                }}
+            />
+            <BottomTab.Screen
+                name='TabThree'
+                component={TabOneScreen}
+                options={{
+                    title: 'TabThree',
+                    tabBarIcon: ({ color, size }) => {
+                        return (
+                            <Ionicons name='stats-chart-sharp' size={size} color={color} />
+                        );
+                    },
+                    tabBarShowLabel: false,
+                }}
+            />
+            <BottomTab.Screen
+                name='Settings'
+                component={SettingsScreen}
+                options={{
+                    title: 'Settings',
+                    tabBarIcon: ({ color, size }) => {
+                        return <Ionicons name='settings' size={size} color={color} />;
+                    },
+                    tabBarShowLabel: false,
+                }}
+            />
+        </BottomTab.Navigator>
+    );
 };
 
 /**
