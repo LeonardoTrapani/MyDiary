@@ -6,6 +6,7 @@ import Main from './src/navigation';
 
 const App = () => {
   const colorScheme = useColorScheme();
+
   const queryClient = new QueryClient();
 
   return (
