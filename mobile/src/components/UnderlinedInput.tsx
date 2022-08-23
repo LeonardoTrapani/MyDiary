@@ -13,10 +13,18 @@ interface CustomInputProps extends TextInputProps {
   errorMessage: string;
 }
 
-const MyInput: React.FC<CustomInputProps> = (props) => {
+const UnderlinedInput: React.FC<CustomInputProps> = (props) => {
   const { colors } = useTheme();
   const colorScheme = useColorScheme();
 
+  /* 
+* name 
+* description
+* expirationDate
+* plannedDates
+* duration 
+* subjectId
+    */
   return (
     <View style={[props.style, props.hasError ? {} : {}]}>
       <TextInput
@@ -51,14 +59,13 @@ const MyInput: React.FC<CustomInputProps> = (props) => {
 
 const styles = StyleSheet.create({
   input: {
-    paddingHorizontal: 13,
-    borderColor: '#0000003e',
-    borderWidth: 0.5,
-    borderRadius: 4,
+    padding: 0,
+    borderColor: '#0000005e',
+    borderBottomWidth: 0.5
   },
   label: {
     fontSize: 20,
   },
 });
 
-export default MyInput;
+export default UnderlinedInput;

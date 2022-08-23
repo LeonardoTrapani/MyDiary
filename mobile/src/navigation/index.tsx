@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
-import { ColorSchemeName, TabBarIOS } from 'react-native';
+import { Button, ColorSchemeName, } from 'react-native';
 import { Text } from 'react-native';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import TabOneScreen from '../screens/TabOneScreen';
@@ -18,7 +18,7 @@ import CreateWeekScreen from '../screens/CreateWeekScreen';
 import HomeworkScreen from '../screens/HomeworkScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import { Ionicons } from '@expo/vector-icons';
-import AddHomeworkModal from '../screens/AddHomeworkModal';
+import AddHomeworkModal, { AddHomeworkButton, CancelHomeworkButton } from '../screens/AddHomeworkModal';
 
 export default function Main({
   colorScheme,
@@ -104,8 +104,10 @@ const NavigatorBody: React.FC = () => {
           component={NotFoundScreen}
           options={{ title: 'Oops!' }}
         />
-        <Stack.Group screenOptions={{ presentation: 'modal' }}>
-          <Stack.Screen name='AddHomework' component={AddHomeworkModal} />
+        <Stack.Group screenOptions={{ presentation: 'modal', }} >
+          <Stack.Screen name='AddHomework' component={AddHomeworkModal} options={{
+            title: "New Homework",
+          }} />
         </Stack.Group>
       </Stack.Navigator>
     );
@@ -126,7 +128,7 @@ const BottomTabNavigator = () => {
     <BottomTab.Navigator initialRouteName='Home'>
       <BottomTab.Screen
         name='Home'
-        component={TabOneScreen}
+        component={HomeworkScreen}
         options={() => ({
           title: 'Logo',
           tabBarIcon: ({ color, size }) => {

@@ -9,11 +9,11 @@ import {
 
 const KeyboardWrapper: React.FC<{ children: React.ReactNode }> = (props) => {
   return (
-    <KeyboardAvoidingView behavior='padding'>
+    <KeyboardAvoidingView behavior='padding' >
       <SafeAreaView>
         <ScrollView
           scrollEnabled={false}
-          style={[{ height: '100%' }]}
+          style={[{ height: '100%', }]}
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps='always'
         >

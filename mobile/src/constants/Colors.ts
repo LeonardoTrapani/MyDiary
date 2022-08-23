@@ -14,6 +14,7 @@ export default {
     tabIconSelected: tintColorLight,
     errorColor: '#E03F68',
     opaqueColor: opaqueColorLight,
+    placeHolderColor: '#ccc'
   },
   dark: {
     text: '#fff',
@@ -22,6 +23,7 @@ export default {
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorDark,
     errorColor: '#E03F68',
+    placeHolderColor: '#ccc',
     opaqueColor: opaqueColorDark,
   },
 };
@@ -31,6 +33,7 @@ export const MyLightTheme: Theme = {
   dark: false,
   colors: {
     ...DefaultTheme.colors,
+    background: '#fff',
     primary: tintColorLight,
   },
 };

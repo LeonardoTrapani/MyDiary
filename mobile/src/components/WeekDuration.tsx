@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import globalStyles from '../constants/Syles';
-import MyTimePicker from './MyTimePicker';
+import MyTimePicker from './MyDurationPicker';
 import { RegularText } from './StyledText';
 import TextButton from './TextButton';
 import { View } from './Themed';

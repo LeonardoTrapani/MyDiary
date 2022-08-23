@@ -39,8 +39,7 @@ const SolidButton: React.FC<CustomTouchableOpacityProps> = (props) => {
           },
         ]}
       >
-        {props.isLoading && <ActivityIndicator color='#fff' />}
-        <BoldText
+        {props.isLoading ? <ActivityIndicator color='#fff' /> : <BoldText
           style={[
             styles.text,
             {
@@ -50,6 +49,7 @@ const SolidButton: React.FC<CustomTouchableOpacityProps> = (props) => {
         >
           {props.title}
         </BoldText>
+        }
       </View>
     </TouchableOpacity>
   );

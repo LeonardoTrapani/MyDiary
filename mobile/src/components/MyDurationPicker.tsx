@@ -8,7 +8,7 @@ type DurationPickerProps = ReactNativeModalDateTimePickerProps & {
   defaultMinutes: number;
 };
 
-const DurationPicker: React.FC<DurationPickerProps> = (props) => {
+const MyTimePicker: React.FC<DurationPickerProps> = (props) => {
   return (
     <DateTimePicker
       mode='time'
@@ -19,8 +19,9 @@ const DurationPicker: React.FC<DurationPickerProps> = (props) => {
       }
       {...props}
       locale='en_GB'
+      is24Hour={true}
     />
   );
 };
 
-export default DurationPicker;
+export default MyTimePicker;

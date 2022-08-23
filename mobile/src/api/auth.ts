@@ -113,7 +113,7 @@ export const getIsWeekCreated = async () => {
 export const getIsWeekCreatedWithToken = async ({
   queryKey,
 }: // eslint-disable-next-line @typescript-eslint/no-explicit-any
-any) => {
+  any) => {
   try {
     const token = queryKey[1];
     const res = await SecureStore.getItemAsync('weekCreated');
