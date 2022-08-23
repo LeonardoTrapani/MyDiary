@@ -23,7 +23,7 @@ import HomeworkScreen from "../screens/HomeworkScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import { Ionicons } from "@expo/vector-icons";
 import AddHomeworkModal from "../screens/AddHomeworkModal";
-import ChooseSubjectScreen from "../screens/ChooseSubjectScreen";
+
 import { useEffect } from "react";
 
 export default function Main({
@@ -149,14 +149,6 @@ const AddHomeworkModalNavigation = () => {
         options={{
           title: "New",
           presentation: "modal",
-        }}
-      />
-      <AddHomeworkStack.Screen
-        name="ChooseSubject"
-        component={ChooseSubjectScreen}
-        options={{
-          title: "Subject",
-          presentation: "card",
         }}
       />
     </AddHomeworkStack.Navigator>
