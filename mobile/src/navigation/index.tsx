@@ -6,7 +6,7 @@ import { Button, ColorSchemeName, } from 'react-native';
 import { Text } from 'react-native';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import TabOneScreen from '../screens/TabOneScreen';
-import { RootStackParamList, RootTabParamList } from '../../types';
+import { AddHomeworkStackParamList, RootStackParamList, RootTabParamList } from '../../types';
 import LinkingConfiguration from './LinkingConfiguration';
 import { LoginScreen } from '../screens/LoginScreen';
 import { SignupScreen } from '../screens/SignupScreen';
@@ -18,7 +18,8 @@ import CreateWeekScreen from '../screens/CreateWeekScreen';
 import HomeworkScreen from '../screens/HomeworkScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import { Ionicons } from '@expo/vector-icons';
-import AddHomeworkModal, { AddHomeworkButton, CancelHomeworkButton } from '../screens/AddHomeworkModal';
+import AddHomeworkModal from '../screens/AddHomeworkModal';
+import ChooseSubjectScreen from '../screens/ChooseSubjectScreen';
 
 export default function Main({
   colorScheme,
@@ -104,11 +105,14 @@ const NavigatorBody: React.FC = () => {
           component={NotFoundScreen}
           options={{ title: 'Oops!' }}
         />
-        <Stack.Group screenOptions={{ presentation: 'modal', }} >
-          <Stack.Screen name='AddHomework' component={AddHomeworkModal} options={{
-            title: "New Homework",
-          }} />
-        </Stack.Group>
+        <Stack.Screen
+          name="AddHomework"
+          options={{
+            headerShown: false,
+            presentation: 'modal'
+          }}
+          component={AddHomeworkModalNavigation}
+        />
       </Stack.Navigator>
     );
   }
@@ -122,6 +126,29 @@ const NavigatorBody: React.FC = () => {
     </Stack.Navigator>
   );
 };
+
+const AddHomeworkStack = createNativeStackNavigator<AddHomeworkStackParamList>()
+
+const AddHomeworkModalNavigation = () => {
+  return (
+    <AddHomeworkStack.Navigator >
+      <AddHomeworkStack.Screen
+        name="Root"
+        component={AddHomeworkModal}
+        options={{
+          title: "New",
+          presentation: 'modal'
+        }} />
+      <AddHomeworkStack.Screen
+        name="ChooseSubject"
+        component={ChooseSubjectScreen}
+        options={{
+          title: "Subject",
+          presentation: 'card'
+        }} />
+    </AddHomeworkStack.Navigator>
+  )
+}
 
 const BottomTabNavigator = () => {
   return (

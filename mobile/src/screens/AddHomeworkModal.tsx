@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { StyleSheet, } from 'react-native';
+import React, { useState } from 'react';
+import { ScrollView, StyleSheet, TouchableOpacity, } from 'react-native';
 import KeyboardWrapper from '../components/KeyboardWrapper';
 import { View } from '../components/Themed';
 import useInput from '../util/useInput';
@@ -7,9 +7,11 @@ import AddHomeworkInput from '../components/AddHomeworkInput';
 import SolidButton from '../components/SolidButton';
 import NonModalDurationPicker from '../components/NonModalDurationPicker';
 import Accordion from '../components/Accordion';
-import MinutesToHoursMinutes from '../components/MinutesToHourMinuets';
+import { RegularText } from '../components/StyledText';
+import { Ionicons } from '@expo/vector-icons';
+import { AddHomeworkStackScreenProps } from '../../types';
 
-const AddHomeworkmodal: React.FC = () => {
+const AddHomeworkmodal = ({ navigation }: AddHomeworkStackScreenProps<'Root'>) => {
   const {
     errorMessage: nameErrorMessage,
     hasError: nameHasError,
@@ -84,18 +86,28 @@ const AddHomeworkmodal: React.FC = () => {
     setDurationDate(date)
   }
 
+  const chooseSubjectHandler = () => {
+    navigation.navigate('ChooseSubject')
+  }
 
   return (<KeyboardWrapper>
     <View style={styles.container}>
-      <View style={styles.inputContainer}>
-        <AddHomeworkInput title="Title" />
-        <AddHomeworkInput title="Description" isTextArea />
-        <View style={[styles.input,]}>
+      <ScrollView>
+
+        <View style={styles.inputContainer}>
+          <AddHomeworkInput title="Title" />
+          <AddHomeworkInput title="Description" isTextArea />
+
           <Accordion title="Duration (h : m)" >
             <NonModalDurationPicker onChangeDuration={durationChangeHandler} value={durationDate} />
           </Accordion>
+
+          <TouchableOpacity onPress={chooseSubjectHandler} style={[styles.main]}>
+            <RegularText style={styles.subjectText}>Subject</RegularText>
+            <Ionicons name="chevron-forward" size={24} color="#aaa" />
+          </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
       <SolidButton title="Next step" isLoading={false} />
     </View>
   </KeyboardWrapper>)
@@ -115,6 +127,19 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: 20,
+  },
+  subjectText: {
+    fontSize: 17,
+  },
+  main: {
+    height: 55,
+    borderBottomWidth: 1,
+    borderColor: "#0000001e",
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 0,
+    flexDirection: 'row',
+    fontSize: 17,
   },
 })
 

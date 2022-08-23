@@ -14,7 +14,7 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace ReactNavigation {
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface RootParamList extends RootStackParamList {}
+    interface RootParamList extends RootStackParamList { }
   }
 }
 
@@ -24,8 +24,16 @@ export type RootStackParamList = {
   Login: undefined;
   CreateWeek: undefined;
   Signup: undefined;
-  AddHomework: undefined;
+  AddHomework: NativeStackScreenProps<AddHomeworkStackParamList> | undefined;
 };
+
+export type AddHomeworkStackParamList = {
+  Root: undefined;
+  ChooseSubject: undefined;
+}
+
+export type AddHomeworkStackScreenProps<Screen extends keyof AddHomeworkStackParamList> =
+  NativeStackScreenProps<AddHomeworkStackParamList, Screen>;
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
   NativeStackScreenProps<RootStackParamList, Screen>;
@@ -36,8 +44,8 @@ export type RootTabParamList = {
   TabThree: undefined;
   Settings: undefined;
 };
-
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
+
   CompositeScreenProps<
     BottomTabScreenProps<RootTabParamList, Screen>,
     NativeStackScreenProps<RootStackParamList>

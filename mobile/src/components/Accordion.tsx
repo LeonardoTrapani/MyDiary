@@ -9,7 +9,7 @@ const Accordion: React.FC<{
   children: React.ReactNode
   style?: StyleProp<ViewStyle>
 }> = (props) => {
-  const [isOpened, setIsOpened] = useState(false);
+  const [isOpened, setIsOpened] = useState(true);
 
   const pressHandler = () => {
     setIsOpened((prev) => !prev)
@@ -23,7 +23,7 @@ const Accordion: React.FC<{
       }]}>
         <RegularText style={styles.text}>{props.title}</RegularText>
         <Ionicons name="chevron-down" size={24} color="#aaa" style={{
-          transform: [{ rotate: isOpened ? '180deg' : '0deg' }]
+          transform: [{ rotate: !isOpened ? '180deg' : '0deg' }]
         }} />
       </TouchableOpacity>
     </View>
@@ -51,7 +51,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 17,
-    color: '#aaa',
   },
   children: {
     borderBottomWidth: 1,
