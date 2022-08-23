@@ -1,25 +1,30 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import * as React from 'react';
-import { Button, ColorSchemeName, } from 'react-native';
-import { Text } from 'react-native';
-import NotFoundScreen from '../screens/NotFoundScreen';
-import TabOneScreen from '../screens/TabOneScreen';
-import { AddHomeworkStackParamList, RootStackParamList, RootTabParamList } from '../../types';
-import LinkingConfiguration from './LinkingConfiguration';
-import { LoginScreen } from '../screens/LoginScreen';
-import { SignupScreen } from '../screens/SignupScreen';
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import * as React from "react";
+import { ColorSchemeName } from "react-native";
+import { Text } from "react-native";
+import NotFoundScreen from "../screens/NotFoundScreen";
+import TabOneScreen from "../screens/TabOneScreen";
+import {
+  AddHomeworkStackParamList,
+  RootStackParamList,
+  RootTabParamList,
+} from "../../types";
+import LinkingConfiguration from "./LinkingConfiguration";
+import { LoginScreen } from "../screens/LoginScreen";
+import { SignupScreen } from "../screens/SignupScreen";
 
-import useInitialLoading from '../util/useInitialLoading';
-import { useIsWeekCreated, useValidToken } from '../util/react-query-hooks';
-import { MyDarkTheme, MyLightTheme } from '../constants/Colors';
-import CreateWeekScreen from '../screens/CreateWeekScreen';
-import HomeworkScreen from '../screens/HomeworkScreen';
-import SettingsScreen from '../screens/SettingsScreen';
-import { Ionicons } from '@expo/vector-icons';
-import AddHomeworkModal from '../screens/AddHomeworkModal';
-import ChooseSubjectScreen from '../screens/ChooseSubjectScreen';
+import useInitialLoading from "../util/useInitialLoading";
+import { useIsWeekCreated, useValidToken } from "../util/react-query-hooks";
+import { MyDarkTheme, MyLightTheme } from "../constants/Colors";
+import CreateWeekScreen from "../screens/CreateWeekScreen";
+import HomeworkScreen from "../screens/HomeworkScreen";
+import SettingsScreen from "../screens/SettingsScreen";
+import { Ionicons } from "@expo/vector-icons";
+import AddHomeworkModal from "../screens/AddHomeworkModal";
+import ChooseSubjectScreen from "../screens/ChooseSubjectScreen";
+import { useEffect } from "react";
 
 export default function Main({
   colorScheme,
@@ -34,7 +39,7 @@ export default function Main({
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
-      theme={colorScheme === 'dark' ? MyDarkTheme : MyLightTheme}
+      theme={colorScheme === "dark" ? MyDarkTheme : MyLightTheme}
       fallback={<Text>Splash screen...</Text>}
     >
       <RootNavigator />
@@ -51,6 +56,11 @@ function RootNavigator() {
 const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
 const NavigatorBody: React.FC = () => {
+  const test = "test";
+  useEffect(() => {
+    console.log(test);
+  }, []);
+
   const { data: validToken } = useValidToken();
   const { data: isWeekCreated, isLoading: isWeekLoading } = useIsWeekCreated();
 
@@ -58,19 +68,19 @@ const NavigatorBody: React.FC = () => {
     return (
       <Stack.Navigator>
         <Stack.Screen
-          name='Login'
+          name="Login"
           component={LoginScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name='Signup'
+          name="Signup"
           component={SignupScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name='NotFound'
+          name="NotFound"
           component={NotFoundScreen}
-          options={{ title: 'Oops!' }}
+          options={{ title: "Oops!" }}
         />
       </Stack.Navigator>
     );
@@ -79,14 +89,14 @@ const NavigatorBody: React.FC = () => {
     return (
       <Stack.Navigator>
         <Stack.Screen
-          name='CreateWeek'
+          name="CreateWeek"
           component={CreateWeekScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name='NotFound'
+          name="NotFound"
           component={NotFoundScreen}
-          options={{ title: 'Oops!' }}
+          options={{ title: "Oops!" }}
         />
       </Stack.Navigator>
     );
@@ -96,20 +106,20 @@ const NavigatorBody: React.FC = () => {
     return (
       <Stack.Navigator>
         <Stack.Screen
-          name='Root'
+          name="Root"
           component={BottomTabNavigator}
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name='NotFound'
+          name="NotFound"
           component={NotFoundScreen}
-          options={{ title: 'Oops!' }}
+          options={{ title: "Oops!" }}
         />
         <Stack.Screen
           name="AddHomework"
           options={{
             headerShown: false,
-            presentation: 'modal'
+            presentation: "modal",
           }}
           component={AddHomeworkModalNavigation}
         />
@@ -119,82 +129,85 @@ const NavigatorBody: React.FC = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name='NotFound'
+        name="NotFound"
         component={NotFoundScreen}
-        options={{ title: 'Oops!' }}
+        options={{ title: "Oops!" }}
       />
     </Stack.Navigator>
   );
 };
 
-const AddHomeworkStack = createNativeStackNavigator<AddHomeworkStackParamList>()
+const AddHomeworkStack =
+  createNativeStackNavigator<AddHomeworkStackParamList>();
 
 const AddHomeworkModalNavigation = () => {
   return (
-    <AddHomeworkStack.Navigator >
+    <AddHomeworkStack.Navigator>
       <AddHomeworkStack.Screen
         name="Root"
         component={AddHomeworkModal}
         options={{
           title: "New",
-          presentation: 'modal'
-        }} />
+          presentation: "modal",
+        }}
+      />
       <AddHomeworkStack.Screen
         name="ChooseSubject"
         component={ChooseSubjectScreen}
         options={{
           title: "Subject",
-          presentation: 'card'
-        }} />
+          presentation: "card",
+        }}
+      />
     </AddHomeworkStack.Navigator>
-  )
-}
+  );
+};
 
 const BottomTabNavigator = () => {
   return (
-    <BottomTab.Navigator initialRouteName='Home'>
+    <BottomTab.Navigator initialRouteName="Home">
       <BottomTab.Screen
-        name='Home'
+        name="Home"
         component={HomeworkScreen}
         options={() => ({
-          title: 'Logo',
+          title: "Logo",
           tabBarIcon: ({ color, size }) => {
-            return <Ionicons name='home' size={size} color={color} />;
+            return <Ionicons name="home" size={size} color={color} />;
           },
           tabBarShowLabel: false,
         })}
       />
       <BottomTab.Screen
-        name='Homework'
+        name="Homework"
         component={HomeworkScreen}
         options={{
-          title: 'Homework',
+          title: "Homework",
           tabBarIcon: ({ color, size }) => {
-            return <Ionicons name='book' size={size} color={color} />;
+            return <Ionicons name="book" size={size} color={color} />;
           },
           tabBarShowLabel: false,
         }}
       />
       <BottomTab.Screen
-        name='TabThree'
+        name="TabThree"
         component={TabOneScreen}
         options={{
-          title: 'TabThree',
+          title: "TabThree",
           tabBarIcon: ({ color, size }) => {
             return (
-              <Ionicons name='stats-chart-sharp' size={size} color={color} />
+              <Ionicons name="stats-chart-sharp" size={size} color={color} />
             );
           },
           tabBarShowLabel: false,
         }}
       />
       <BottomTab.Screen
-        name='Settings'
+        name="Settings"
         component={SettingsScreen}
         options={{
-          title: 'Settings',
+          title: "Settings",
           tabBarIcon: ({ color, size }) => {
-            return <Ionicons name='settings' size={size} color={color} />;
+            return <Ionicons name="settings" size={size} color={color} />;
           },
           tabBarShowLabel: false,
         }}
@@ -202,4 +215,3 @@ const BottomTabNavigator = () => {
     </BottomTab.Navigator>
   );
 };
-
