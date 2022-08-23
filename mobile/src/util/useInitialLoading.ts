@@ -21,14 +21,12 @@ export default function useInitialLoading() {
 
   useEffect(() => {
     const loadResourcesAndDataAsync = async () => {
-      console.log('TRY');
       try {
         SplashScreen.preventAutoHideAsync();
       } catch (e) {
         console.warn(e);
         // We might want to provide this error information to an error reporting service
       } finally {
-        console.log('LOADING RESOURCES, week created: ', weekCreated);
         await SplashScreen.hideAsync();
         setLoadingComplete(true);
       }

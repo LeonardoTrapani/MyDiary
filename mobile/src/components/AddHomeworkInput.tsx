@@ -8,6 +8,7 @@ interface AddHomeworkInputProps extends TextInputProps {
 
 const AddHomeworkInput: React.FC<AddHomeworkInputProps> = (props) => {
   return <TextInput
+    placeholderTextColor="#aaa"
     style={[styles.input, props.isTextArea ? styles.textArea : {}]}
     placeholder={props.title}
     {...props.isTextArea ? { multiline: true } : { multiline: false }}

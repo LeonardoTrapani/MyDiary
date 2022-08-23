@@ -1,5 +1,5 @@
 import React, { useState, } from "react";
-import { Animated, Easing, StyleProp, StyleSheet, TouchableOpacity, ViewStyle } from "react-native";
+import { StyleProp, StyleSheet, TouchableOpacity, ViewStyle } from "react-native";
 import { RegularText } from "./StyledText";
 import { View } from "./Themed";
 import { Ionicons } from '@expo/vector-icons';
@@ -22,7 +22,7 @@ const Accordion: React.FC<{
         borderColor: "#0000001e",
       }]}>
         <RegularText style={styles.text}>{props.title}</RegularText>
-        <Ionicons name="chevron-down" size={24} color="#ccc" style={{
+        <Ionicons name="chevron-down" size={24} color="#aaa" style={{
           transform: [{ rotate: isOpened ? '180deg' : '0deg' }]
         }} />
       </TouchableOpacity>
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 17,
-    color: '#ccc',
+    color: '#aaa',
   },
   children: {
     borderBottomWidth: 1,

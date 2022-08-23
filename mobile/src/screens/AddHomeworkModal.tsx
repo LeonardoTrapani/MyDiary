@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { StyleSheet, } from 'react-native';
 import KeyboardWrapper from '../components/KeyboardWrapper';
 import { View } from '../components/Themed';
@@ -7,6 +7,7 @@ import AddHomeworkInput from '../components/AddHomeworkInput';
 import SolidButton from '../components/SolidButton';
 import NonModalDurationPicker from '../components/NonModalDurationPicker';
 import Accordion from '../components/Accordion';
+import MinutesToHoursMinutes from '../components/MinutesToHourMinuets';
 
 const AddHomeworkmodal: React.FC = () => {
   const {
@@ -83,13 +84,14 @@ const AddHomeworkmodal: React.FC = () => {
     setDurationDate(date)
   }
 
+
   return (<KeyboardWrapper>
     <View style={styles.container}>
       <View style={styles.inputContainer}>
         <AddHomeworkInput title="Title" />
         <AddHomeworkInput title="Description" isTextArea />
         <View style={[styles.input,]}>
-          <Accordion title="Duration (h : m) " >
+          <Accordion title="Duration (h : m)" >
             <NonModalDurationPicker onChangeDuration={durationChangeHandler} value={durationDate} />
           </Accordion>
         </View>
