@@ -6,13 +6,23 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { AddHomeworkStackScreenProps } from "../../types";
+import {
+  AddHomeworkStackParamList,
+  AddHomeworkStackScreenProps,
+} from "../../types";
 import Error from "../components/Error";
-import { MediumText } from "../components/StyledText";
+import { BoldText, MediumText } from "../components/StyledText";
 import { View } from "../components/Themed";
 import { useGetDataFromAxiosError } from "../util/axiosUtils";
 import { Subject as SubjectType, useSubjects } from "../util/react-query-hooks";
 import globalStyles from "../constants/Syles";
+import { Ionicons } from "@expo/vector-icons";
+import {
+  NavigationProp,
+  useNavigation,
+  useTheme,
+} from "@react-navigation/native";
+import { navigationRef } from "../navigation";
 
 const ChooseSubjectScreen = ({
   navigation,
@@ -84,6 +94,29 @@ const ColoredCircle: React.FC<{ color: string }> = ({ color }) => {
         },
       ]}
     ></View>
+  );
+};
+
+export const ChooseSubjectAddIcon: React.FC = () => {
+  const { primary } = useTheme().colors;
+
+  const navigation = useNavigation<NavigationProp<AddHomeworkStackParamList>>();
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate("AddSubject");
+      }}
+    >
+      <Ionicons name="add" size={32} color={primary} />
+    </TouchableOpacity>
+  );
+};
+
+export const AddSubjectScreen: React.FC = () => {
+  return (
+    <View>
+      <BoldText>ADD SUBJECT</BoldText>
+    </View>
   );
 };
 

@@ -1,5 +1,9 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer } from "@react-navigation/native";
+import {
+  createNavigationContainerRef,
+  NavigationContainer,
+  NavigationContainerRef,
+} from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as React from "react";
 import { ColorSchemeName } from "react-native";
@@ -23,7 +27,10 @@ import HomeworkScreen from "../screens/HomeworkScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import { Ionicons } from "@expo/vector-icons";
 import AddHomeworkModal from "../screens/AddHomeworkModal";
-import ChooseSubjectScreen from "../screens/ChooseSubjectScreen";
+import ChooseSubjectScreen, {
+  AddSubjectScreen,
+  ChooseSubjectAddIcon,
+} from "../screens/ChooseSubjectScreen";
 
 export default function Main({
   colorScheme,
@@ -31,6 +38,7 @@ export default function Main({
   colorScheme: ColorSchemeName;
 }) {
   const isLoadingComplete = useInitialLoading();
+
   if (!isLoadingComplete) {
     return null;
   }
@@ -38,7 +46,6 @@ export default function Main({
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
-      theme={colorScheme === "dark" ? MyDarkTheme : MyLightTheme}
       fallback={<Text>Splash screen...</Text>}
     >
       <RootNavigator />
@@ -150,6 +157,16 @@ const AddHomeworkModalNavigation = () => {
         component={ChooseSubjectScreen}
         options={{
           title: "Subject",
+          presentation: "card",
+          headerBackTitle: "Back",
+          headerRight: ChooseSubjectAddIcon,
+        }}
+      />
+      <AddHomeworkStack.Screen
+        name="AddSubject"
+        component={AddSubjectScreen}
+        options={{
+          title: "New Subject",
           presentation: "card",
           headerBackTitle: "Back",
         }}
