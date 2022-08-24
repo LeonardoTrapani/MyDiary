@@ -23,8 +23,6 @@ import HomeworkScreen from "../screens/HomeworkScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import { Ionicons } from "@expo/vector-icons";
 import AddHomeworkModal from "../screens/AddHomeworkModal";
-
-import { useEffect } from "react";
 import ChooseSubjectScreen from "../screens/ChooseSubjectScreen";
 
 export default function Main({
@@ -143,7 +141,7 @@ const AddHomeworkModalNavigation = () => {
         name="Root"
         component={AddHomeworkModal}
         options={{
-          title: "New",
+          title: "New Homework",
           presentation: "modal",
         }}
       />
@@ -153,6 +151,7 @@ const AddHomeworkModalNavigation = () => {
         options={{
           title: "Subject",
           presentation: "card",
+          headerBackTitle: "Back",
         }}
       />
     </AddHomeworkStack.Navigator>
@@ -163,7 +162,7 @@ const BottomTabNavigator = () => {
   return (
     <BottomTab.Navigator initialRouteName="Home">
       <BottomTab.Screen
-        name="Home"
+        name="Homework"
         component={HomeworkScreen}
         options={() => ({
           title: "Logo",
@@ -172,17 +171,6 @@ const BottomTabNavigator = () => {
           },
           tabBarShowLabel: false,
         })}
-      />
-      <BottomTab.Screen
-        name="Homework"
-        component={HomeworkScreen}
-        options={{
-          title: "Homework",
-          tabBarIcon: ({ color, size }) => {
-            return <Ionicons name="book" size={size} color={color} />;
-          },
-          tabBarShowLabel: false,
-        }}
       />
       <BottomTab.Screen
         name="TabThree"

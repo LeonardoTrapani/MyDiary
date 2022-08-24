@@ -14,7 +14,7 @@ const Accordion: React.FC<{
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
 }> = (props) => {
-  const [isOpened, setIsOpened] = useState(true);
+  const [isOpened, setIsOpened] = useState(false);
 
   const pressHandler = () => {
     setIsOpened((prev) => !prev);

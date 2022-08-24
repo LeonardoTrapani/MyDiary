@@ -2,19 +2,16 @@ import { AxiosError } from "axios";
 import React from "react";
 import {
   ActivityIndicator,
-  Animated,
   FlatList,
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
 import { AddHomeworkStackScreenProps } from "../../types";
 import Error from "../components/Error";
-import { MediumText, RegularText } from "../components/StyledText";
+import { MediumText } from "../components/StyledText";
 import { View } from "../components/Themed";
 import { useGetDataFromAxiosError } from "../util/axiosUtils";
 import { Subject as SubjectType, useSubjects } from "../util/react-query-hooks";
-import SolidButton from "../components/SolidButton";
-import Colors from "../constants/Colors";
 import globalStyles from "../constants/Syles";
 
 const ChooseSubjectScreen = ({
@@ -98,19 +95,21 @@ const styles = StyleSheet.create({
     backgroundColor: "red",
   },
   subject: {
-    paddingVertical: 10,
+    paddingVertical: 12,
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: 20,
   },
   subjectList: {
-    margin: 20,
+    margin: 14,
     paddingVertical: 2,
     borderRadius: 16,
   },
   circle: {
     aspectRatio: 1,
     borderRadius: 1000,
+    borderColor: "#000",
+    borderWidth: 0.2,
   },
 });
 export default ChooseSubjectScreen;
