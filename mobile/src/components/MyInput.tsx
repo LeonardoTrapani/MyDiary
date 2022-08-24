@@ -1,11 +1,11 @@
-import { useTheme } from '@react-navigation/native';
-import React from 'react';
-import { TextInput, TextInputProps } from 'react-native';
-import { StyleSheet } from 'react-native';
-import useColorScheme from '../util/useColorScheme';
-import Colors from '../constants/Colors';
-import { View } from './Themed';
-import { RegularText } from './StyledText';
+import { useTheme } from "@react-navigation/native";
+import React from "react";
+import { TextInput, TextInputProps } from "react-native";
+import { StyleSheet } from "react-native";
+import useColorScheme from "../util/useColorScheme";
+import Colors from "../constants/Colors";
+import { View } from "./Themed";
+import { RegularText } from "./StyledText";
 
 interface CustomInputProps extends TextInputProps {
   name: string;
@@ -30,8 +30,8 @@ const MyInput: React.FC<CustomInputProps> = (props) => {
           },
           props.hasError
             ? {
-              borderColor: Colors[colorScheme].errorColor,
-            }
+                borderColor: Colors[colorScheme].errorColor,
+              }
             : {},
         ]}
         placeholder={props.name}
@@ -52,7 +52,7 @@ const MyInput: React.FC<CustomInputProps> = (props) => {
 const styles = StyleSheet.create({
   input: {
     paddingHorizontal: 13,
-    borderColor: '#0000003e',
+    borderColor: "#0000003e",
     borderWidth: 0.5,
     borderRadius: 4,
   },

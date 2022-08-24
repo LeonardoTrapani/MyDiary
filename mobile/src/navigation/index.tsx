@@ -25,6 +25,7 @@ import { Ionicons } from "@expo/vector-icons";
 import AddHomeworkModal from "../screens/AddHomeworkModal";
 
 import { useEffect } from "react";
+import ChooseSubjectScreen from "../screens/ChooseSubjectScreen";
 
 export default function Main({
   colorScheme,
@@ -56,11 +57,6 @@ function RootNavigator() {
 const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
 const NavigatorBody: React.FC = () => {
-  const test = "test";
-  useEffect(() => {
-    console.log(test);
-  }, []);
-
   const { data: validToken } = useValidToken();
   const { data: isWeekCreated, isLoading: isWeekLoading } = useIsWeekCreated();
 
@@ -149,6 +145,14 @@ const AddHomeworkModalNavigation = () => {
         options={{
           title: "New",
           presentation: "modal",
+        }}
+      />
+      <AddHomeworkStack.Screen
+        name="ChooseSubject"
+        component={ChooseSubjectScreen}
+        options={{
+          title: "Subject",
+          presentation: "card",
         }}
       />
     </AddHomeworkStack.Navigator>

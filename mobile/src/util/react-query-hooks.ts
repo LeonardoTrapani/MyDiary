@@ -1,8 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
-import { getIsWeekCreatedWithToken, getWeek, validateToken } from '../api/auth';
+import { useQuery } from "@tanstack/react-query";
+import { getIsWeekCreatedWithToken, getWeek, validateToken } from "../api/auth";
+import { getSubjects } from "../api/subject";
 
 export const useValidToken = () => {
-  return useQuery<string | null>(['validToken'], validateToken);
+  return useQuery<string | null>(["validToken"], validateToken);
 };
 
 // export const useIsWeekCreated = () => {
@@ -12,7 +13,7 @@ export const useValidToken = () => {
 export const useIsWeekCreated = () => {
   const { data: validToken, isFetched: isValidTokenFetched } = useValidToken();
   return useQuery<boolean>(
-    ['isWeekCreated', validToken],
+    ["isWeekCreated", validToken],
     getIsWeekCreatedWithToken,
     {
       enabled: isValidTokenFetched,
@@ -31,5 +32,18 @@ export type Week = {
 };
 
 export const useWeek = () => {
-  return useQuery<Week | null>(['week'], getWeek);
+  return useQuery<Week | null>(["week"], getWeek);
+};
+
+export type Subject = {
+  id: number;
+  color: string;
+  name: string;
+};
+
+export const useSubjects = () => {
+  const { data: validToken, isFetched: isValidTokenFetched } = useValidToken();
+  return useQuery<Subject[]>(["subject", validToken], getSubjects, {
+    enabled: isValidTokenFetched,
+  });
 };

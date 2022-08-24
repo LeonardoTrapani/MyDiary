@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 const useSnackbar = (seconds: number, text: string | null) => {
   const [isActive, setIsActive] = useState(false);
-  console.log(isActive);
   useEffect(() => {
     if (text) {
       setIsActive(true);

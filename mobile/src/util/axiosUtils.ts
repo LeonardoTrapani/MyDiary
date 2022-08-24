@@ -1,9 +1,9 @@
-import { AxiosError } from 'axios';
-import { useCallback } from 'react';
+import { AxiosError } from "axios";
+import { useCallback } from "react";
 
 export const useGetDataFromAxiosError = (
   err: AxiosError,
-  defaultMessage: string | undefined = 'an error has occurred'
+  defaultMessage: string | undefined = "an error has occurred"
 ) =>
   useCallback(() => {
     if (!err) {
@@ -21,3 +21,20 @@ export const useGetDataFromAxiosError = (
     }
     return defaultMessage;
   }, [err, defaultMessage]);
+
+export const getDataFromAxiosError = (
+  err: AxiosError,
+  defaultMessage: string | undefined = "an error has occurred"
+) => {
+  if (!err.response) {
+    return defaultMessage;
+  }
+  const data = err.response.data as {
+    message: string;
+    statusCode: number;
+  };
+  if (data) {
+    return data.message;
+  }
+  return defaultMessage;
+};
