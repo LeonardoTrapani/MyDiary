@@ -6,7 +6,7 @@ import AddHomeworkInput from "../components/AddHomeworkInput";
 import SolidButton from "../components/SolidButton";
 import NonModalDurationPicker from "../components/NonModalDurationPicker";
 import Accordion from "../components/Accordion";
-import { RegularText } from "../components/StyledText";
+import { MediumText, RegularText } from "../components/StyledText";
 import { Ionicons } from "@expo/vector-icons";
 import { AddHomeworkStackScreenProps } from "../../types";
 
@@ -32,20 +32,19 @@ const AddHomeworkmodal = ({
             <AddHomeworkInput title="Title" />
             <AddHomeworkInput title="Description" isTextArea />
 
+            <TouchableOpacity
+              onPress={chooseSubjectHandler}
+              style={[styles.main]}
+            >
+              <MediumText style={styles.subjectText}>Subject</MediumText>
+              <Ionicons name="chevron-forward" size={24} color="#aaa" />
+            </TouchableOpacity>
             <Accordion title="Duration (h : m)">
               <NonModalDurationPicker
                 onChangeDuration={durationChangeHandler}
                 value={durationDate}
               />
             </Accordion>
-
-            <TouchableOpacity
-              onPress={chooseSubjectHandler}
-              style={[styles.main]}
-            >
-              <RegularText style={styles.subjectText}>Subject</RegularText>
-              <Ionicons name="chevron-forward" size={24} color="#aaa" />
-            </TouchableOpacity>
           </View>
         </ScrollView>
         <SolidButton title="Next step" isLoading={false} />
@@ -71,6 +70,7 @@ const styles = StyleSheet.create({
   },
   subjectText: {
     fontSize: 17,
+    color: "#888",
   },
   main: {
     height: 55,

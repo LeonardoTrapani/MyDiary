@@ -1,29 +1,29 @@
-import { DefaultTheme, Theme, DarkTheme } from '@react-navigation/native';
+import { DefaultTheme, Theme, DarkTheme } from "@react-navigation/native";
 
-const tintColorLight = '#3F68E0';
-const opaqueColorLight = '#1841ba';
-const tintColorDark = '#3F68E0';
-const opaqueColorDark = '#1841ba';
+const tintColorLight = "#3F68E0";
+const opaqueColorLight = "#1841ba";
+const tintColorDark = "#3F68E0";
+const opaqueColorDark = "#1841ba";
 
 export default {
   light: {
-    text: '#000',
-    background: '#fff',
+    text: "#000",
+    background: "#fff",
     tint: tintColorLight,
-    tabIconDefault: '#ccc',
+    tabIconDefault: "#ccc",
     tabIconSelected: tintColorLight,
-    errorColor: '#E03F68',
+    errorColor: "#E03F68",
     opaqueColor: opaqueColorLight,
-    placeHolderColor: '#ccc'
+    placeHolderColor: "#888",
   },
   dark: {
-    text: '#fff',
-    background: '#000',
+    text: "#fff",
+    background: "#000",
     tint: tintColorDark,
-    tabIconDefault: '#ccc',
+    tabIconDefault: "#ccc",
     tabIconSelected: tintColorDark,
-    errorColor: '#E03F68',
-    placeHolderColor: '#ccc',
+    errorColor: "#E03F68",
+    placeHolderColor: "#ccc",
     opaqueColor: opaqueColorDark,
   },
 };
@@ -33,7 +33,7 @@ export const MyLightTheme: Theme = {
   dark: false,
   colors: {
     ...DefaultTheme.colors,
-    background: '#fff',
+    background: "#fff",
     primary: tintColorLight,
   },
 };

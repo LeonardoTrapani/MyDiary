@@ -1,5 +1,7 @@
 import React from "react";
 import { StyleSheet, TextInput, TextInputProps } from "react-native";
+import Colors from "../constants/Colors";
+import useColorScheme from "../util/useColorScheme";
 
 interface AddHomeworkInputProps extends TextInputProps {
   title: string;
@@ -7,12 +9,17 @@ interface AddHomeworkInputProps extends TextInputProps {
 }
 
 const AddHomeworkInput: React.FC<AddHomeworkInputProps> = (props) => {
-  return <TextInput
-    style={[styles.input, props.isTextArea ? styles.textArea : {}]}
-    placeholder={props.title}
-    {...props.isTextArea ? { multiline: true } : { multiline: false }}
-  />
-}
+  const colorScheme = useColorScheme();
+  const { placeHolderColor } = Colors[colorScheme];
+  return (
+    <TextInput
+      style={[styles.input, props.isTextArea ? styles.textArea : {}]}
+      placeholder={props.title}
+      placeholderTextColor={placeHolderColor}
+      {...(props.isTextArea ? { multiline: true } : { multiline: false })}
+    />
+  );
+};
 
 const styles = StyleSheet.create({
   input: {
@@ -20,12 +27,12 @@ const styles = StyleSheet.create({
     height: 55,
     borderColor: "#0000001e",
     paddingHorizontal: 0,
-    fontSize: 17
+    fontSize: 17,
   },
   textArea: {
     height: 170,
     paddingTop: 20,
-    textAlignVertical: 'top'
-  }
-})
-export default AddHomeworkInput
+    textAlignVertical: "top",
+  },
+});
+export default AddHomeworkInput;

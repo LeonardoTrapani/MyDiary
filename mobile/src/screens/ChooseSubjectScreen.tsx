@@ -1,12 +1,21 @@
 import { AxiosError } from "axios";
 import React from "react";
-import { ActivityIndicator } from "react-native";
+import {
+  ActivityIndicator,
+  Animated,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { AddHomeworkStackScreenProps } from "../../types";
 import Error from "../components/Error";
-import { RegularText } from "../components/StyledText";
+import { MediumText, RegularText } from "../components/StyledText";
 import { View } from "../components/Themed";
 import { useGetDataFromAxiosError } from "../util/axiosUtils";
-import { Subject, useSubjects } from "../util/react-query-hooks";
+import { Subject as SubjectType, useSubjects } from "../util/react-query-hooks";
+import SolidButton from "../components/SolidButton";
+import Colors from "../constants/Colors";
+import globalStyles from "../constants/Syles";
 
 const ChooseSubjectScreen = ({
   navigation,
@@ -28,24 +37,80 @@ const ChooseSubjectScreen = ({
 };
 
 const SubjectsList: React.FC<{
-  subjects: Subject[];
+  subjects: SubjectType[];
 }> = (props) => {
   return (
-    <View>
-      {props.subjects.map((subject) => {
-        return (
-          <RegularText
-            key={subject.id}
-            style={{
-              color: subject.color,
-            }}
-          >
-            {subject.name}
-          </RegularText>
-        );
-      })}
+    <View style={[styles.subjectList, globalStyles.smallShadow]}>
+      <FlatList
+        data={props.subjects}
+        scrollEnabled={false}
+        ItemSeparatorComponent={Separator}
+        renderItem={({ item }) => <SingleSubject subject={item} />}
+      />
     </View>
   );
 };
 
+const Separator: React.FC = () => {
+  return (
+    <View
+      style={{
+        paddingHorizontal: 14,
+      }}
+    >
+      <View
+        style={{
+          borderBottomWidth: 1,
+          borderColor: "#0000001e",
+        }}
+      ></View>
+    </View>
+  );
+};
+
+const SingleSubject: React.FC<{ subject: SubjectType }> = ({ subject }) => {
+  return (
+    <TouchableOpacity style={[styles.subject]}>
+      <MediumText style={styles.subjectText}>{subject.name}</MediumText>
+      <ColoredCircle color={subject.color} />
+    </TouchableOpacity>
+  );
+};
+
+const ColoredCircle: React.FC<{ color: string }> = ({ color }) => {
+  return (
+    <View
+      style={[
+        styles.circle,
+        {
+          backgroundColor: color,
+        },
+      ]}
+    ></View>
+  );
+};
+
+const styles = StyleSheet.create({
+  subjectText: {
+    fontSize: 18,
+  },
+  right: {
+    backgroundColor: "red",
+  },
+  subject: {
+    paddingVertical: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+  },
+  subjectList: {
+    margin: 20,
+    paddingVertical: 2,
+    borderRadius: 16,
+  },
+  circle: {
+    aspectRatio: 1,
+    borderRadius: 1000,
+  },
+});
 export default ChooseSubjectScreen;
