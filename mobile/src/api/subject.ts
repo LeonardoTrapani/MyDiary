@@ -17,3 +17,26 @@ any) => {
   });
   return res.data;
 };
+
+export const createNewSubject = async (
+  name: string,
+  color: string,
+  token: string | null | undefined
+) => {
+  if (!token) {
+    throw new Error("Not authenticated");
+  }
+  const res = await axios.post(
+    BACKEND_URL + "/subject/create",
+    {
+      name,
+      color,
+    },
+    {
+      headers: {
+        Authorization: token,
+      },
+    }
+  );
+  return res.data;
+};

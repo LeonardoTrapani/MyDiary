@@ -1,21 +1,21 @@
-import React from 'react';
+import React from "react";
 import {
   Keyboard,
   KeyboardAvoidingView,
   SafeAreaView,
   ScrollView,
   TouchableWithoutFeedback,
-} from 'react-native';
+} from "react-native";
 
 const KeyboardWrapper: React.FC<{ children: React.ReactNode }> = (props) => {
   return (
-    <KeyboardAvoidingView behavior='padding' >
+    <KeyboardAvoidingView behavior="padding">
       <SafeAreaView>
         <ScrollView
           scrollEnabled={false}
-          style={[{ height: '100%', }]}
+          style={[{ height: "100%" }]}
           contentContainerStyle={{ flexGrow: 1 }}
-          keyboardShouldPersistTaps='always'
+          keyboardShouldPersistTaps="always"
         >
           <TouchableWithoutFeedback
             onPress={Keyboard.dismiss}

@@ -16,7 +16,11 @@ import Error from "../components/Error";
 import { MediumText } from "../components/StyledText";
 import { View } from "../components/Themed";
 import { useGetDataFromAxiosError } from "../util/axiosUtils";
-import { Subject as SubjectType, useSubjects } from "../util/react-query-hooks";
+import {
+  Subject as SubjectType,
+  useSubjects,
+  useValidToken,
+} from "../util/react-query-hooks";
 import globalStyles from "../constants/Syles";
 import { Ionicons } from "@expo/vector-icons";
 import {
@@ -27,6 +31,9 @@ import {
 import MyInput from "../components/MyInput";
 import useInput from "../util/useInput";
 import KeyboardWrapper from "../components/KeyboardWrapper";
+import SolidButton from "../components/SolidButton";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createNewSubject } from "../api/subject";
 
 const ChooseSubjectScreen = ({
   navigation,
@@ -115,7 +122,6 @@ const ColoredCircle: React.FC<{
     ></View>
   );
 };
-
 export const ChooseSubjectAddIcon: React.FC = () => {
   const { primary } = useTheme().colors;
 
@@ -132,11 +138,23 @@ export const ChooseSubjectAddIcon: React.FC = () => {
 };
 
 export const AddSubjectScreen: React.FC = () => {
+  const queryClient = useQueryClient();
+  const { data: validToken } = useValidToken();
+  const addSubjectMutation = useMutation(
+    (info: { name: string; color: string }) => {
+      return createNewSubject(info.name, info.color, validToken);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["subject"]);
+      },
+    }
+  );
+
   const {
     errorMessage: nameErrorMessage,
     value: nameValue,
     isValid: nameIsValid,
-    hasError: nameHasError,
     validate: nameValidate,
     onChangeText: nameOnChange,
   } = useInput([
@@ -145,7 +163,8 @@ export const AddSubjectScreen: React.FC = () => {
       errorMessage: "please insert a subject name",
     },
   ]);
-  const [activeColor, setActiveColor] = useState("#fff");
+
+  const [activeColor, setActiveColor] = useState<string | undefined>();
   const [indexes, setIndexes] = useState<{
     rowIndex?: number;
     columnIndex?: number;
@@ -163,30 +182,45 @@ export const AddSubjectScreen: React.FC = () => {
     });
   };
 
+  const newSubjectSubmitHandler = () => {
+    nameValidate();
+    if (!nameIsValid || !activeColor) {
+      return;
+    }
+    addSubjectMutation.mutate({ color: activeColor, name: nameValue });
+  };
+
   return (
     <KeyboardWrapper>
-      <View style={styles.createSubjectContainer}>
-        <View style={styles.inputAndColorContainer}>
-          <MyInput
-            hasError={nameHasError}
-            name="Subject name"
-            errorMessage={nameErrorMessage}
-            value={nameValue}
-            onBlur={nameValidate}
-            onChangeText={nameOnChange}
-            style={styles.newSubjectInput}
+      <View style={styles.createSubjcetInputContainer}>
+        <View>
+          <View style={styles.inputAndColorContainer}>
+            <MyInput
+              hasError={false}
+              name="Subject name"
+              errorMessage={nameErrorMessage}
+              value={nameValue}
+              onBlur={nameValidate}
+              onChangeText={nameOnChange}
+              style={styles.newSubjectInput}
+            />
+            <View
+              style={[
+                styles.coloredCircleNewSubject,
+                { backgroundColor: activeColor },
+              ]}
+            ></View>
+          </View>
+          <ColorList
+            columnIndexActive={indexes.columnIndex}
+            onPickColor={pickColorHandler}
+            rowIndexActive={indexes.rowIndex}
           />
-          <View
-            style={[
-              styles.coloredCircleNewSubject,
-              { backgroundColor: activeColor },
-            ]}
-          ></View>
         </View>
-        <ColorList
-          columnIndexActive={indexes.columnIndex}
-          onPickColor={pickColorHandler}
-          rowIndexActive={indexes.rowIndex}
+        <SolidButton
+          title="Create subject"
+          isLoading={addSubjectMutation.isLoading}
+          onPress={newSubjectSubmitHandler}
         />
       </View>
     </KeyboardWrapper>
@@ -333,8 +367,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
   },
-  createSubjectContainer: {
+  createSubjcetInputContainer: {
     padding: 15,
+    justifyContent: "space-between",
     flex: 1,
   },
   colorListContainer: {
@@ -342,6 +377,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: 20,
     paddingVertical: 15,
+    justifyContent: "space-between",
   },
   colorListText: {
     fontSize: 19,
