@@ -11,7 +11,7 @@ import {
   AddHomeworkStackScreenProps,
 } from "../../types";
 import Error from "../components/Error";
-import { BoldText, MediumText } from "../components/StyledText";
+import { MediumText } from "../components/StyledText";
 import { View } from "../components/Themed";
 import { useGetDataFromAxiosError } from "../util/axiosUtils";
 import { Subject as SubjectType, useSubjects } from "../util/react-query-hooks";
@@ -22,7 +22,10 @@ import {
   useNavigation,
   useTheme,
 } from "@react-navigation/native";
-import { navigationRef } from "../navigation";
+import MyInput from "../components/MyInput";
+import useInput from "../util/useInput";
+import KeyboardWrapper from "../components/KeyboardWrapper";
+import ColorPicker from "react-native-wheel-color-picker";
 
 const ChooseSubjectScreen = ({
   navigation,
@@ -113,10 +116,38 @@ export const ChooseSubjectAddIcon: React.FC = () => {
 };
 
 export const AddSubjectScreen: React.FC = () => {
+  const {
+    errorMessage: nameErrorMessage,
+    value: nameValue,
+    isValid: nameIsValid,
+    hasError: nameHasError,
+    validate: nameValidate,
+    onChangeText: nameOnChange,
+  } = useInput([
+    {
+      check: (value) => !!value,
+      errorMessage: "please insert a subject name",
+    },
+  ]);
   return (
-    <View>
-      <BoldText>ADD SUBJECT</BoldText>
-    </View>
+    <KeyboardWrapper>
+      <View style={styles.createSubjectContainer}>
+        <MyInput
+          hasError={nameHasError}
+          name="Subject name"
+          errorMessage={nameErrorMessage}
+          value={nameValue}
+          onBlur={nameValidate}
+          onChangeText={nameOnChange}
+        />
+        <ColorPicker
+          swatches={false}
+          onColorChange={(color: string) => {
+            console.log(color);
+          }}
+        />
+      </View>
+    </KeyboardWrapper>
   );
 };
 
@@ -128,7 +159,7 @@ const styles = StyleSheet.create({
     backgroundColor: "red",
   },
   subject: {
-    paddingVertical: 12,
+    paddingVertical: 14,
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: 20,
@@ -143,6 +174,26 @@ const styles = StyleSheet.create({
     borderRadius: 1000,
     borderColor: "#000",
     borderWidth: 0.2,
+  },
+  leftAction: {
+    flex: 1,
+    backgroundColor: "#497AFC",
+    justifyContent: "center",
+  },
+  actionText: {
+    color: "white",
+    fontSize: 16,
+    backgroundColor: "transparent",
+    padding: 10,
+  },
+  rightAction: {
+    alignItems: "center",
+    flex: 1,
+    justifyContent: "center",
+  },
+  createSubjectContainer: {
+    padding: 15,
+    flex: 1,
   },
 });
 export default ChooseSubjectScreen;

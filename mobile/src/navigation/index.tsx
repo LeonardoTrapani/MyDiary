@@ -1,9 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import {
-  createNavigationContainerRef,
-  NavigationContainer,
-  NavigationContainerRef,
-} from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as React from "react";
 import { ColorSchemeName } from "react-native";
@@ -46,6 +42,7 @@ export default function Main({
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
+      theme={colorScheme === "dark" ? MyDarkTheme : MyLightTheme}
       fallback={<Text>Splash screen...</Text>}
     >
       <RootNavigator />
