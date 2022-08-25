@@ -63,20 +63,27 @@ const SubjectsList: React.FC<{
   const { card } = useTheme().colors;
 
   return (
-    <View
+    //<View
+    //style={[
+    //styles.subjectList,
+    //globalStyles.smallShadow,
+    //{ backgroundColor: card },
+    //]}
+    //>
+    <FlatList
+      data={props.subjects}
       style={[
-        styles.subjectList,
         globalStyles.smallShadow,
-        { backgroundColor: card },
+        {
+          backgroundColor: card,
+          borderRadius: 20,
+        },
       ]}
-    >
-      <FlatList
-        data={props.subjects}
-        scrollEnabled={false}
-        ItemSeparatorComponent={Separator}
-        renderItem={({ item }) => <SingleSubject subject={item} />}
-      />
-    </View>
+      scrollEnabled={true}
+      ItemSeparatorComponent={Separator}
+      renderItem={({ item }) => <SingleSubject subject={item} />}
+    />
+    //</View>
   );
 };
 
@@ -137,7 +144,9 @@ export const ChooseSubjectAddIcon: React.FC = () => {
   );
 };
 
-export const AddSubjectScreen: React.FC = () => {
+export const AddSubjectScreen = ({
+  navigation,
+}: AddHomeworkStackScreenProps<"AddSubject">) => {
   const queryClient = useQueryClient();
   const { data: validToken } = useValidToken();
   const addSubjectMutation = useMutation(
@@ -145,8 +154,9 @@ export const AddSubjectScreen: React.FC = () => {
       return createNewSubject(info.name, info.color, validToken);
     },
     {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["subject"]);
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(["subject"]);
+        navigation.pop();
       },
     }
   );
@@ -338,12 +348,8 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     flexDirection: "row",
     justifyContent: "space-between",
+    marginHorizontal: 14,
     paddingHorizontal: 20,
-  },
-  subjectList: {
-    margin: 14,
-    paddingVertical: 2,
-    borderRadius: 16,
   },
   circle: {
     aspectRatio: 1,

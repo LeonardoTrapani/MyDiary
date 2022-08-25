@@ -15,7 +15,7 @@ const KeyboardWrapper: React.FC<{ children: React.ReactNode }> = (props) => {
           scrollEnabled={false}
           style={[{ height: "100%" }]}
           contentContainerStyle={{ flexGrow: 1 }}
-          keyboardShouldPersistTaps="always"
+          keyboardShouldPersistTaps="handled"
         >
           <TouchableWithoutFeedback
             onPress={Keyboard.dismiss}
