@@ -34,6 +34,7 @@ import KeyboardWrapper from "../components/KeyboardWrapper";
 import SolidButton from "../components/SolidButton";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createNewSubject } from "../api/subject";
+import ErrorList from "../components/ErrorList";
 
 const ChooseSubjectScreen = ({
   navigation,
@@ -167,12 +168,15 @@ export const AddSubjectScreen = ({
     isValid: nameIsValid,
     validate: nameValidate,
     onChangeText: nameOnChange,
+    hasError: nameHasError,
   } = useInput([
     {
       check: (value) => !!value,
-      errorMessage: "please insert a subject name",
+      errorMessage: "insert a subject name",
     },
   ]);
+
+  const [buttonPressed, setButtonPressed] = useState(false);
 
   const [activeColor, setActiveColor] = useState<string | undefined>();
   const [indexes, setIndexes] = useState<{
@@ -193,6 +197,7 @@ export const AddSubjectScreen = ({
   };
 
   const newSubjectSubmitHandler = () => {
+    setButtonPressed(true);
     nameValidate();
     if (!nameIsValid || !activeColor) {
       return;
@@ -225,6 +230,15 @@ export const AddSubjectScreen = ({
             columnIndexActive={indexes.columnIndex}
             onPickColor={pickColorHandler}
             rowIndexActive={indexes.rowIndex}
+          />
+          <ErrorList
+            errors={[
+              { hasError: nameHasError, errorMessage: nameErrorMessage },
+              {
+                hasError: !activeColor && buttonPressed,
+                errorMessage: "choose a color",
+              },
+            ]}
           />
         </View>
         <SolidButton
