@@ -12,7 +12,7 @@ import {
 } from "../../types";
 import Error from "../components/Error";
 import { MediumText } from "../components/StyledText";
-import { View } from "../components/Themed";
+import { useThemeColor, View } from "../components/Themed";
 import { useGetDataFromAxiosError } from "../util/axiosUtils";
 import { Subject as SubjectType, useSubjects } from "../util/react-query-hooks";
 import globalStyles from "../constants/Syles";
@@ -31,7 +31,7 @@ const ChooseSubjectScreen = ({
   navigation,
 }: AddHomeworkStackScreenProps<"ChooseSubject">) => {
   const { data: subjects, error: subjectsError, isLoading } = useSubjects();
-
+  const { card } = useTheme().colors;
   const getDataFromAxiosError = useGetDataFromAxiosError(
     subjectsError as AxiosError,
     "an error has occurred fetching the subjects"
@@ -43,14 +43,26 @@ const ChooseSubjectScreen = ({
     const err = getDataFromAxiosError();
     return <Error text={err} />;
   }
-  return <View>{subjects && <SubjectsList subjects={subjects} />}</View>;
+  return (
+    <View style={{ backgroundColor: card, minHeight: "100%" }}>
+      {subjects && <SubjectsList subjects={subjects} />}
+    </View>
+  );
 };
 
 const SubjectsList: React.FC<{
   subjects: SubjectType[];
 }> = (props) => {
+  const { card } = useTheme().colors;
+
   return (
-    <View style={[styles.subjectList, globalStyles.smallShadow]}>
+    <View
+      style={[
+        styles.subjectList,
+        globalStyles.smallShadow,
+        { backgroundColor: card },
+      ]}
+    >
       <FlatList
         data={props.subjects}
         scrollEnabled={false}

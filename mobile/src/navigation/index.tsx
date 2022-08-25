@@ -155,7 +155,7 @@ const AddHomeworkModalNavigation = () => {
         options={{
           title: "Subject",
           presentation: "card",
-          headerBackTitle: "Back",
+          headerBackTitle: "Homework",
           headerRight: ChooseSubjectAddIcon,
         }}
       />
@@ -165,7 +165,7 @@ const AddHomeworkModalNavigation = () => {
         options={{
           title: "New Subject",
           presentation: "card",
-          headerBackTitle: "Back",
+          headerBackTitle: "Subject",
         }}
       />
     </AddHomeworkStack.Navigator>

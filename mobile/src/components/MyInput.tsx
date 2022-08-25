@@ -24,12 +24,13 @@ const MyInput: React.FC<CustomInputProps> = (props) => {
         style={[
           styles.input,
           {
-            backgroundColor: colors.background,
-            height: 40,
+            backgroundColor: colors.card,
+            height: 47,
             fontSize: 18,
           },
           props.hasError
             ? {
+                borderWidth: 0.5,
                 borderColor: Colors[colorScheme].errorColor,
               }
             : {},
@@ -39,6 +40,8 @@ const MyInput: React.FC<CustomInputProps> = (props) => {
       {props.hasError && (
         <RegularText
           style={{
+            marginTop: 2,
+            marginLeft: 10,
             color: Colors[colorScheme].errorColor,
           }}
         >
@@ -51,10 +54,9 @@ const MyInput: React.FC<CustomInputProps> = (props) => {
 
 const styles = StyleSheet.create({
   input: {
-    paddingHorizontal: 13,
-    borderColor: "#0000003e",
-    borderWidth: 0.5,
-    borderRadius: 4,
+    paddingHorizontal: 14,
+    borderWidth: 0,
+    borderRadius: 8,
   },
   label: {
     fontSize: 20,

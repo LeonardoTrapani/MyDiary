@@ -8,7 +8,7 @@ const opaqueColorDark = "#1841ba";
 export default {
   light: {
     text: "#000",
-    background: "#fff",
+    background: "#eee",
     tint: tintColorLight,
     tabIconDefault: "#ccc",
     tabIconSelected: tintColorLight,
@@ -33,7 +33,8 @@ export const MyLightTheme: Theme = {
   dark: false,
   colors: {
     ...DefaultTheme.colors,
-    background: "#fff",
+    background: "#f5f5f5",
+    card: "#fff",
     primary: tintColorLight,
   },
 };
@@ -42,6 +43,7 @@ export const MyDarkTheme: Theme = {
   dark: true,
   colors: {
     ...DarkTheme.colors,
+    card: "#000",
     primary: tintColorDark,
   },
 };

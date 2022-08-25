@@ -9,6 +9,8 @@ import Accordion from "../components/Accordion";
 import { MediumText, RegularText } from "../components/StyledText";
 import { Ionicons } from "@expo/vector-icons";
 import { AddHomeworkStackScreenProps } from "../../types";
+import Colors from "../constants/Colors";
+import { useTheme } from "@react-navigation/native";
 
 const AddHomeworkmodal = ({
   navigation,
@@ -24,11 +26,27 @@ const AddHomeworkmodal = ({
     navigation.push("ChooseSubject");
   };
 
+  const { card } = useTheme().colors;
+
   return (
     <KeyboardWrapper>
-      <View style={styles.container}>
+      <View
+        style={[
+          styles.container,
+          {
+            backgroundColor: card,
+          },
+        ]}
+      >
         <ScrollView>
-          <View style={styles.inputContainer}>
+          <View
+            style={[
+              styles.inputContainer,
+              {
+                backgroundColor: card,
+              },
+            ]}
+          >
             <AddHomeworkInput title="Title" />
             <AddHomeworkInput title="Description" isTextArea />
 
@@ -36,7 +54,7 @@ const AddHomeworkmodal = ({
               onPress={chooseSubjectHandler}
               style={[styles.main]}
             >
-              <MediumText style={styles.subjectText}>Subject</MediumText>
+              <RegularText style={styles.subjectText}>Subject</RegularText>
               <Ionicons name="chevron-forward" size={24} color="#aaa" />
             </TouchableOpacity>
             <Accordion title="Duration (h : m)">
