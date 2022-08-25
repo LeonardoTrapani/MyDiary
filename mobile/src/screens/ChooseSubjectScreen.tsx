@@ -1,10 +1,12 @@
 import { AxiosError } from "axios";
-import React from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  StyleProp,
   StyleSheet,
   TouchableOpacity,
+  ViewStyle,
 } from "react-native";
 import {
   AddHomeworkStackParamList,
@@ -12,7 +14,7 @@ import {
 } from "../../types";
 import Error from "../components/Error";
 import { MediumText } from "../components/StyledText";
-import { useThemeColor, View } from "../components/Themed";
+import { View } from "../components/Themed";
 import { useGetDataFromAxiosError } from "../util/axiosUtils";
 import { Subject as SubjectType, useSubjects } from "../util/react-query-hooks";
 import globalStyles from "../constants/Syles";
@@ -25,13 +27,11 @@ import {
 import MyInput from "../components/MyInput";
 import useInput from "../util/useInput";
 import KeyboardWrapper from "../components/KeyboardWrapper";
-import ColorPicker from "react-native-wheel-color-picker";
 
 const ChooseSubjectScreen = ({
   navigation,
 }: AddHomeworkStackScreenProps<"ChooseSubject">) => {
   const { data: subjects, error: subjectsError, isLoading } = useSubjects();
-  const { card } = useTheme().colors;
   const getDataFromAxiosError = useGetDataFromAxiosError(
     subjectsError as AxiosError,
     "an error has occurred fetching the subjects"
@@ -44,7 +44,7 @@ const ChooseSubjectScreen = ({
     return <Error text={err} />;
   }
   return (
-    <View style={{ backgroundColor: card, minHeight: "100%" }}>
+    <View style={{ minHeight: "100%" }}>
       {subjects && <SubjectsList subjects={subjects} />}
     </View>
   );
@@ -99,7 +99,10 @@ const SingleSubject: React.FC<{ subject: SubjectType }> = ({ subject }) => {
   );
 };
 
-const ColoredCircle: React.FC<{ color: string }> = ({ color }) => {
+const ColoredCircle: React.FC<{
+  color: string;
+  style?: StyleProp<ViewStyle>;
+}> = ({ color, style }) => {
   return (
     <View
       style={[
@@ -107,6 +110,7 @@ const ColoredCircle: React.FC<{ color: string }> = ({ color }) => {
         {
           backgroundColor: color,
         },
+        style,
       ]}
     ></View>
   );
@@ -141,25 +145,151 @@ export const AddSubjectScreen: React.FC = () => {
       errorMessage: "please insert a subject name",
     },
   ]);
+  const [activeColor, setActiveColor] = useState("#fff");
+  const [indexes, setIndexes] = useState<{
+    rowIndex?: number;
+    columnIndex?: number;
+  }>({});
+
+  const pickColorHandler = (
+    rowIndex: number,
+    columnIndex: number,
+    color: string
+  ) => {
+    setActiveColor(color);
+    setIndexes({
+      rowIndex,
+      columnIndex,
+    });
+  };
+
   return (
     <KeyboardWrapper>
       <View style={styles.createSubjectContainer}>
-        <MyInput
-          hasError={nameHasError}
-          name="Subject name"
-          errorMessage={nameErrorMessage}
-          value={nameValue}
-          onBlur={nameValidate}
-          onChangeText={nameOnChange}
-        />
-        <ColorPicker
-          swatches={false}
-          onColorChange={(color: string) => {
-            console.log(color);
-          }}
+        <View style={styles.inputAndColorContainer}>
+          <MyInput
+            hasError={nameHasError}
+            name="Subject name"
+            errorMessage={nameErrorMessage}
+            value={nameValue}
+            onBlur={nameValidate}
+            onChangeText={nameOnChange}
+            style={styles.newSubjectInput}
+          />
+          <View
+            style={[
+              styles.coloredCircleNewSubject,
+              { backgroundColor: activeColor },
+            ]}
+          ></View>
+        </View>
+        <ColorList
+          columnIndexActive={indexes.columnIndex}
+          onPickColor={pickColorHandler}
+          rowIndexActive={indexes.rowIndex}
         />
       </View>
     </KeyboardWrapper>
+  );
+};
+
+const ColorList: React.FC<{
+  rowIndexActive?: number;
+  columnIndexActive?: number;
+  onPickColor: (rowIndex: number, columnIndex: number, color: string) => void;
+}> = (props) => {
+  const { card } = useTheme().colors;
+  const row1 = [
+    "#fa1500",
+    "#ff5900",
+    "#fffb00",
+    "#05f50d",
+    "#0521f5",
+    "#f505c5",
+    "#a105f5",
+  ];
+
+  const row2 = [
+    "#eb424a",
+    "#ff9100",
+    "#c2fc00",
+    "#00c71b",
+    "#00ccff",
+    "#ff0073",
+    "#883de3",
+  ];
+
+  const row3 = [
+    "#850004",
+    "#5e2f00",
+    "#185200",
+    "#150e45",
+    "#440954",
+    "#690532",
+    "#000000",
+  ];
+
+  const rows = [row1, row2, row3];
+
+  return (
+    <View
+      style={[
+        styles.colorListContainer,
+        {
+          backgroundColor: card,
+        },
+      ]}
+    >
+      {rows.map((row, rowIndex) => {
+        return (
+          <View
+            style={[styles.colorRow, { backgroundColor: card }]}
+            key={row[0]}
+          >
+            {row.map((color, columnIndex) => {
+              return (
+                <ColorPick
+                  isActive={
+                    rowIndex === props.rowIndexActive &&
+                    columnIndex === props.columnIndexActive
+                  }
+                  rowIndex={rowIndex}
+                  columnIndex={columnIndex}
+                  key={color}
+                  color={color}
+                  onPress={props.onPickColor}
+                />
+              );
+            })}
+          </View>
+        );
+      })}
+    </View>
+  );
+};
+const ColorPick: React.FC<{
+  color: string;
+  rowIndex: number;
+  columnIndex: number;
+  isActive: boolean;
+  onPress: (rowIndex: number, columnIndex: number, color: string) => void;
+}> = (props) => {
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        props.onPress(props.rowIndex, props.columnIndex, props.color);
+      }}
+    >
+      <View
+        style={[
+          {
+            backgroundColor: props.color,
+          },
+          styles.colorPick,
+          props.isActive ? [styles.colorPickActive, globalStyles.shadow] : {},
+        ]}
+      ></View>
+    </TouchableOpacity>
   );
 };
 
@@ -206,6 +336,45 @@ const styles = StyleSheet.create({
   createSubjectContainer: {
     padding: 15,
     flex: 1,
+  },
+  colorListContainer: {
+    marginTop: 30,
+    borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+  },
+  colorListText: {
+    fontSize: 19,
+  },
+  colorPick: {
+    height: 30,
+    margin: 5,
+    aspectRatio: 1,
+    borderRadius: 8,
+  },
+  colorPickActive: {
+    transform: [{ scale: 1.4 }],
+  },
+  colorRow: {
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "space-between",
+    marginVertical: 5,
+  },
+  inputAndColorContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  newSubjectInput: {
+    flexGrow: 1,
+  },
+  coloredCircleNewSubject: {
+    height: 37,
+    borderWidth: 0.2,
+    borderColor: "#000",
+    aspectRatio: 1,
+    marginLeft: 7,
+    borderRadius: 1000,
   },
 });
 export default ChooseSubjectScreen;

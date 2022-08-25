@@ -6,10 +6,9 @@ import AddHomeworkInput from "../components/AddHomeworkInput";
 import SolidButton from "../components/SolidButton";
 import NonModalDurationPicker from "../components/NonModalDurationPicker";
 import Accordion from "../components/Accordion";
-import { MediumText, RegularText } from "../components/StyledText";
+import { RegularText } from "../components/StyledText";
 import { Ionicons } from "@expo/vector-icons";
 import { AddHomeworkStackScreenProps } from "../../types";
-import Colors from "../constants/Colors";
 import { useTheme } from "@react-navigation/native";
 
 const AddHomeworkmodal = ({
