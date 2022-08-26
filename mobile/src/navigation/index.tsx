@@ -9,7 +9,6 @@ import TabOneScreen from "../screens/TabOneScreen";
 import {
   AddHomeworkStackParamList,
   RootStackParamList,
-  RootStackScreenProps,
   RootTabParamList,
 } from "../../types";
 import LinkingConfiguration from "./LinkingConfiguration";
@@ -28,9 +27,9 @@ import ChooseSubjectScreen, {
   AddSubjectScreen,
   ChooseSubjectAddIcon,
 } from "../screens/ChooseSubjectScreen";
-import { useEffect } from "react";
 import { useAtom } from "jotai";
 import { activeSubjectAtom } from "../util/atoms";
+import PlannedDatesScreen from "../screens/PlannedDatesScreen";
 
 export default function Main({
   colorScheme,
@@ -176,6 +175,15 @@ const AddHomeworkModalNavigation = () => {
           title: "New Subject",
           presentation: "card",
           headerBackTitle: "Subject",
+        }}
+      />
+      <AddHomeworkStack.Screen
+        name="PlannedDates"
+        component={PlannedDatesScreen}
+        options={{
+          title: "Planned Dates",
+          presentation: "card",
+          headerBackTitle: "homework",
         }}
       />
     </AddHomeworkStack.Navigator>

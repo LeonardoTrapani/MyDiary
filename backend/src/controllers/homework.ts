@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
-import { throwResponseError } from '../utilities';
+import { Request, Response, NextFunction } from "express";
+import { throwResponseError } from "../utilities";
 
-import { prisma } from '../app';
-import moment from 'moment';
-import { createOrUpdateDayCountingPreviousMinutes } from './day';
-import { fetchWeek, findfreeMinutesInDay } from './week';
+import { prisma } from "../app";
+import moment from "moment";
+import { createOrUpdateDayCountingPreviousMinutes } from "./day";
+import { fetchWeek, findfreeMinutesInDay } from "./week";
 
 export const createHomework = async (
   req: Request,
@@ -44,7 +44,7 @@ export const createHomework = async (
     const formattedPlannedDates = plannedDates.map((plannedDate) => {
       return {
         minutesAssigned: plannedDate.minutes,
-        date: moment(plannedDate.date).startOf('day').toISOString(),
+        date: moment(plannedDate.date).startOf("day").toISOString(),
       };
     });
 
@@ -53,7 +53,7 @@ export const createHomework = async (
         userId: +userId!,
         description,
         duration: duration,
-        expirationDate: moment(expirationDate).startOf('day').toDate(),
+        expirationDate: moment(expirationDate).startOf("day").toDate(),
         name: name,
         subjectId: subject.id,
         plannedDates: {
@@ -66,7 +66,7 @@ export const createHomework = async (
     return res.json(homework);
   } catch (err) {
     console.error(err);
-    return throwResponseError('unable to create homework', 500, res);
+    return throwResponseError("unable to create homework", 500, res);
   }
 };
 
@@ -96,11 +96,7 @@ export const getAllHomework = async (
 };
 
 const DAYS_PER_PAGE = 9;
-export const calculateFreeDays = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const calculateFreeDays = async (req: Request, res: Response) => {
   const { expirationDate: expirationDateBody } = req.body;
   const { pageNumber } = req.params;
   const expirationDate = moment(expirationDateBody);
@@ -109,7 +105,7 @@ export const calculateFreeDays = async (
     const week = await fetchWeek(+userId!);
     if (!week) {
       return throwResponseError(
-        'please define your usual week before creating any homework',
+        "please define your usual week before creating any homework",
         400,
         res
       );
@@ -126,7 +122,7 @@ export const calculateFreeDays = async (
 
     const daysFromToday = +pageNumber * DAYS_PER_PAGE - DAYS_PER_PAGE;
 
-    const startDate = moment().add(daysFromToday, 'days').startOf('days');
+    const startDate = moment().add(daysFromToday, "days").startOf("days");
 
     const freeDaysArray = getFreeDaysArray(
       startDate.clone(),
@@ -139,7 +135,7 @@ export const calculateFreeDays = async (
     return res.json(freeDaysArray);
   } catch (err) {
     return throwResponseError(
-      'an error has occurred finding the free hours',
+      "an error has occurred finding the free hours",
       400,
       res
     );
@@ -180,7 +176,7 @@ export const fetchFreeDays = async (userId: number) => {
         where: {
           deleted: false,
           date: {
-            gte: moment().startOf('day').toDate(),
+            gte: moment().startOf("day").toDate(),
           },
         },
       },
@@ -201,13 +197,13 @@ export const getFreeDaysArray = (
   }[] = [];
   let currentDate = startDate;
   while (
-    currentDate.isSameOrBefore(expirationDate, 'days') &&
+    currentDate.isSameOrBefore(expirationDate, "days") &&
     finalFreeDays.length < daysPerPage
   ) {
     const freeMinutes = findfreeMinutesInDay(currentDate, week);
     const freeDayToPut = freeDays.days.find((day) => {
       const freeDaysDay = moment(day.date);
-      return freeDaysDay.isSame(currentDate, 'days');
+      return freeDaysDay.isSame(currentDate, "days");
     });
     if (freeDayToPut) {
       finalFreeDays.push({
@@ -222,7 +218,7 @@ export const getFreeDaysArray = (
         minutesToAssign: freeMinutes,
       });
     }
-    currentDate = currentDate.add(1, 'day');
+    currentDate = currentDate.add(1, "day");
   }
   return finalFreeDays;
 };

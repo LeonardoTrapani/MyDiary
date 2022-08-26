@@ -31,7 +31,24 @@ export type AddHomeworkStackParamList = {
   Root: undefined;
   ChooseSubject: undefined;
   AddSubject: undefined;
+  PlannedDates: { homeworkInfo: HomeworkInfoType; freeDays: FreeDays };
 };
+
+export interface FreeDays {
+  days: {
+    date: Date;
+    freeMins: number;
+    minutesToAssign: number;
+  }[];
+}
+
+export interface HomeworkInfoType {
+  title: string;
+  description: string;
+  subjectId: number;
+  expirationDate: string;
+  duration: number;
+}
 
 export type AddHomeworkStackScreenProps<
   Screen extends keyof AddHomeworkStackParamList
