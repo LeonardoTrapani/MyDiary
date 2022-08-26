@@ -27,7 +27,7 @@ export const createNewSubject = async (
     throw new Error("Not authenticated");
   }
   const res = await axios.post(
-    BACKEND_URL + "/subject/create",
+    `${BACKEND_URL}/subject/create`,
     {
       name,
       color,

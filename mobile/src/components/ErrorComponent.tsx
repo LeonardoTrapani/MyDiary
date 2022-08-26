@@ -1,13 +1,14 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
-import Colors from '../constants/Colors';
+import React from "react";
+import { StyleProp, StyleSheet, ViewStyle } from "react-native";
+import Colors from "../constants/Colors";
 
-import globalStyles from '../constants/Syles';
-import useColorScheme from '../util/useColorScheme';
-import { MediumText } from './StyledText';
-import { View } from './Themed';
-const Error: React.FC<{
+import globalStyles from "../constants/Syles";
+import useColorScheme from "../util/useColorScheme";
+import { MediumText } from "./StyledText";
+import { View } from "./Themed";
+const ErrorComponent: React.FC<{
   text: string | null;
+  style?: StyleProp<ViewStyle>;
 }> = (props) => {
   const colorScheme = useColorScheme();
   return (
@@ -18,6 +19,7 @@ const Error: React.FC<{
         {
           backgroundColor: Colors[colorScheme].errorColor,
         },
+        props.style,
       ]}
     >
       <MediumText style={[styles.errorText]}>{props.text}</MediumText>
@@ -28,8 +30,8 @@ const Error: React.FC<{
 const styles = StyleSheet.create({
   errorText: {
     fontSize: 17,
-    textAlign: 'center',
-    color: '#fff',
+    textAlign: "center",
+    color: "#fff",
   },
   errorContainer: {
     marginBottom: 20,
@@ -37,4 +39,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Error;
+export default ErrorComponent;

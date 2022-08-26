@@ -12,7 +12,6 @@ import {
   AddHomeworkStackParamList,
   AddHomeworkStackScreenProps,
 } from "../../types";
-import Error from "../components/Error";
 import { MediumText } from "../components/StyledText";
 import { View } from "../components/Themed";
 import { useGetDataFromAxiosError } from "../util/axiosUtils";
@@ -37,6 +36,7 @@ import { createNewSubject } from "../api/subject";
 import ErrorList from "../components/ErrorList";
 import { useAtom } from "jotai";
 import { activeSubjectAtom } from "../util/atoms";
+import ErrorComponent from "../components/ErrorComponent";
 
 const ChooseSubjectScreen = ({
   navigation,
@@ -51,7 +51,7 @@ const ChooseSubjectScreen = ({
   }
   if (subjectsError) {
     const err = getDataFromAxiosError();
-    return <Error text={err} />;
+    return <ErrorComponent text={err} />;
   }
   return (
     <View style={{ minHeight: "100%" }}>
@@ -222,6 +222,11 @@ export const AddSubjectScreen = ({
     addSubjectMutation.mutate({ color: activeColor, name: nameValue });
   };
 
+  const getDataFromAxiosError = useGetDataFromAxiosError(
+    addSubjectMutation.error as AxiosError,
+    "an error has occurred creating the subject"
+  );
+
   return (
     <KeyboardWrapper>
       <View style={styles.createSubjcetInputContainer}>
@@ -248,6 +253,12 @@ export const AddSubjectScreen = ({
             onPickColor={pickColorHandler}
             rowIndexActive={indexes.rowIndex}
           />
+          {addSubjectMutation.isError && (
+            <ErrorComponent
+              style={{ marginTop: 20 }}
+              text={getDataFromAxiosError()}
+            />
+          )}
           <ErrorList
             errors={[
               { hasError: nameHasError, errorMessage: nameErrorMessage },

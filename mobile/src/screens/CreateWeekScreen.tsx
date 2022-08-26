@@ -1,17 +1,17 @@
-import * as SecureStore from 'expo-secure-store';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import React, { useState } from 'react';
-import { Alert, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { createWeek } from '../api/week';
-import SolidButton from '../components/SolidButton';
-import { BoldText } from '../components/StyledText';
-import { View } from '../components/Themed';
-import WeekDuration from '../components/WeekDuration';
-import { Week } from '../util/react-query-hooks';
-import Error from '../components/Error';
-import { useGetDataFromAxiosError } from '../util/axiosUtils';
-import { AxiosError } from 'axios';
+import * as SecureStore from "expo-secure-store";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import React, { useState } from "react";
+import { Alert, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { createWeek } from "../api/week";
+import SolidButton from "../components/SolidButton";
+import { BoldText } from "../components/StyledText";
+import { View } from "../components/Themed";
+import WeekDuration from "../components/WeekDuration";
+import { Week } from "../util/react-query-hooks";
+import ErrorComponent from "../components/ErrorComponent";
+import { useGetDataFromAxiosError } from "../util/axiosUtils";
+import { AxiosError } from "axios";
 
 const CreateWeekScreen = () => {
   const queryClient = useQueryClient();
@@ -29,9 +29,9 @@ const CreateWeekScreen = () => {
     },
     {
       onSuccess: async () => {
-        await SecureStore.setItemAsync('weekCreated', JSON.stringify(true));
+        await SecureStore.setItemAsync("weekCreated", JSON.stringify(true));
 
-        queryClient.invalidateQueries(['isWeekCreated']);
+        queryClient.invalidateQueries(["isWeekCreated"]);
       },
     }
   );
@@ -48,14 +48,14 @@ const CreateWeekScreen = () => {
   };
 
   const buttonPressHandler = () => {
-    Alert.alert('Submit', 'Are you sure you want to submit?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Submit', style: 'default', onPress: submitWeekHandler },
+    Alert.alert("Submit", "Are you sure you want to submit?", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Submit", style: "default", onPress: submitWeekHandler },
     ]);
   };
   const getDataFromAxiosError = useGetDataFromAxiosError(
     createWeekMutation.error as AxiosError,
-    'an error has occurred creating the week'
+    "an error has occurred creating the week"
   );
 
   return (
@@ -65,46 +65,48 @@ const CreateWeekScreen = () => {
           How much time can you devote to homework each day?
         </BoldText>
       )}
-      {createWeekMutation.isError && <Error text={getDataFromAxiosError()} />}
+      {createWeekMutation.isError && (
+        <ErrorComponent text={getDataFromAxiosError()} />
+      )}
       <View style={styles.durations}>
         <WeekDuration
-          name='Monday'
+          name="Monday"
           onSetValue={setMondayVal}
           minutes={mondayVal}
         />
         <WeekDuration
-          name='Tuesday'
+          name="Tuesday"
           onSetValue={setTuesdayVal}
           minutes={tuesdayVal}
         />
         <WeekDuration
-          name='Wednesday'
+          name="Wednesday"
           onSetValue={setWednesDayVal}
           minutes={wednesDayVal}
         />
         <WeekDuration
-          name='Thursday'
+          name="Thursday"
           onSetValue={setThursdayVal}
           minutes={thursdayVal}
         />
         <WeekDuration
-          name='Friday'
+          name="Friday"
           onSetValue={setFridayVal}
           minutes={fridayVal}
         />
         <WeekDuration
-          name='Saturday'
+          name="Saturday"
           onSetValue={setSaturdayal}
           minutes={saturdayal}
         />
         <WeekDuration
-          name='Sunday'
+          name="Sunday"
           onSetValue={setSundayVal}
           minutes={sundayVal}
         />
       </View>
       <SolidButton
-        title='submit'
+        title="submit"
         isLoading={createWeekMutation.isLoading}
         onPress={buttonPressHandler}
       />
@@ -123,15 +125,15 @@ const styles = StyleSheet.create({
     fontSize: 40,
     lineHeight: titleLineHeight,
     // backgroundColor: 'red',
-    marginRight: '30%',
+    marginRight: "30%",
   },
   container: {
-    height: '100%',
+    height: "100%",
     padding: 20,
   },
   durations: {
     flex: 1,
-    justifyContent: 'space-evenly',
+    justifyContent: "space-evenly",
   },
 });
 

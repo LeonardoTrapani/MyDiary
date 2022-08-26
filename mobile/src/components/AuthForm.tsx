@@ -1,17 +1,17 @@
-import { AxiosError } from 'axios';
-import React from 'react';
-import { View, StyleSheet, KeyboardType } from 'react-native';
-import { AutoCapitalize, AutoComplete } from '../../types';
-import KeyboardWrapper from './KeyboardWrapper';
-import MyInput from './MyInput';
+import { AxiosError } from "axios";
+import React from "react";
+import { View, StyleSheet, KeyboardType } from "react-native";
+import { AutoCapitalize, AutoComplete } from "../../types";
+import KeyboardWrapper from "./KeyboardWrapper";
+import MyInput from "./MyInput";
 
-import SolidButton from './SolidButton';
-import { BoldText } from './StyledText';
-import TextButton from './TextButton';
-import { useGetDataFromAxiosError } from '../util/axiosUtils';
+import SolidButton from "./SolidButton";
+import { BoldText } from "./StyledText";
+import TextButton from "./TextButton";
+import { useGetDataFromAxiosError } from "../util/axiosUtils";
 
-import Error from './Error';
-import useKeyboardOpened from '../util/useKeyboardOpened';
+import ErrorComponent from "./ErrorComponent";
+import useKeyboardOpened from "../util/useKeyboardOpened";
 
 const AuthForm: React.FC<{
   title: string;
@@ -37,7 +37,9 @@ const AuthForm: React.FC<{
         )}
         <View style={styles.body}>
           <View>
-            {props.hasError && <Error text={getDataFromAxiosError()} />}
+            {props.hasError && (
+              <ErrorComponent text={getDataFromAxiosError()} />
+            )}
             <BoldText style={[styles.title]}>{props.title}</BoldText>
             <View>
               {props.inputs.map((input) => {
@@ -85,21 +87,21 @@ export const INPUT_GAP = 15;
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    height: '100%',
+    height: "100%",
   },
   title: {
     fontSize: 50,
     marginBottom: 20,
   },
   svgContainer: {
-    height: '30%',
+    height: "30%",
   },
   body: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   instead: {
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   submitButton: {
     marginTop: 20,
