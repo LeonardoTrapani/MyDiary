@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import KeyboardWrapper from "../components/KeyboardWrapper";
-import { useThemeColor, View } from "../components/Themed";
+import { View } from "../components/Themed";
 import AddHomeworkInput from "../components/AddHomeworkInput";
 import SolidButton from "../components/SolidButton";
 import NonModalDurationPicker from "../components/NonModalDurationPicker";
@@ -13,6 +13,7 @@ import { useTheme } from "@react-navigation/native";
 import { useAtom } from "jotai";
 import { activeSubjectAtom } from "../util/atoms";
 import DateTimePicker from "react-native-modal-datetime-picker";
+import { addDaysFromToday } from "../util/generalUtils";
 
 const AddHomeworkmodal = ({
   navigation,
@@ -113,9 +114,10 @@ const AddHomeworkmodal = ({
         <DateTimePicker
           isVisible={isExpDateOpened}
           mode="date"
-          minimumDate={new Date()}
-          onConfirm={() => {
-            setExpDateOpened(true);
+          minimumDate={addDaysFromToday(1)}
+          onConfirm={(date: Date) => {
+            setExpDateOpened(false);
+            setExpDate(date);
           }}
           onCancel={() => {
             setExpDateOpened(false);
@@ -140,7 +142,7 @@ const ExpirationDatePicker: React.FC<{
       <RegularText
         style={[styles.undefinedText, props.expDate ? { color: text } : {}]}
       >
-        {props.expDate ? props.expDate.toLocaleString() : "Expiration Date"}
+        {props.expDate ? props.expDate.toLocaleDateString() : "Expiration Date"}
       </RegularText>
       <TouchableOpacity onPress={props.onOpen}>
         <Ionicons name="ios-calendar-outline" size={24} />

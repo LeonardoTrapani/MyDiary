@@ -10,3 +10,13 @@ export const generateUUID = () => {
   );
   return uuid;
 };
+
+export const addDaysFromToday = (daysToAdd: number) => {
+  return addDays(new Date(Date.now()), daysToAdd);
+};
+
+export const addDays = (from: Date, daysToAdd: number) => {
+  const result = new Date(from);
+  result.setDate(result.getDate() + daysToAdd);
+  return result;
+};
