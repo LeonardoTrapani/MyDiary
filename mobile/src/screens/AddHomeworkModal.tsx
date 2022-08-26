@@ -14,6 +14,7 @@ import { useAtom } from "jotai";
 import { activeSubjectAtom } from "../util/atoms";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import { addDaysFromToday } from "../util/generalUtils";
+import useInput from "../util/useInput";
 
 const AddHomeworkmodal = ({
   navigation,
@@ -42,6 +43,25 @@ const AddHomeworkmodal = ({
   const [isExpDateOpened, setExpDateOpened] = useState(false);
   const [expDate, setExpDate] = useState<undefined | Date>(undefined);
 
+  const { value: titleValue, onChangeText: onChangeTitle } = useInput([
+    {
+      check: (value) => !!value,
+      errorMessage: "please enter a title",
+    },
+  ]);
+
+  const { value: descriptionValue, onChangeText: onChangeDescription } =
+    useInput([
+      {
+        check: (value) => !!value,
+        errorMessage: "please enter a description",
+      },
+      {
+        check: (value) => +value <= 400,
+        errorMessage: "the description maximum length is 400 characters",
+      },
+    ]);
+
   const expirationDateOpenHandler = () => {
     setExpDateOpened(true);
   };
@@ -65,8 +85,18 @@ const AddHomeworkmodal = ({
               },
             ]}
           >
-            <AddHomeworkInput title="Title" />
-            <AddHomeworkInput title="Description" isTextArea maxLength={400} />
+            <AddHomeworkInput
+              title="Title"
+              onChangeText={onChangeTitle}
+              value={titleValue}
+            />
+            <AddHomeworkInput
+              title="Description"
+              isTextArea
+              maxLength={400}
+              onChangeText={onChangeDescription}
+              value={descriptionValue}
+            />
 
             <TouchableOpacity
               onPress={chooseSubjectHandler}

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const useInput = (
   checksToBeValid: {
@@ -7,10 +7,10 @@ const useInput = (
   }[],
   defaultValue?: string
 ) => {
-  const [value, setValue] = useState(defaultValue || '');
+  const [value, setValue] = useState(defaultValue || "");
   const [isValid, setIsValid] = useState(false);
   const [hasBeenTouched, setHasBeenTouched] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
 
   const isFirstTime = useRef(true);
 
@@ -51,9 +51,9 @@ const useInput = (
   };
 
   const reset = () => {
-    setValue(defaultValue || '');
+    setValue(defaultValue || "");
     isFirstTime.current = true;
-    setErrorMessage('');
+    setErrorMessage("");
     setHasBeenTouched(false);
     setIsValid(false);
   };
@@ -78,7 +78,7 @@ const areAllChecksValid = (
   value: string
 ) => {
   let isValid = true;
-  let errorMessage = '';
+  let errorMessage = "";
   for (let i = 0; i < checksToBeValid.length; i++) {
     if (!checksToBeValid[i].check(value)) {
       errorMessage = checksToBeValid[i].errorMessage;
@@ -99,7 +99,7 @@ export const passwordInputChecks = [
     check: (value: string) => {
       return value.length > 0;
     },
-    errorMessage: 'please enter a password',
+    errorMessage: "please enter a password",
   },
 
   {
@@ -111,33 +111,33 @@ export const passwordInputChecks = [
         return false;
       }
     },
-    errorMessage: 'at least one special character',
+    errorMessage: "at least one special character",
   },
   {
     check: (value: string) => {
       return /[A-Z]/.test(value);
     },
-    errorMessage: 'at least uppercase letter',
+    errorMessage: "at least uppercase letter",
   },
   {
     check: (value: string) => {
       const regexp = /\d/;
       return regexp.test(value);
     },
-    errorMessage: 'at least one number',
+    errorMessage: "at least one number",
   },
   {
     check: (value: string) => {
       const regexp = /[a-z]/;
       return regexp.test(value);
     },
-    errorMessage: 'at least one lowercase letter',
+    errorMessage: "at least one lowercase letter",
   },
   {
     check: (value: string) => {
       return value.length >= 8;
     },
-    errorMessage: 'at least 8 characters',
+    errorMessage: "at least 8 characters",
   },
 ];
 
