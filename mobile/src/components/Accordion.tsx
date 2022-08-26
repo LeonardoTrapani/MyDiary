@@ -24,6 +24,7 @@ const Accordion: React.FC<{
   };
 
   const { card } = useTheme().colors;
+  const { text } = useTheme().colors;
 
   return (
     <View
@@ -47,7 +48,12 @@ const Accordion: React.FC<{
               },
         ]}
       >
-        <RegularText style={styles.text}>
+        <RegularText
+          style={[
+            styles.text,
+            !isOpened && props.isValueChoosed ? { color: text } : {},
+          ]}
+        >
           {!isOpened && props.isValueChoosed ? props.choosedValue : props.title}
         </RegularText>
         <Ionicons
