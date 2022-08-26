@@ -66,7 +66,7 @@ const AddHomeworkmodal = ({
             ]}
           >
             <AddHomeworkInput title="Title" />
-            <AddHomeworkInput title="Description" isTextArea />
+            <AddHomeworkInput title="Description" isTextArea maxLength={400} />
 
             <TouchableOpacity
               onPress={chooseSubjectHandler}

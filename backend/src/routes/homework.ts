@@ -11,6 +11,7 @@ import {
 } from "../middlewares";
 import { isValidDate, minutesAreLessThanDay } from "../utilities";
 import { body, param } from "express-validator";
+import moment from "moment";
 const router = Router();
 
 router.post(
@@ -20,17 +21,17 @@ router.post(
     body("name", "plase enter a valid subject name with at least 3 characters")
       .trim()
       .isString()
-      .notEmpty()
-      .isLength({ min: 3 }),
-    body(
-      "description",
-      "please enter a description between 5 and 400 characters"
-    )
+      .notEmpty(),
+    body("description", "the description maximum length is 400 characters")
       .trim()
-      .isLength({ min: 5, max: 400 })
+      .isLength({ max: 400 })
       .notEmpty(),
     body("expirationDate", "please insert a valid expiration date")
       .isISO8601()
+      .custom((value) => {
+        return moment(value).isAfter(moment());
+      })
+      .withMessage("please insert a future date")
       .notEmpty(),
     body("plannedDates", "please enter valid planned dates")
       .custom((value) => {
