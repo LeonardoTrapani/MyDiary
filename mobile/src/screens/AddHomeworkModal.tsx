@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import KeyboardWrapper from "../components/KeyboardWrapper";
-import { View } from "../components/Themed";
+import { useThemeColor, View } from "../components/Themed";
 import AddHomeworkInput from "../components/AddHomeworkInput";
 import SolidButton from "../components/SolidButton";
 import NonModalDurationPicker from "../components/NonModalDurationPicker";
@@ -12,6 +12,7 @@ import { AddHomeworkStackScreenProps } from "../../types";
 import { useTheme } from "@react-navigation/native";
 import { useAtom } from "jotai";
 import { activeSubjectAtom } from "../util/atoms";
+import DateTimePicker from "react-native-modal-datetime-picker";
 
 const AddHomeworkmodal = ({
   navigation,
@@ -36,6 +37,13 @@ const AddHomeworkmodal = ({
   const duration = useMemo(() => {
     return durationDate.getMinutes() + durationDate.getHours() * 60;
   }, [durationDate]);
+
+  const [isExpDateOpened, setExpDateOpened] = useState(false);
+  const [expDate, setExpDate] = useState<undefined | Date>(undefined);
+
+  const expirationDateOpenHandler = () => {
+    setExpDateOpened(true);
+  };
 
   return (
     <KeyboardWrapper>
@@ -81,7 +89,7 @@ const AddHomeworkmodal = ({
                   ></View>
                 </View>
               ) : (
-                <RegularText style={styles.subjectText}>Subject</RegularText>
+                <RegularText style={styles.undefinedText}>Subject</RegularText>
               )}
               <Ionicons name="chevron-forward" size={24} color="#aaa" />
             </TouchableOpacity>
@@ -95,11 +103,49 @@ const AddHomeworkmodal = ({
                 value={durationDate}
               />
             </Accordion>
+            <ExpirationDatePicker
+              expDate={expDate}
+              onOpen={expirationDateOpenHandler}
+            />
           </View>
         </ScrollView>
         <SolidButton title="Next step" isLoading={false} />
+        <DateTimePicker
+          isVisible={isExpDateOpened}
+          mode="date"
+          minimumDate={new Date()}
+          onConfirm={() => {
+            setExpDateOpened(true);
+          }}
+          onCancel={() => {
+            setExpDateOpened(false);
+          }}
+        />
       </View>
     </KeyboardWrapper>
+  );
+};
+
+const ExpirationDatePicker: React.FC<{
+  expDate: Date | undefined;
+  onOpen: () => void;
+}> = (props) => {
+  const { card, text } = useTheme().colors;
+
+  return (
+    <TouchableOpacity
+      onPress={props.onOpen}
+      style={[styles.main, { backgroundColor: card }]}
+    >
+      <RegularText
+        style={[styles.undefinedText, props.expDate ? { color: text } : {}]}
+      >
+        {props.expDate ? props.expDate.toLocaleString() : "Expiration Date"}
+      </RegularText>
+      <TouchableOpacity onPress={props.onOpen}>
+        <Ionicons name="ios-calendar-outline" size={24} />
+      </TouchableOpacity>
+    </TouchableOpacity>
   );
 };
 
@@ -111,9 +157,6 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     flex: 1,
-  },
-  title: {
-    fontSize: 25,
   },
   input: {
     marginBottom: 20,
@@ -127,7 +170,7 @@ const styles = StyleSheet.create({
   activeSubject: {
     fontSize: 17,
   },
-  subjectText: {
+  undefinedText: {
     fontSize: 17,
     color: "#888",
   },
