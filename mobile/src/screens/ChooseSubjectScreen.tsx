@@ -35,6 +35,8 @@ import SolidButton from "../components/SolidButton";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createNewSubject } from "../api/subject";
 import ErrorList from "../components/ErrorList";
+import { useAtom } from "jotai";
+import { activeSubjectAtom } from "../util/atoms";
 
 const ChooseSubjectScreen = ({
   navigation,
@@ -53,24 +55,25 @@ const ChooseSubjectScreen = ({
   }
   return (
     <View style={{ minHeight: "100%" }}>
-      {subjects && <SubjectsList subjects={subjects} />}
+      {subjects && (
+        <SubjectsList
+          subjects={subjects}
+          onPressSubject={() => {
+            navigation.pop();
+          }}
+        />
+      )}
     </View>
   );
 };
 
 const SubjectsList: React.FC<{
   subjects: SubjectType[];
+  onPressSubject: () => void;
 }> = (props) => {
   const { card } = useTheme().colors;
 
   return (
-    //<View
-    //style={[
-    //styles.subjectList,
-    //globalStyles.smallShadow,
-    //{ backgroundColor: card },
-    //]}
-    //>
     <FlatList
       data={props.subjects}
       style={[
@@ -82,9 +85,32 @@ const SubjectsList: React.FC<{
       ]}
       scrollEnabled={true}
       ItemSeparatorComponent={Separator}
-      renderItem={({ item }) => <SingleSubject subject={item} />}
+      renderItem={({ item, index }) => (
+        <SingleSubject
+          key={index}
+          subject={item}
+          onPressSubject={props.onPressSubject}
+        />
+      )}
     />
-    //</View>
+  );
+};
+
+const SingleSubject: React.FC<{
+  subject: SubjectType;
+  onPressSubject: () => void;
+}> = ({ subject, onPressSubject }) => {
+  const setSubject = useAtom(activeSubjectAtom)[1];
+  const subjectPressHandler = () => {
+    setSubject(subject);
+    onPressSubject();
+  };
+
+  return (
+    <TouchableOpacity style={[styles.subject]} onPress={subjectPressHandler}>
+      <MediumText style={styles.subjectText}>{subject.name}</MediumText>
+      <ColoredCircle color={subject.color} />
+    </TouchableOpacity>
   );
 };
 
@@ -105,16 +131,7 @@ const Separator: React.FC = () => {
   );
 };
 
-const SingleSubject: React.FC<{ subject: SubjectType }> = ({ subject }) => {
-  return (
-    <TouchableOpacity style={[styles.subject]}>
-      <MediumText style={styles.subjectText}>{subject.name}</MediumText>
-      <ColoredCircle color={subject.color} />
-    </TouchableOpacity>
-  );
-};
-
-const ColoredCircle: React.FC<{
+export const ColoredCircle: React.FC<{
   color: string;
   style?: StyleProp<ViewStyle>;
 }> = ({ color, style }) => {
@@ -302,7 +319,7 @@ const ColorList: React.FC<{
         return (
           <View
             style={[styles.colorRow, { backgroundColor: card }]}
-            key={row[0]}
+            key={rowIndex}
           >
             {row.map((color, columnIndex) => {
               return (

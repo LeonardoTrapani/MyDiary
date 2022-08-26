@@ -9,6 +9,7 @@ import TabOneScreen from "../screens/TabOneScreen";
 import {
   AddHomeworkStackParamList,
   RootStackParamList,
+  RootStackScreenProps,
   RootTabParamList,
 } from "../../types";
 import LinkingConfiguration from "./LinkingConfiguration";
@@ -27,6 +28,9 @@ import ChooseSubjectScreen, {
   AddSubjectScreen,
   ChooseSubjectAddIcon,
 } from "../screens/ChooseSubjectScreen";
+import { useEffect } from "react";
+import { useAtom } from "jotai";
+import { activeSubjectAtom } from "../util/atoms";
 
 export default function Main({
   colorScheme,
@@ -61,6 +65,7 @@ const BottomTab = createBottomTabNavigator<RootTabParamList>();
 const NavigatorBody: React.FC = () => {
   const { data: validToken } = useValidToken();
   const { data: isWeekCreated, isLoading: isWeekLoading } = useIsWeekCreated();
+  const setActiveSubject = useAtom(activeSubjectAtom)[1];
 
   if (!validToken || (isWeekLoading && !isWeekCreated)) {
     return (
@@ -115,6 +120,11 @@ const NavigatorBody: React.FC = () => {
         />
         <Stack.Screen
           name="AddHomework"
+          listeners={{
+            beforeRemove: () => {
+              setActiveSubject(null);
+            },
+          }}
           options={{
             headerShown: false,
             presentation: "modal",

@@ -1,4 +1,3 @@
-import { useTheme } from "@react-navigation/native";
 import React from "react";
 import Colors from "../constants/Colors";
 import useColorScheme from "../util/useColorScheme";
@@ -17,13 +16,13 @@ const ErrorList: React.FC<{
         marginHorizontal: 10,
       }}
     >
-      {props.errors.map((error) => {
+      {props.errors.map((error, index) => {
         if (!error.hasError) {
-          return <></>;
+          return;
         }
         return (
           <RegularText
-            key={error.errorMessage}
+            key={index}
             style={{
               color: errorColor,
               fontSize: 18,
