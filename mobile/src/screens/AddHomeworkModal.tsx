@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import KeyboardWrapper from "../components/KeyboardWrapper";
 import { View } from "../components/Themed";
@@ -16,7 +16,7 @@ import { activeSubjectAtom } from "../util/atoms";
 const AddHomeworkmodal = ({
   navigation,
 }: AddHomeworkStackScreenProps<"Root">) => {
-  const [activeSubject, setActiveSubject] = useAtom(activeSubjectAtom);
+  const [activeSubject] = useAtom(activeSubjectAtom);
 
   const [durationDate, setDurationDate] = useState(
     new Date(new Date().setHours(0, 0, 0, 0))
@@ -30,6 +30,12 @@ const AddHomeworkmodal = ({
   };
 
   const { card } = useTheme().colors;
+
+  const accordionTitle = "Duration (h : m)";
+
+  const duration = useMemo(() => {
+    return durationDate.getMinutes() + durationDate.getHours() * 60;
+  }, [durationDate]);
 
   return (
     <KeyboardWrapper>
@@ -79,7 +85,11 @@ const AddHomeworkmodal = ({
               )}
               <Ionicons name="chevron-forward" size={24} color="#aaa" />
             </TouchableOpacity>
-            <Accordion title="Duration (h : m)">
+            <Accordion
+              title={accordionTitle}
+              choosedValue={`${durationDate.getHours()}h ${durationDate.getMinutes()}m`}
+              isValueChoosed={duration !== 0}
+            >
               <NonModalDurationPicker
                 onChangeDuration={durationChangeHandler}
                 value={durationDate}

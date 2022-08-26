@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   ViewStyle,
 } from "react-native";
-import { MediumText, RegularText } from "./StyledText";
+import { RegularText } from "./StyledText";
 import { View } from "./Themed";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
@@ -14,6 +14,8 @@ const Accordion: React.FC<{
   title: string;
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
+  choosedValue: string;
+  isValueChoosed: boolean;
 }> = (props) => {
   const [isOpened, setIsOpened] = useState(false);
 
@@ -45,7 +47,9 @@ const Accordion: React.FC<{
               },
         ]}
       >
-        <RegularText style={styles.text}>{props.title}</RegularText>
+        <RegularText style={styles.text}>
+          {!isOpened && props.isValueChoosed ? props.choosedValue : props.title}
+        </RegularText>
         <Ionicons
           name="chevron-down"
           size={24}
