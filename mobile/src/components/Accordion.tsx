@@ -9,6 +9,8 @@ import { RegularText } from "./StyledText";
 import { View } from "./Themed";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
+import Colors from "../constants/Colors";
+import useColorScheme from "../util/useColorScheme";
 
 const Accordion: React.FC<{
   title: string;
@@ -16,15 +18,16 @@ const Accordion: React.FC<{
   style?: StyleProp<ViewStyle>;
   choosedValue: string;
   isValueChoosed: boolean;
+  hasError: boolean;
 }> = (props) => {
   const [isOpened, setIsOpened] = useState(false);
 
   const pressHandler = () => {
     setIsOpened((prev) => !prev);
   };
-
-  const { card } = useTheme().colors;
-  const { text } = useTheme().colors;
+  const cs = useColorScheme();
+  const { errorColor } = Colors[cs];
+  const { card, text } = useTheme().colors;
 
   return (
     <View
@@ -52,6 +55,7 @@ const Accordion: React.FC<{
           style={[
             styles.text,
             !isOpened && props.isValueChoosed ? { color: text } : {},
+            props.hasError ? { color: errorColor } : {},
           ]}
         >
           {!isOpened && props.isValueChoosed ? props.choosedValue : props.title}

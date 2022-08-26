@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import useColorScheme from "../util/useColorScheme";
 import KeyboardWrapper from "../components/KeyboardWrapper";
 import { View } from "../components/Themed";
 import AddHomeworkInput from "../components/AddHomeworkInput";
@@ -15,15 +16,19 @@ import { activeSubjectAtom } from "../util/atoms";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import { addDaysFromToday } from "../util/generalUtils";
 import useInput from "../util/useInput";
+import Colors from "../constants/Colors";
 
 const AddHomeworkmodal = ({
   navigation,
 }: AddHomeworkStackScreenProps<"Root">) => {
   const [activeSubject] = useAtom(activeSubjectAtom);
 
+  const [activeSubjectHasError, setActiveSubjectHasError] = useState(false);
   const [durationDate, setDurationDate] = useState(
     new Date(new Date().setHours(0, 0, 0, 0))
   );
+  const [durationHasError, setDurationHasError] = useState(false);
+
   const durationChangeHandler = (date: Date) => {
     setDurationDate(date);
   };
@@ -37,33 +42,83 @@ const AddHomeworkmodal = ({
   const accordionTitle = "Duration (h : m)";
 
   const duration = useMemo(() => {
-    return durationDate.getMinutes() + durationDate.getHours() * 60;
+    const dur = durationDate.getMinutes() + durationDate.getHours() * 60;
+    if (dur !== 0) {
+      setDurationHasError(false);
+    }
+    return dur;
   }, [durationDate]);
 
   const [isExpDateOpened, setExpDateOpened] = useState(false);
   const [expDate, setExpDate] = useState<undefined | Date>(undefined);
+  const [expDateHasError, setExpDateHasError] = useState(false);
 
-  const { value: titleValue, onChangeText: onChangeTitle } = useInput([
+  const {
+    value: titleValue,
+    onChangeText: onChangeTitle,
+    validate: validateTitle,
+    hasError: titleHasError,
+  } = useInput([
     {
       check: (value) => !!value,
       errorMessage: "please enter a title",
     },
   ]);
 
-  const { value: descriptionValue, onChangeText: onChangeDescription } =
-    useInput([
-      {
-        check: (value) => !!value,
-        errorMessage: "please enter a description",
+  const {
+    value: descriptionValue,
+    onChangeText: onChangeDescription,
+    validate: validateDescription,
+    hasError: descriptionHasError,
+  } = useInput([
+    {
+      check: (value) => {
+        return !!value;
       },
-      {
-        check: (value) => +value <= 400,
-        errorMessage: "the description maximum length is 400 characters",
-      },
-    ]);
+      errorMessage: "please enter a description",
+    },
+    {
+      check: (value) => value.length <= 400,
+      errorMessage: "the description maximum length is 400 characters",
+    },
+  ]);
 
   const expirationDateOpenHandler = () => {
     setExpDateOpened(true);
+  };
+
+  const colorScheme = useColorScheme();
+  const { errorColor } = Colors[colorScheme];
+
+  const nextStepHandler = () => {
+    validateTitle();
+    validateDescription();
+    let hasToReturn = false;
+
+    if (!activeSubject) {
+      setActiveSubjectHasError(true);
+      hasToReturn = true;
+    } else {
+      setActiveSubjectHasError(false);
+    }
+
+    if (duration === 0) {
+      setDurationHasError(true);
+      hasToReturn = true;
+    } else {
+      setDurationHasError(false);
+    }
+
+    if (!expDate) {
+      setExpDateHasError(true);
+      hasToReturn = true;
+    } else {
+      setExpDateHasError(false);
+    }
+    if (hasToReturn) {
+      return;
+    }
+    //MUTATE AND GO TO THE NEXT STEP
   };
 
   return (
@@ -89,6 +144,7 @@ const AddHomeworkmodal = ({
               title="Title"
               onChangeText={onChangeTitle}
               value={titleValue}
+              hasError={titleHasError}
             />
             <AddHomeworkInput
               title="Description"
@@ -96,6 +152,7 @@ const AddHomeworkmodal = ({
               maxLength={400}
               onChangeText={onChangeDescription}
               value={descriptionValue}
+              hasError={descriptionHasError}
             />
 
             <TouchableOpacity
@@ -120,13 +177,21 @@ const AddHomeworkmodal = ({
                   ></View>
                 </View>
               ) : (
-                <RegularText style={styles.undefinedText}>Subject</RegularText>
+                <RegularText
+                  style={[
+                    styles.undefinedText,
+                    activeSubjectHasError ? { color: errorColor } : {},
+                  ]}
+                >
+                  Subject
+                </RegularText>
               )}
               <Ionicons name="chevron-forward" size={24} color="#aaa" />
             </TouchableOpacity>
             <Accordion
               title={accordionTitle}
               choosedValue={`${durationDate.getHours()}h ${durationDate.getMinutes()}m`}
+              hasError={durationHasError}
               isValueChoosed={duration !== 0}
             >
               <NonModalDurationPicker
@@ -136,11 +201,16 @@ const AddHomeworkmodal = ({
             </Accordion>
             <ExpirationDatePicker
               expDate={expDate}
+              hasError={expDateHasError}
               onOpen={expirationDateOpenHandler}
             />
           </View>
         </ScrollView>
-        <SolidButton title="Next step" isLoading={false} />
+        <SolidButton
+          title="Next step"
+          isLoading={false}
+          onPress={nextStepHandler}
+        />
         <DateTimePicker
           isVisible={isExpDateOpened}
           mode="date"
@@ -148,6 +218,7 @@ const AddHomeworkmodal = ({
           onConfirm={(date: Date) => {
             setExpDateOpened(false);
             setExpDate(date);
+            setExpDateHasError(false);
           }}
           onCancel={() => {
             setExpDateOpened(false);
@@ -160,22 +231,28 @@ const AddHomeworkmodal = ({
 
 const ExpirationDatePicker: React.FC<{
   expDate: Date | undefined;
+  hasError: boolean;
   onOpen: () => void;
 }> = (props) => {
   const { card, text } = useTheme().colors;
-
+  const cs = useColorScheme();
+  const { errorColor } = Colors[cs];
   return (
     <TouchableOpacity
       onPress={props.onOpen}
       style={[styles.main, { backgroundColor: card }]}
     >
       <RegularText
-        style={[styles.undefinedText, props.expDate ? { color: text } : {}]}
+        style={[
+          styles.undefinedText,
+          props.expDate ? { color: text } : {},
+          props.hasError ? { color: errorColor } : {},
+        ]}
       >
         {props.expDate ? props.expDate.toLocaleDateString() : "Expiration Date"}
       </RegularText>
       <TouchableOpacity onPress={props.onOpen}>
-        <Ionicons name="ios-calendar-outline" size={24} />
+        <Ionicons name="ios-calendar-outline" size={24} color="#888" />
       </TouchableOpacity>
     </TouchableOpacity>
   );

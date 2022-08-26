@@ -10,6 +10,7 @@ interface AddHomeworkInputProps extends TextInputProps {
   title: string;
   isTextArea?: boolean;
   value: string;
+  hasError: boolean;
 }
 
 const AddHomeworkInput: React.FC<AddHomeworkInputProps> = (props) => {
@@ -20,17 +21,21 @@ const AddHomeworkInput: React.FC<AddHomeworkInputProps> = (props) => {
     <View style={[styles.container, { backgroundColor: card }]}>
       <TextInput
         {...props}
-        style={[styles.input, props.isTextArea ? styles.textArea : {}]}
+        style={[
+          styles.input,
+          props.isTextArea ? styles.textArea : {},
+          props.hasError ? { color: errorColor } : {},
+        ]}
         value={props.value}
         placeholder={props.title}
-        placeholderTextColor={placeHolderColor}
+        placeholderTextColor={props.hasError ? errorColor : placeHolderColor}
         {...(props.isTextArea ? { multiline: true } : { multiline: false })}
       />
       {props.isTextArea && props.maxLength ? (
         <RegularText
           style={[
             styles.limitText,
-            props.value.length >= props.maxLength
+            props.value.length >= props.maxLength || props.hasError
               ? {
                   color: errorColor,
                 }
