@@ -34,10 +34,9 @@ const AddHomeworkmodal = ({
       return fetchFreeDays(homeworkInfo, 1, validToken);
     },
     {
-      onSuccess: () => {
-        if (!activeSubject || !expDate || !freeDaysMutation.data) {
-          console.log(activeSubject, expDate, freeDaysMutation.data);
-          console.warn("FREE DAYS NOT HANDLED (add homeworkmodal 36:66)");
+      onSuccess: (days) => {
+        if (!activeSubject || !expDate || !days) {
+          console.warn("exeption not handled");
           return;
         }
         navigation.navigate("PlannedDates", {
@@ -48,7 +47,7 @@ const AddHomeworkmodal = ({
             duration: duration,
             expirationDate: expDate.toString(),
           },
-          freeDays: freeDaysMutation.data,
+          freeDays: days,
         });
       },
     }

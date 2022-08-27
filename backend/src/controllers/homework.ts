@@ -95,9 +95,10 @@ export const getAllHomework = async (
   res.json(homework);
 };
 
-const DAYS_PER_PAGE = 9;
+export const CONTS_DAYS_PER_PAGE = 9;
 export const calculateFreeDays = async (req: Request, res: Response) => {
   const { expirationDate: expirationDateBody } = req.body;
+  let daysPerPage = req.body.daysPerPage || CONTS_DAYS_PER_PAGE;
   const { pageNumber } = req.params;
   const expirationDate = moment(expirationDateBody);
   const { userId } = req;
@@ -120,7 +121,7 @@ export const calculateFreeDays = async (req: Request, res: Response) => {
       );
     }
 
-    const daysFromToday = +pageNumber * DAYS_PER_PAGE - DAYS_PER_PAGE;
+    const daysFromToday = +pageNumber * daysPerPage - daysPerPage;
 
     const startDate = moment().add(daysFromToday, "days").startOf("days");
 
@@ -129,7 +130,7 @@ export const calculateFreeDays = async (req: Request, res: Response) => {
       expirationDate.clone(),
       week,
       freeDays,
-      DAYS_PER_PAGE
+      daysPerPage
     );
 
     return res.json(freeDaysArray);
