@@ -119,7 +119,7 @@ export const calculateFreeDays = async (req: Request, res: Response) => {
 
     const startDate = moment().add(daysFromToday, "days").startOf("days");
 
-    const freeDaysArray = getFreeDaysArray(
+    const { nextDay, freeDays: freeDaysArray } = getFreeDaysArray(
       startDate.clone(),
       expirationDate.clone(),
       week,
@@ -127,8 +127,9 @@ export const calculateFreeDays = async (req: Request, res: Response) => {
       daysPerPage
     );
 
+    const isLastPage = !nextDay;
     const finalResponse: FreeDaysResponse = {
-      nextCursor: +pageNumber + 1,
+      nextCursor: isLastPage ? undefined : +pageNumber + 1,
       page: {
         freeDays: freeDaysArray,
       },
@@ -209,11 +210,11 @@ export const getFreeDaysArray = (
     currentDate.isSameOrBefore(expirationDate, "days") &&
     finalFreeDays.length < daysPerPage
   ) {
-    const freeMinutes = findfreeMinutesInDay(currentDate, week);
-    const freeDayToPut = freeDays.find((day) => {
-      const freeDaysDay = moment(day.date);
-      return freeDaysDay.isSame(currentDate, "days");
-    });
+    const { freeDayToPut, freeMinutes } = getOneFreeDay(
+      currentDate,
+      week,
+      freeDays
+    );
     if (freeDayToPut) {
       finalFreeDays.push({
         date: moment(freeDayToPut.date).toDate(),
@@ -229,5 +230,22 @@ export const getFreeDaysArray = (
     }
     currentDate = currentDate.add(1, "day");
   }
-  return finalFreeDays;
+  const nextDay = getOneFreeDay(currentDate, week, freeDays);
+  if (currentDate.isAfter(expirationDate, "days")) {
+    return { freeDays: finalFreeDays, nextDay: null };
+  }
+  return { freeDays: finalFreeDays, nextDay };
+};
+
+export const getOneFreeDay = (
+  currentDate: moment.Moment,
+  week: week,
+  freeDays: FreeDays
+) => {
+  const freeMinutes = findfreeMinutesInDay(currentDate, week);
+  const freeDayToPut = freeDays.find((day) => {
+    const freeDaysDay = moment(day.date);
+    return freeDaysDay.isSame(currentDate, "days");
+  });
+  return { freeMinutes, freeDayToPut };
 };

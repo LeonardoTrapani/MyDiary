@@ -102,7 +102,7 @@ export const getCalendar = async (req: Request, res: Response) => {
     return;
   }
 
-  const calendarDays = getFreeDaysArray(
+  const { freeDays: calendarDays } = getFreeDaysArray(
     startOfMonth.clone(),
     endOfMonth.clone(),
     week,
@@ -113,12 +113,12 @@ export const getCalendar = async (req: Request, res: Response) => {
   calendarDays.forEach((calendarDay, i) => {
     calendar.push({
       date: moment(calendarDay.date),
-      freeMins: calendarDay.freMins,
+      freeMins: calendarDay.freeMins,
       minutesToAssign: calendarDay.minutesToAssign,
       disabled: isCalendarDayDisabled(
         moment(calendarDay.date),
         startOfMonth.month(),
-        calendarDay.freMins,
+        calendarDay.freeMins,
         homeworkInDays[i]
       ),
       homework: homeworkInDays[i],

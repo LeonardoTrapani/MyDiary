@@ -13,7 +13,6 @@ const PlannedDatesScreen = ({
     useFreeDays(route.params);
 
   const loadMore = () => {
-    console.log({ hasNextPage });
     if (hasNextPage) {
       fetchNextPage();
     }
@@ -46,14 +45,3 @@ const FreeDayComponent: React.FC<{ freeDay: FreeDay }> = (props) => {
 };
 
 export default PlannedDatesScreen;
-function useCalculateFreeDays(
-  params: Readonly<import("../../types").HomeworkInfoType>
-): {
-  isLoading: any;
-  hasNextPage: any;
-  data: any;
-  fetchNextPage: any;
-  isFetchingNextPage: any;
-} {
-  throw new Error("Function not implemented.");
-}
