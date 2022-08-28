@@ -34,9 +34,14 @@ export type AddHomeworkStackParamList = {
   PlannedDates: HomeworkInfoType;
 };
 
-export interface FreeDays {
-  days: FreeDay[];
-}
+export type FreeDays = FreeDay[];
+
+export type FreeDaysResponse = {
+  nextCursor: number | undefined;
+  page: {
+    freeDays: FreeDays;
+  };
+};
 
 export interface FreeDay {
   date: Date;

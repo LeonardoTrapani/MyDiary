@@ -1,9 +1,5 @@
-import {
-  GetNextPageParamFunction,
-  useInfiniteQuery,
-  useQuery,
-} from "@tanstack/react-query";
-import { FreeDays, HomeworkInfoType } from "../../types";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { FreeDaysResponse, HomeworkInfoType } from "../../types";
 import { getIsWeekCreatedWithToken, getWeek, validateToken } from "../api/auth";
 import { fetchFreeDays } from "../api/homework";
 import { getSubjects } from "../api/subject";
@@ -52,12 +48,16 @@ export const useSubjects = () => {
 
 export const useFreeDays = (homeworkInfo: HomeworkInfoType) => {
   const { data: validToken, isFetched: isValidTokenFetched } = useValidToken();
-  return useInfiniteQuery<FreeDays>(
+  const infQuery = useInfiniteQuery<FreeDaysResponse>(
     ["freeDays"],
     ({ pageParam = 1 }) => fetchFreeDays(pageParam, homeworkInfo, validToken),
     {
       enabled: isValidTokenFetched,
-      getNextPageParam: (lastPage) => lastPage.days ?? undefined,
+      getNextPageParam: (lastPage) => {
+        console.log(lastPage);
+        return lastPage.nextCursor;
+      },
     }
   );
+  return infQuery;
 };

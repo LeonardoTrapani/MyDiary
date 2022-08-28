@@ -1,67 +1,71 @@
 import { useTheme } from "@react-navigation/native";
-import { AxiosError } from "axios";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import React from "react";
-import { ActivityIndicator, FlatList, VirtualizedList } from "react-native";
-import { AddHomeworkStackScreenProps, FreeDay } from "../../types";
+import { ActivityIndicator, FlatList } from "react-native";
+import {
+  AddHomeworkStackScreenProps,
+  FreeDay,
+  FreeDaysResponse,
+} from "../../types";
+import { fetchFreeDays } from "../api/homework";
 import { RegularText } from "../components/StyledText";
 import { View } from "../components/Themed";
-import { useGetDataFromAxiosError } from "../util/axiosUtils";
-import { useFreeDays } from "../util/react-query-hooks";
+import { useValidToken } from "../util/react-query-hooks";
 
 const PlannedDatesScreen = ({
   route,
-  navigation,
 }: AddHomeworkStackScreenProps<"PlannedDates">) => {
+  //const { isLoading, hasNextPage, fetchNextPage, isFetchingNextPage, data } =
+  //useFreeDays(route.params);
+  const { data: validToken, isFetched: isValidTokenFetched } = useValidToken();
   const {
-    data: freeDays,
-    isFetched: freeDaysIsFetched,
+    isLoading,
     hasNextPage,
-    isFetchingNextPage,
     fetchNextPage,
-    isLoading: isFreeDaysLoading,
-    isError: isFreeDaysError,
-    error: freeDaysError,
-  } = useFreeDays(route.params);
+    isFetchingNextPage,
+    data,
+    isError,
+    error,
+  } = useInfiniteQuery<FreeDaysResponse>(
+    ["freeDays"],
+    ({ pageParam = 1 }) => fetchFreeDays(pageParam, route.params, validToken),
+    {
+      enabled: isValidTokenFetched,
+      getNextPageParam: (lastPage) => {
+        console.log(lastPage);
+        return lastPage.nextCursor;
+      },
+    }
+  );
+  console.log({ isError, error });
 
   const loadMore = () => {
+    console.log({ hasNextPage });
     if (hasNextPage) {
       fetchNextPage();
     }
   };
 
-  const getDataFromAxiosError = useGetDataFromAxiosError(
-    freeDaysError as AxiosError
-  );
   const { text } = useTheme().colors;
 
   return (
     <View>
-      {isFetchingNextPage ? (
+      {isLoading ? (
         <ActivityIndicator color={text} />
       ) : (
-        <FlatList
-          data={freeDays?.pages}
-          renderItem={({ item }) => {
-            console.log(item.days);
-            return (
-              <FreeDayComponent
-                freeDay={{
-                  date: new Date(),
-                  minutesToAssign: 1,
-                  freeMins: 2,
-                }}
-              />
-            );
-          }}
-          onEndReached={loadMore}
-        />
+        <>
+          <FlatList
+            data={data?.pages.map((page) => page.page.freeDays).flat()}
+            renderItem={({ item }) => {
+              return <FreeDayComponent freeDay={item} />;
+            }}
+            onEndReached={loadMore}
+          />
+          {isFetchingNextPage && <ActivityIndicator color={text} />}
+        </>
       )}
     </View>
   );
-};
-
-const freeDayExtractorKey = (freeDay: FreeDay) => {
-  return freeDay.date.toString();
 };
 
 const FreeDayComponent: React.FC<{ freeDay: FreeDay }> = (props) => {
@@ -69,3 +73,14 @@ const FreeDayComponent: React.FC<{ freeDay: FreeDay }> = (props) => {
 };
 
 export default PlannedDatesScreen;
+function useCalculateFreeDays(
+  params: Readonly<import("../../types").HomeworkInfoType>
+): {
+  isLoading: any;
+  hasNextPage: any;
+  data: any;
+  fetchNextPage: any;
+  isFetchingNextPage: any;
+} {
+  throw new Error("Function not implemented.");
+}
