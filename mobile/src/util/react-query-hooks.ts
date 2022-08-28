@@ -54,7 +54,6 @@ export const useFreeDays = (homeworkInfo: HomeworkInfoType) => {
     {
       enabled: isValidTokenFetched,
       getNextPageParam: (lastPage) => {
-        console.log(lastPage);
         return lastPage.nextCursor;
       },
     }

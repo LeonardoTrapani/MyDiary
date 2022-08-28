@@ -8,7 +8,6 @@ export const fetchFreeDays = async (
   token: string | null | undefined
 ) => {
   if (!token) {
-    console.log("GONNA THROw");
     throw "Not authenticated";
   }
   const freeDays = await axios.post<FreeDaysResponse>(
@@ -24,7 +23,5 @@ export const fetchFreeDays = async (
       },
     }
   );
-  console.log("PIANO C");
-  console.log({ freeDays });
   return freeDays.data;
 };

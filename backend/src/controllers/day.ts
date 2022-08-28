@@ -1,8 +1,8 @@
-import { NextFunction, Request, Response } from 'express';
-import { isPositiveNotZero, throwResponseError } from '../utilities';
-import { prisma } from '../app';
-import moment from 'moment';
-import { fetchWeek, findfreeMinutesInDay } from './week';
+import { NextFunction, Request, Response } from "express";
+import { isPositiveNotZero, throwResponseError } from "../utilities";
+import { prisma } from "../app";
+import moment from "moment";
+import { fetchWeek, findfreeMinutesInDay } from "./week";
 
 export const getAllDays = async (
   req: Request,
@@ -24,7 +24,7 @@ export const getAllDays = async (
     });
     res.json(days);
   } catch (err) {
-    throwResponseError('an error has occurred fetching the days', 400, res);
+    throwResponseError("an error has occurred fetching the days", 400, res);
   }
 };
 
@@ -45,7 +45,7 @@ export const createDay = async (
     res.json(createDayRes);
   } catch (err) {
     console.error(err);
-    throwResponseError('an error has occurred creating the day', 400, res);
+    throwResponseError("an error has occurred creating the day", 400, res);
   }
 };
 
@@ -75,7 +75,7 @@ export const editDay = async (
     res.json(editedDay);
     return;
   } catch (err) {
-    throwResponseError('an error has occurred editing the day', 400, res);
+    throwResponseError("an error has occurred editing the day", 400, res);
   }
 };
 
@@ -88,7 +88,7 @@ export const createOrUpdateDay = async (
   const existingDay = await prisma.day.findFirst({
     where: {
       userId: +userId!,
-      date: moment(date).startOf('day').toDate(),
+      date: moment(date).startOf("day").toDate(),
     },
     select: {
       freeMins: true,
@@ -106,7 +106,7 @@ export const createOrUpdateDay = async (
 
   const day = await prisma.day.create({
     data: {
-      date: moment(date).startOf('day').toDate(),
+      date: moment(date).startOf("day").toDate(),
       minutesToAssign: freeMinutes,
       freeMins: freeMinutes,
       userId: +userId!,
@@ -124,7 +124,7 @@ export const createOrUpdateDayCountingPreviousMinutes = async (
   const existingDay = await prisma.day.findFirst({
     where: {
       userId: userId,
-      date: moment(date).startOf('day').toDate(),
+      date: moment(date).startOf("day").toDate(),
     },
     select: {
       id: true,
@@ -141,14 +141,14 @@ export const createOrUpdateDayCountingPreviousMinutes = async (
     throwResponseError("could't find the week", 400, res);
     return;
   }
-  const minutesInDay = findfreeMinutesInDay(moment(date).startOf('day'), week);
+  const minutesInDay = findfreeMinutesInDay(moment(date).startOf("day"), week);
   if (minutesInDay - freeMinutes < 0) {
-    throwResponseError('the minutes are less than 0 somehow', 400, res);
+    throwResponseError("the minutes are less than 0 somehow", 400, res);
     return;
   }
   const day = await prisma.day.create({
     data: {
-      date: moment(date).startOf('day').toDate(),
+      date: moment(date).startOf("day").toDate(),
       freeMins: minutesInDay,
       minutesToAssign: minutesInDay - freeMinutes,
       userId: +userId!,
@@ -172,7 +172,7 @@ export const editExistingDay = async (
   if (timeRemoved) {
     if (existingDay.minutesToAssign - timeRemoved < 0) {
       throw new Error(
-        'the free minutes would be less than the minutes already assigned'
+        "the free minutes would be less than the minutes already assigned"
       );
     }
 
@@ -205,7 +205,7 @@ export const editExistingDay = async (
     });
     return editedDay;
   }
-  console.log('responding with nothing');
+  console.warn("responding with nothing");
 
   return existingDay;
 };

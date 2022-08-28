@@ -1,6 +1,6 @@
-import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
-import { BACKEND_URL } from '../utilities/contants';
-import { CustomRequestInit } from '../utilities/hooks';
+import { createSlice, Dispatch, PayloadAction } from "@reduxjs/toolkit";
+import { BACKEND_URL } from "../utilities/contants";
+import { CustomRequestInit } from "../utilities/hooks";
 
 type Subjects = { id: number; name: string; color: string }[];
 interface SubjectsState {
@@ -18,7 +18,7 @@ const initialState: SubjectsState = {
 };
 
 const subjectsSlice = createSlice({
-  name: 'subjects',
+  name: "subjects",
   initialState,
   reducers: {
     setLoading(state, action: PayloadAction<boolean>) {
@@ -35,7 +35,6 @@ const subjectsSlice = createSlice({
       state.creatingSubjectName = action.payload;
     },
     removeCreatingSubject(state) {
-      console.log('CLOSinG CREATING SUBJEct');
       state.creatingSubject = false;
       state.creatingSubjectName = undefined;
     },
@@ -63,7 +62,7 @@ export const fetchSubjects = (
       dispatch(subjectsActions.setLoading(true));
       dispatch(subjectsActions.setHasError(false));
       const subjects = (await fetchAuthorized()(
-        BACKEND_URL + '/subject/all'
+        BACKEND_URL + "/subject/all"
       )) as Subjects;
       dispatch(subjectsActions.setSubjects(subjects));
       setTimeout(() => {
@@ -94,9 +93,9 @@ export const createSubject = (
       dispatch(subjectsActions.setLoading(true));
       dispatch(subjectsActions.setHasError(false));
       const createSubjectResponse = (await fetchAuthorized()(
-        BACKEND_URL + '/subject/create',
+        BACKEND_URL + "/subject/create",
         {
-          method: 'POST',
+          method: "POST",
           requestBody: {
             name,
             color,

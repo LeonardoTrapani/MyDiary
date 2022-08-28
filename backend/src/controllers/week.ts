@@ -1,6 +1,6 @@
-import { NextFunction, Request, Response } from 'express';
-import { prisma } from '../app';
-import { throwResponseError } from '../utilities';
+import { NextFunction, Request, Response } from "express";
+import { prisma } from "../app";
+import { throwResponseError } from "../utilities";
 export const createWeek = async (
   req: Request,
   res: Response,
@@ -28,7 +28,7 @@ export const createWeek = async (
     });
     if (weekExistance?.week) {
       return throwResponseError(
-        'An error has occurred: the week has already been created',
+        "An error has occurred: the week has already been created",
         400,
         res
       );
@@ -56,9 +56,9 @@ export const createWeek = async (
     });
     return res.json(week);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return throwResponseError(
-      'an error has occurred creating the week',
+      "an error has occurred creating the week",
       400,
       res
     );
