@@ -1,10 +1,10 @@
-import { Request, Response } from 'express';
-import { throwResponseError } from '../utilities';
-import { prisma } from '../app';
-import { fetchFreeDays, getFreeDaysArray } from './homework';
-import { Moment } from 'moment';
-import moment from 'moment';
-import { fetchWeek } from './week';
+import { Request, Response } from "express";
+import { throwResponseError } from "../utilities";
+import { prisma } from "../app";
+import { fetchFreeDays, getFreeDaysArray } from "./homework";
+import { Moment } from "moment";
+import moment from "moment";
+import { fetchWeek } from "./week";
 
 type Calendar = CalendarDay[];
 
@@ -31,21 +31,21 @@ export const getCalendar = async (req: Request, res: Response) => {
   const pageNumber = +page!;
 
   const startOfMonth = moment()
-    .add(pageNumber - 1, 'months')
-    .startOf('month');
+    .add(pageNumber - 1, "months")
+    .startOf("month");
   const endOfMonth = moment()
-    .add(pageNumber - 1, 'months')
-    .endOf('month')
-    .startOf('day');
+    .add(pageNumber - 1, "months")
+    .endOf("month")
+    .startOf("day");
 
   const daysInMonth = moment()
-    .add(pageNumber - 1, 'months')
+    .add(pageNumber - 1, "months")
     .daysInMonth();
   // const daysToRemoveStart = startOfMonth.diff(currDate, 'days');
   const daysToAddEnd = DAYS_PER_PAGE - daysInMonth;
   // const firstDay = startOfMonth.subtract(daysToRemoveStart, 'days');
-  const lastDay = endOfMonth.add(daysToAddEnd, 'days');
-  let currentDate = moment(startOfMonth).startOf('day');
+  const lastDay = endOfMonth.add(daysToAddEnd, "days");
+  let currentDate = moment(startOfMonth).startOf("day");
 
   const homeworkInDays: CalendarHomework[][] = [];
   const calendar: Calendar = [];
@@ -87,12 +87,12 @@ export const getCalendar = async (req: Request, res: Response) => {
     });
 
     homeworkInDays.push(formattedHomework);
-    currentDate = currentDate.add(1, 'day');
+    currentDate = currentDate.add(1, "day");
   }
 
   const week = await fetchWeek(+userId!);
   if (!week) {
-    throwResponseError('please define your usual week', 400, res);
+    throwResponseError("please define your usual week", 400, res);
     return;
   }
   const freeDays = await fetchFreeDays(+userId!);
@@ -136,7 +136,7 @@ const isCalendarDayDisabled = (
 ) => {
   const currDate = moment();
   if (
-    date.isBefore(currDate.subtract(1, 'days')) ||
+    date.isBefore(currDate.subtract(1, "days")) ||
     date.month() !== month ||
     (freeMinutes <= 0 && !homeworkInDays.length)
   ) {

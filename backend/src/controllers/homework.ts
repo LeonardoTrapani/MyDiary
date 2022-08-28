@@ -1,16 +1,13 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { throwResponseError } from "../utilities";
 
 import { prisma } from "../app";
 import moment from "moment";
+
 import { createOrUpdateDayCountingPreviousMinutes } from "./day";
 import { fetchWeek, findfreeMinutesInDay } from "./week";
 
-export const createHomework = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const createHomework = async (req: Request, res: Response) => {
   const { userId } = req;
   const { name, subjectId, duration, description, expirationDate } = req.body;
   const plannedDates = req.body.plannedDates as {
@@ -70,11 +67,7 @@ export const createHomework = async (
   }
 };
 
-export const getAllHomework = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const getAllHomework = async (req: Request, res: Response) => {
   const userId = +req.userId!;
   const homework = await prisma.homework.findMany({
     where: {
@@ -96,6 +89,7 @@ export const getAllHomework = async (
 };
 
 export const CONTS_DAYS_PER_PAGE = 9;
+
 export const calculateFreeDays = async (req: Request, res: Response) => {
   const { expirationDate: expirationDateBody } = req.body;
   let daysPerPage = req.body.daysPerPage || CONTS_DAYS_PER_PAGE;
@@ -133,7 +127,14 @@ export const calculateFreeDays = async (req: Request, res: Response) => {
       daysPerPage
     );
 
-    return res.json(freeDaysArray);
+    //TODO: next cursor only if next page number exists
+    const finalResponse: FreeDaysResponse = {
+      nextCursor: +pageNumber + 1,
+      page: {
+        freeDays: freeDaysArray,
+      },
+    };
+    return finalResponse;
   } catch (err) {
     return throwResponseError(
       "an error has occurred finding the free hours",
@@ -153,16 +154,23 @@ interface week {
   saturdayFreeMinutes: number;
   sundayFreeMinutes: number;
 }
-interface freeDays {
-  days: {
-    date: Date;
-    freeMins: number;
-    minutesToAssign: number;
-  }[];
+type FreeDays = FreeDay[];
+
+interface FreeDay {
+  date: Date;
+  freeMins: number;
+  minutesToAssign: number;
 }
 
+export type FreeDaysResponse = {
+  nextCursor: number | undefined;
+  page: {
+    freeDays: FreeDays;
+  };
+};
+
 export const fetchFreeDays = async (userId: number) => {
-  return await prisma.user.findFirst({
+  const res = await prisma.user.findFirst({
     where: {
       id: userId,
       deleted: false,
@@ -183,17 +191,18 @@ export const fetchFreeDays = async (userId: number) => {
       },
     },
   });
+  return res?.days;
 };
 export const getFreeDaysArray = (
   startDate: moment.Moment,
   expirationDate: moment.Moment,
   week: week,
-  freeDays: freeDays,
+  freeDays: FreeDays,
   daysPerPage: number
 ) => {
   const finalFreeDays: {
     date: Date;
-    freMins: number;
+    freeMins: number;
     minutesToAssign: number;
   }[] = [];
   let currentDate = startDate;
@@ -202,20 +211,20 @@ export const getFreeDaysArray = (
     finalFreeDays.length < daysPerPage
   ) {
     const freeMinutes = findfreeMinutesInDay(currentDate, week);
-    const freeDayToPut = freeDays.days.find((day) => {
+    const freeDayToPut = freeDays.find((day) => {
       const freeDaysDay = moment(day.date);
       return freeDaysDay.isSame(currentDate, "days");
     });
     if (freeDayToPut) {
       finalFreeDays.push({
         date: moment(freeDayToPut.date).toDate(),
-        freMins: freeDayToPut.freeMins,
+        freeMins: freeDayToPut.freeMins,
         minutesToAssign: freeDayToPut.minutesToAssign,
       });
     } else {
       finalFreeDays.push({
         date: currentDate.toDate(),
-        freMins: freeMinutes,
+        freeMins: freeMinutes,
         minutesToAssign: freeMinutes,
       });
     }

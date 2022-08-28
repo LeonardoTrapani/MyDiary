@@ -76,6 +76,7 @@ router.post(
       .withMessage("you can't have more than 24 free hours in a day!"),
     param("pageNumber", "page number not provided")
       .isNumeric()
+      .withMessage("page number is not a number")
       .custom((value) => value > 0)
       .withMessage("the page needs to be at least 1"),
   ],
