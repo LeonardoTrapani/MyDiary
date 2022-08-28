@@ -127,14 +127,13 @@ export const calculateFreeDays = async (req: Request, res: Response) => {
       daysPerPage
     );
 
-    //TODO: next cursor only if next page number exists
     const finalResponse: FreeDaysResponse = {
       nextCursor: +pageNumber + 1,
       page: {
         freeDays: freeDaysArray,
       },
     };
-    return finalResponse;
+    return res.json(finalResponse);
   } catch (err) {
     return throwResponseError(
       "an error has occurred finding the free hours",
