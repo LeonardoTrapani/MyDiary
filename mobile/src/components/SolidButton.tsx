@@ -3,17 +3,17 @@ import {
   StyleSheet,
   TouchableHighlightProps,
   TouchableOpacity,
-} from 'react-native';
+} from "react-native";
 
-import React from 'react';
-import { BoldText } from './StyledText';
-import { useTheme } from '@react-navigation/native';
-import { View } from './Themed';
-import globalStyles from '../constants/Syles';
+import React from "react";
+import { BoldText } from "./StyledText";
+import { useTheme } from "@react-navigation/native";
+import { View } from "./Themed";
+import globalStyles from "../constants/Syles";
 
 interface CustomTouchableOpacityProps extends TouchableHighlightProps {
   title: string;
-  isLoading: boolean;
+  isLoading?: boolean;
 }
 
 const SolidButton: React.FC<CustomTouchableOpacityProps> = (props) => {
@@ -39,17 +39,20 @@ const SolidButton: React.FC<CustomTouchableOpacityProps> = (props) => {
           },
         ]}
       >
-        {props.isLoading ? <ActivityIndicator color='#fff' /> : <BoldText
-          style={[
-            styles.text,
-            {
-              color: background,
-            },
-          ]}
-        >
-          {props.title}
-        </BoldText>
-        }
+        {props.isLoading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <BoldText
+            style={[
+              styles.text,
+              {
+                color: background,
+              },
+            ]}
+          >
+            {props.title}
+          </BoldText>
+        )}
       </View>
     </TouchableOpacity>
   );
@@ -58,18 +61,18 @@ const SolidButton: React.FC<CustomTouchableOpacityProps> = (props) => {
 const styles = StyleSheet.create({
   button: {
     height: 50,
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: 15,
   },
   text: {
     fontSize: 23,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     marginLeft: 10,
   },
   buttonContent: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
 });
 

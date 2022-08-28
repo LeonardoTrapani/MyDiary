@@ -31,15 +31,17 @@ export type AddHomeworkStackParamList = {
   Root: undefined;
   ChooseSubject: undefined;
   AddSubject: undefined;
-  PlannedDates: { homeworkInfo: HomeworkInfoType; freeDays: FreeDays };
+  PlannedDates: HomeworkInfoType;
 };
 
 export interface FreeDays {
-  days: {
-    date: Date;
-    freeMins: number;
-    minutesToAssign: number;
-  }[];
+  days: FreeDay[];
+}
+
+export interface FreeDay {
+  date: Date;
+  freeMins: number;
+  minutesToAssign: number;
 }
 
 export interface HomeworkInfoType {

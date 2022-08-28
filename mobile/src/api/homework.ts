@@ -3,8 +3,8 @@ import { FreeDays, HomeworkInfoType } from "../../types";
 import { BACKEND_URL, PLANNED_DATES_PER_PAGE } from "../constants/constants";
 
 export const fetchFreeDays = async (
-  homeworkInfo: HomeworkInfoType,
   pageNumber: number,
+  homeworkInfo: HomeworkInfoType,
   token: string | null | undefined
 ) => {
   if (!token) {

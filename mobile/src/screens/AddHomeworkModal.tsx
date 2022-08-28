@@ -17,9 +17,6 @@ import DateTimePicker from "react-native-modal-datetime-picker";
 import { addDaysFromToday } from "../util/generalUtils";
 import useInput from "../util/useInput";
 import Colors from "../constants/Colors";
-import { useMutation } from "@tanstack/react-query";
-import { fetchFreeDays } from "../api/homework";
-import { useValidToken } from "../util/react-query-hooks";
 import ErrorComponent from "../components/ErrorComponent";
 import { useGetDataFromAxiosError } from "../util/axiosUtils";
 import { AxiosError } from "axios";
@@ -27,38 +24,6 @@ import { AxiosError } from "axios";
 const AddHomeworkmodal = ({
   navigation,
 }: AddHomeworkStackScreenProps<"Root">) => {
-  const { data: validToken } = useValidToken();
-
-  const freeDaysMutation = useMutation(
-    (homeworkInfo: HomeworkInfoType) => {
-      return fetchFreeDays(homeworkInfo, 1, validToken);
-    },
-    {
-      onSuccess: (days) => {
-        if (!activeSubject || !expDate || !days) {
-          console.warn("exeption not handled");
-          return;
-        }
-        navigation.navigate("PlannedDates", {
-          homeworkInfo: {
-            title: titleValue,
-            subjectId: activeSubject.id,
-            description: descriptionValue,
-            duration: duration,
-            expirationDate: expDate.toString(),
-          },
-          freeDays: days,
-        });
-      },
-    }
-  );
-
-  useEffect(() => {
-    if (freeDaysMutation.isLoading) {
-      setSubjectHasLoaded(true);
-    }
-  }, [freeDaysMutation.isLoading]);
-  const [freeDaysHasLoaded, setSubjectHasLoaded] = useState(false);
   const [activeSubject] = useAtom(activeSubjectAtom);
 
   const [activeSubjectHasError, setActiveSubjectHasError] = useState(false);
@@ -155,7 +120,8 @@ const AddHomeworkmodal = ({
       ]);
       return;
     }
-    freeDaysMutation.mutate({
+
+    navigation.navigate("PlannedDates", {
       title: titleValue,
       subjectId: activeSubject.id,
       description: descriptionValue,
@@ -163,10 +129,6 @@ const AddHomeworkmodal = ({
       expirationDate: expDate.toString(),
     });
   };
-
-  const getDataFromAxiosError = useGetDataFromAxiosError(
-    freeDaysMutation.error as AxiosError
-  );
 
   return (
     <KeyboardWrapper>
@@ -179,9 +141,6 @@ const AddHomeworkmodal = ({
         ]}
       >
         <ScrollView>
-          {freeDaysMutation.isError && (
-            <ErrorComponent text={getDataFromAxiosError()} />
-          )}
           <View
             style={[
               styles.inputContainer,
@@ -256,11 +215,7 @@ const AddHomeworkmodal = ({
             />
           </View>
         </ScrollView>
-        <SolidButton
-          title="Next step"
-          isLoading={freeDaysHasLoaded}
-          onPress={nextStepHandler}
-        />
+        <SolidButton title="Next step" onPress={nextStepHandler} />
         <DateTimePicker
           isVisible={isExpDateOpened}
           mode="date"

@@ -69,10 +69,9 @@ router.post(
     body("expirationDate", "please insert a valid expiration date")
       .notEmpty()
       .isISO8601(),
-    body("duration", "please enter a valid duration (min: 5)")
+    body("duration", "please enter a duration")
       .trim()
       .isNumeric()
-      .custom((value) => +value >= 5)
       .custom((value) => minutesAreLessThanDay(value))
       .withMessage("you can't have more than 24 free hours in a day!"),
     param("pageNumber", "page number not provided")
