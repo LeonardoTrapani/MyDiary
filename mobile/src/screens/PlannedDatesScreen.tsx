@@ -1,5 +1,5 @@
 import { useTheme } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { ActivityIndicator, FlatList, StyleSheet } from "react-native";
 import { AddHomeworkStackScreenProps, FreeDay } from "../../types";
 import MinutesToHoursMinutes from "../components/MinutesToHourMinuets";
@@ -7,8 +7,7 @@ import { MediumText } from "../components/StyledText";
 import { View } from "../components/Themed";
 import globalStyles from "../constants/Syles";
 import { useFreeDays } from "../util/react-query-hooks";
-import Slider from "@react-native-community/slider";
-import Icon from "@expo/vector-icons/Ionicons";
+import { Slider } from "@miblanchard/react-native-slider";
 
 const PlannedDatesScreen = ({
   route,
@@ -68,35 +67,45 @@ const FreeDayComponent: React.FC<{ freeDay: FreeDay }> = (props) => {
           style={styles.freeMinutes}
         />
       </View>
-      <View style={[{ backgroundColor: card }]}>
-        <Slider
-          minimumValue={0}
-          maximumValue={props.freeDay.minutesToAssign}
-          onValueChange={(mins) => setAssignedMinutes(+mins.toFixed(0))}
-          disabled={isDisabled}
-          thumbTintColor={!isDisabled ? primary : "#888"}
-        />
-      </View>
+      <Slider
+        minimumValue={0}
+        maximumValue={props.freeDay.minutesToAssign}
+        onValueChange={(mins) => {
+          if (typeof mins === "number") {
+            return setAssignedMinutes(+mins.toFixed());
+          }
+          return setAssignedMinutes(+mins[mins.length - 1].toFixed());
+        }}
+        value={assignedMinutes}
+        minimumTrackTintColor={!isDisabled ? primary : "#ddd"}
+        disabled={isDisabled}
+        maximumTrackTintColor={!isDisabled ? "#888" : "#ddd"}
+        thumbTintColor={!isDisabled ? primary : "#ddd"}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   freeDayDate: {
-    fontSize: 18,
+    fontSize: 19,
+    textAlignVertical: "bottom",
   },
   freeDayContainer: {
     marginVertical: 10,
     marginHorizontal: 20,
-    padding: 10,
+    justifyContent: "space-between",
+    height: 200,
+    padding: 20,
   },
   freeMinutes: {
-    fontSize: 25,
+    fontSize: 24,
+    textAlignVertical: "bottom",
   },
   titleContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-end",
   },
   sliderContainer: {
     flexDirection: "row",
