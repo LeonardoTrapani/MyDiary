@@ -117,8 +117,8 @@ const AddHomeworkmodal = ({
       !activeSubject ||
       duration === 0 ||
       !expDate ||
-      !isTitleValid ||
-      !isDescriptionValid
+      titleHasError ||
+      descriptionHasError
     ) {
       Alert.alert("Error", "Please compile the form", [
         { text: "Ok", style: "default" },
