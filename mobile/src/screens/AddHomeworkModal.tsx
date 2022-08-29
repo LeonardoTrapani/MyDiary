@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Alert, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import useColorScheme from "../util/useColorScheme";
 import KeyboardWrapper from "../components/KeyboardWrapper";
@@ -9,7 +9,7 @@ import NonModalDurationPicker from "../components/NonModalDurationPicker";
 import Accordion from "../components/Accordion";
 import { RegularText } from "../components/StyledText";
 import { Ionicons } from "@expo/vector-icons";
-import { AddHomeworkStackScreenProps, HomeworkInfoType } from "../../types";
+import { AddHomeworkStackScreenProps } from "../../types";
 import { useTheme } from "@react-navigation/native";
 import { useAtom } from "jotai";
 import { activeSubjectAtom } from "../util/atoms";
@@ -17,9 +17,6 @@ import DateTimePicker from "react-native-modal-datetime-picker";
 import { addDaysFromToday } from "../util/generalUtils";
 import useInput from "../util/useInput";
 import Colors from "../constants/Colors";
-import ErrorComponent from "../components/ErrorComponent";
-import { useGetDataFromAxiosError } from "../util/axiosUtils";
-import { AxiosError } from "axios";
 
 const AddHomeworkmodal = ({
   navigation,
@@ -59,6 +56,7 @@ const AddHomeworkmodal = ({
   const {
     value: titleValue,
     onChangeText: onChangeTitle,
+    isValid: isTitleValid,
     validate: validateTitle,
     hasError: titleHasError,
   } = useInput([
@@ -72,6 +70,7 @@ const AddHomeworkmodal = ({
     value: descriptionValue,
     onChangeText: onChangeDescription,
     validate: validateDescription,
+    isValid: isDescriptionValid,
     hasError: descriptionHasError,
   } = useInput([
     {
@@ -114,7 +113,13 @@ const AddHomeworkmodal = ({
     } else {
       setExpDateHasError(false);
     }
-    if (!activeSubject || duration === 0 || !expDate) {
+    if (
+      !activeSubject ||
+      duration === 0 ||
+      !expDate ||
+      !isTitleValid ||
+      !isDescriptionValid
+    ) {
       Alert.alert("Error", "Please compile the form", [
         { text: "Ok", style: "default" },
       ]);

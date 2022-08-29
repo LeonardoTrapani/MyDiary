@@ -1,12 +1,14 @@
 import { useTheme } from "@react-navigation/native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, StyleSheet } from "react-native";
 import { AddHomeworkStackScreenProps, FreeDay } from "../../types";
 import MinutesToHoursMinutes from "../components/MinutesToHourMinuets";
-import { BoldText, MediumText, RegularText } from "../components/StyledText";
-import { useThemeColor, View } from "../components/Themed";
+import { MediumText } from "../components/StyledText";
+import { View } from "../components/Themed";
 import globalStyles from "../constants/Syles";
 import { useFreeDays } from "../util/react-query-hooks";
+import Slider from "@react-native-community/slider";
+import Icon from "@expo/vector-icons/Ionicons";
 
 const PlannedDatesScreen = ({
   route,
@@ -44,7 +46,13 @@ const PlannedDatesScreen = ({
 
 const FreeDayComponent: React.FC<{ freeDay: FreeDay }> = (props) => {
   const formattedDate = new Date(props.freeDay.date).toDateString();
-  const { card } = useTheme().colors;
+  const [assignedMinutes, setAssignedMinutes] = useState(
+    props.freeDay.freeMins - props.freeDay.minutesToAssign
+  );
+  const [isDisabled, setIsDisabled] = useState(
+    props.freeDay.minutesToAssign === 0
+  );
+  const { card, primary } = useTheme().colors;
   return (
     <View
       style={[
@@ -56,11 +64,19 @@ const FreeDayComponent: React.FC<{ freeDay: FreeDay }> = (props) => {
       <View style={[styles.titleContainer, { backgroundColor: card }]}>
         <MediumText style={styles.freeDayDate}>{formattedDate}</MediumText>
         <MinutesToHoursMinutes
-          minutes={props.freeDay.freeMins}
+          minutes={assignedMinutes}
           style={styles.freeMinutes}
         />
       </View>
-      <RegularText>MINS TO ASSIGN: {props.freeDay.minutesToAssign}</RegularText>
+      <View style={[{ backgroundColor: card }]}>
+        <Slider
+          minimumValue={0}
+          maximumValue={props.freeDay.minutesToAssign}
+          onValueChange={(mins) => setAssignedMinutes(+mins.toFixed(0))}
+          disabled={isDisabled}
+          thumbTintColor={!isDisabled ? primary : "#888"}
+        />
+      </View>
     </View>
   );
 };
@@ -81,6 +97,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  sliderContainer: {
+    flexDirection: "row",
   },
 });
 
