@@ -1,9 +1,11 @@
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import { ActivityIndicator, FlatList } from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet } from "react-native";
 import { AddHomeworkStackScreenProps, FreeDay } from "../../types";
-import { RegularText } from "../components/StyledText";
-import { View } from "../components/Themed";
+import MinutesToHoursMinutes from "../components/MinutesToHourMinuets";
+import { BoldText, MediumText, RegularText } from "../components/StyledText";
+import { useThemeColor, View } from "../components/Themed";
+import globalStyles from "../constants/Syles";
 import { useFreeDays } from "../util/react-query-hooks";
 
 const PlannedDatesScreen = ({
@@ -41,7 +43,45 @@ const PlannedDatesScreen = ({
 };
 
 const FreeDayComponent: React.FC<{ freeDay: FreeDay }> = (props) => {
-  return <RegularText>{props.freeDay.date.toString()}</RegularText>;
+  const formattedDate = new Date(props.freeDay.date).toDateString();
+  const { card } = useTheme().colors;
+  return (
+    <View
+      style={[
+        styles.freeDayContainer,
+        globalStyles.smallShadow,
+        { backgroundColor: card },
+      ]}
+    >
+      <View style={[styles.titleContainer, { backgroundColor: card }]}>
+        <MediumText style={styles.freeDayDate}>{formattedDate}</MediumText>
+        <MinutesToHoursMinutes
+          minutes={props.freeDay.freeMins}
+          style={styles.freeMinutes}
+        />
+      </View>
+      <RegularText>MINS TO ASSIGN: {props.freeDay.minutesToAssign}</RegularText>
+    </View>
+  );
 };
+
+const styles = StyleSheet.create({
+  freeDayDate: {
+    fontSize: 18,
+  },
+  freeDayContainer: {
+    marginVertical: 10,
+    marginHorizontal: 20,
+    padding: 10,
+  },
+  freeMinutes: {
+    fontSize: 25,
+  },
+  titleContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+});
 
 export default PlannedDatesScreen;

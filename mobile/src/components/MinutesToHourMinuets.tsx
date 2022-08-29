@@ -1,22 +1,18 @@
-import React, { useMemo } from 'react';
-import { RegularText } from './StyledText';
+import React, { useMemo } from "react";
+import { StyleProp, TextStyle } from "react-native";
+import { MediumText } from "./StyledText";
 
 const MinutesToHoursMinutes: React.FC<{
   minutes: number;
-  minutesNameClass?: string;
-  hoursNameClass?: string;
-  minutesValueClass?: string;
-  hoursValueClass?: string;
-  generalClassHours?: string;
-  generalClassMinutes?: string;
+  style?: StyleProp<TextStyle>;
 }> = (props) => {
   const h = useMemo(() => Math.floor(props.minutes / 60), [props.minutes]);
   const m = useMemo(() => props.minutes % 60, [props.minutes]);
 
   return (
-    <RegularText>
+    <MediumText style={props.style}>
       {h}h {m}m
-    </RegularText>
+    </MediumText>
   );
 };
 

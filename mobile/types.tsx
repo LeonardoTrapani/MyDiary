@@ -44,7 +44,7 @@ export type FreeDaysResponse = {
 };
 
 export interface FreeDay {
-  date: Date;
+  date: string;
   freeMins: number;
   minutesToAssign: number;
 }
