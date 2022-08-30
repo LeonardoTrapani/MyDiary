@@ -34,6 +34,11 @@ export type AddHomeworkStackParamList = {
   PlannedDates: HomeworkInfoType;
 };
 
+export type SelectedDay = {
+  date: string;
+  minutes: number;
+};
+
 export type FreeDays = FreeDay[];
 
 export type FreeDaysResponse = {

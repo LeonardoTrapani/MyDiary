@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
-import { validationResult } from 'express-validator';
-import jwt from 'jsonwebtoken';
-import { throwResponseError } from './utilities';
+import { Request, Response, NextFunction } from "express";
+import { validationResult } from "express-validator";
+import jwt from "jsonwebtoken";
+import { throwResponseError } from "./utilities";
 
 type JwtPayload =
   | {
@@ -15,11 +15,11 @@ export const isAuthenticated = (
   next: NextFunction
 ) => {
   try {
-    const token = req.get('Authorization')?.split(' ')[1];
+    const token = req.get("Authorization")?.split(" ")[1];
     if (!token) {
       throw new Error();
     }
-    token.split(' ')[1];
+    token.split(" ")[1];
     const decodedToken = jwt.verify(
       token,
       process.env.JWT_SECRET!
@@ -30,7 +30,7 @@ export const isAuthenticated = (
     req.userId = decodedToken.userId;
     next();
   } catch (err) {
-    throwResponseError('Not authenticated', 401, res);
+    throwResponseError("Not authenticated", 401, res);
   }
 };
 
@@ -63,7 +63,7 @@ export const plannedDatesAreValid = (
   }, 0);
   if (totalMinutes > req.body.duration) {
     throwResponseError(
-      'The duration provided exceed your duration limit',
+      "The duration provided exceed your duration limit",
       400,
       res
     );

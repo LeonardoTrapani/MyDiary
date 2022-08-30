@@ -20,3 +20,9 @@ export const addDays = (from: Date, daysToAdd: number) => {
   result.setDate(result.getDate() + daysToAdd);
   return result;
 };
+
+export const minutesToHoursMinutesFun = (minutes: number) => {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return `${h}h ${m}m`;
+};
