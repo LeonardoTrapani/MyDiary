@@ -1,6 +1,11 @@
 import { useTheme } from "@react-navigation/native";
 import React, { useMemo, useState } from "react";
-import { ActivityIndicator, FlatList, StyleSheet } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import {
   AddHomeworkStackScreenProps,
   FreeDay,
@@ -11,8 +16,8 @@ import { BoldText, MediumText, RegularText } from "../components/StyledText";
 import { CardView, View } from "../components/Themed";
 import globalStyles from "../constants/Syles";
 import { useFreeDays } from "../util/react-query-hooks";
-import { Slider } from "@miblanchard/react-native-slider";
 import { minutesToHoursMinutesFun } from "../util/generalUtils";
+import MyDurationPicker from "../components/MyDurationPicker";
 
 const PlannedDatesScreen = ({
   route,
@@ -38,7 +43,7 @@ const PlannedDatesScreen = ({
     }
   };
 
-  const slideCompleteHandler = (minutes: number, i: number) => {
+  const assignedMinutesChangeHandler = (minutes: number, i: number) => {
     if (!freeDays) {
       console.warn("There are not free days and you are scrolling a free day?");
       return;
@@ -91,7 +96,7 @@ const PlannedDatesScreen = ({
             totalTimeToAssign={route.params.duration - totalAssignedMinutes}
             isFetchingNextPage={isFetchingNextPage}
             loadMore={loadMore}
-            onChange={slideCompleteHandler}
+            onChange={assignedMinutesChangeHandler}
           />
         </View>
       )}
@@ -118,18 +123,29 @@ const FreeDayList: React.FC<{
       <FlatList
         data={freeDays}
         renderItem={({ item, index }) => {
+          let showLoading = false;
+          if (
+            freeDays &&
+            index === freeDays?.length - 1 &&
+            isFetchingNextPage
+          ) {
+            showLoading = true;
+          }
           return (
-            <FreeDayComponent
-              freeDay={item}
-              onChange={onChange}
-              i={index}
-              totalTimeToAssign={totalTimeToAssign}
-            />
+            <>
+              <FreeDayComponent
+                freeDay={item}
+                onChange={onChange}
+                i={index}
+                totalTimeToAssign={totalTimeToAssign}
+              />
+              {showLoading && <ActivityIndicator color={text} />}
+            </>
           );
         }}
         onEndReached={loadMore}
+        onEndReachedThreshold={0.3}
       />
-      {isFetchingNextPage && <ActivityIndicator color={text} />}
     </>
   );
 };
@@ -144,11 +160,7 @@ const FreeDayComponent: React.FC<{
   const [assignedMinutes, setAssignedMinutes] = useState(
     props.freeDay.freeMins - props.freeDay.minutesToAssign
   );
-  const freeMinutes = props.freeDay.freeMins - assignedMinutes;
-  const isDisabled =
-    props.freeDay.minutesToAssign === 0 ||
-    (props.totalTimeToAssign === 0 && assignedMinutes === 0);
-  const { card, primary } = useTheme().colors;
+  const { card } = useTheme().colors;
   return (
     <View
       style={[
@@ -157,45 +169,114 @@ const FreeDayComponent: React.FC<{
         { backgroundColor: card },
       ]}
     >
-      <CardView style={[styles.titleContainer]}>
-        <MediumText style={styles.freeDayDate}>{formattedDate}</MediumText>
-      </CardView>
-      <CardView style={styles.freeDayBodyContainer}>
-        <RegularText style={styles.bodyText}>
-          Assigned Time: {minutesToHoursMinutesFun(assignedMinutes)}
-        </RegularText>
-        <RegularText style={styles.bodyText}>
-          Free time: {minutesToHoursMinutesFun(freeMinutes)}
-        </RegularText>
-      </CardView>
-      <Slider
-        minimumValue={0}
-        maximumValue={props.freeDay.minutesToAssign}
-        onValueChange={(mins) => {
-          let minutes;
-          if (typeof mins === "number") {
-            minutes = +mins.toFixed();
-          } else {
-            minutes = +mins[mins.length - 1].toFixed();
-          }
-          const diff = props.totalTimeToAssign - minutes;
-          if (diff < 0) {
-            const finalVal = minutes + props.totalTimeToAssign;
-            console.log(finalVal);
-            //props.onChange(finalVal, props.i);
-            //return setAssignedMinutes(finalVal);
-            return;
-          }
-          props.onChange(+minutes.toFixed(), props.i);
-          return setAssignedMinutes(minutes);
+      <MediumText style={styles.freeDayDate}>{formattedDate}</MediumText>
+      <SelectFreeMinsComponent
+        timeToAssign={props.totalTimeToAssign}
+        onChangeMintes={(minutes) => {
+          setAssignedMinutes(minutes);
+          props.onChange(minutes, props.i);
         }}
-        //value={assignedMinutes}
-        minimumTrackTintColor={!isDisabled ? primary : "#ddd"}
-        disabled={isDisabled}
-        maximumTrackTintColor={!isDisabled ? "#888" : "#ddd"}
-        thumbTintColor={!isDisabled ? primary : "#ddd"}
+        assignedMinutes={assignedMinutes}
       />
     </View>
+  );
+};
+
+const SelectFreeMinsComponent: React.FC<{
+  onChangeMintes: (mintes: number) => void;
+  assignedMinutes: number;
+  timeToAssign: number;
+}> = (props) => {
+  const minHandler = () => {
+    props.onChangeMintes(0);
+  };
+  const minusFiveHandler = () => {
+    if (props.assignedMinutes < 5) {
+      props.onChangeMintes(0);
+      return;
+    }
+    props.onChangeMintes(props.assignedMinutes - 5);
+  };
+  const plusFiveHandler = () => {
+    if (props.timeToAssign < 5) {
+      props.onChangeMintes(props.assignedMinutes + props.timeToAssign);
+      return;
+    }
+    props.onChangeMintes(props.assignedMinutes + 5);
+  };
+  const maxHandler = () => {
+    props.onChangeMintes(props.timeToAssign + props.assignedMinutes);
+  };
+  const pickerChangeHandler = (minutes: number) => {
+    if (minutes > props.timeToAssign) {
+      props.onChangeMintes(props.timeToAssign);
+      return;
+    }
+    props.onChangeMintes(minutes);
+  };
+
+  return (
+    <CardView style={styles.selectFreeMins}>
+      <SelectFreeMinsBtn title="MIN" onPress={minHandler} />
+      <SelectFreeMinsBtn title="-5" onPress={minusFiveHandler} />
+      <SelectFreeMinsTimePicker
+        onChange={pickerChangeHandler}
+        timeToAssign={props.timeToAssign}
+        assignedMinutes={props.assignedMinutes}
+      />
+      <SelectFreeMinsBtn title="+5" onPress={plusFiveHandler} />
+      <SelectFreeMinsBtn title="MAX" onPress={maxHandler} />
+    </CardView>
+  );
+};
+
+const SelectFreeMinsBtn: React.FC<{
+  title: string;
+  onPress: () => void;
+}> = (props) => {
+  return (
+    <TouchableOpacity
+      style={[styles.selectFreeMinsBorder, styles.selectFreeMinsBtn]}
+      onPress={props.onPress}
+    >
+      <RegularText style={styles.selectFreeMinsText}>{props.title}</RegularText>
+    </TouchableOpacity>
+  );
+};
+
+const SelectFreeMinsTimePicker: React.FC<{
+  onChange: (minutes: number) => void;
+  assignedMinutes: number;
+  timeToAssign: number;
+}> = (props) => {
+  const [isOpened, setIsOpened] = useState(false);
+  return (
+    <>
+      <MyDurationPicker
+        isVisible={isOpened}
+        defaultMinutes={props.assignedMinutes % 60}
+        deafaultHours={Math.floor(props.assignedMinutes / 60)}
+        maximumTime={props.assignedMinutes + props.timeToAssign}
+        onConfirm={(date) => {
+          setIsOpened(false);
+          const mins = date.getMinutes() + date.getHours() * 60;
+          props.onChange(mins);
+        }}
+        onCancel={() => {
+          setIsOpened(false);
+        }}
+      />
+      <TouchableOpacity
+        onPress={() => {
+          setIsOpened(true);
+        }}
+        style={[styles.selectFreeMinsBorder, styles.selectFreeMinsTimePicker]}
+      >
+        <BoldText style={styles.selectFreeMinsText}>
+          {minutesToHoursMinutesFun(props.assignedMinutes)}
+        </BoldText>
+      </TouchableOpacity>
+    </>
   );
 };
 
@@ -218,7 +299,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "flex-end",
   },
-
   freeDayBodyContainer: {
     marginTop: 20,
     marginBottom: 10,
@@ -227,8 +307,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   bodyContainer: {
-    marginVertical: 10,
     marginHorizontal: 20,
+    height: "100%",
   },
   titleText: {
     marginRight: "20%",
@@ -239,6 +319,33 @@ const styles = StyleSheet.create({
   timeLeftText: {
     fontSize: 20,
     marginBottom: 20,
+  },
+  selectFreeMins: {
+    flexDirection: "row",
+    marginHorizontal: -5,
+    marginTop: 20,
+  },
+  selectFreeMinsBtn: {
+    aspectRatio: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
+    height: 45,
+    marginHorizontal: 5,
+  },
+  selectFreeMinsTimePicker: {
+    marginHorizontal: 5,
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
+    flexGrow: 1,
+  },
+  selectFreeMinsBorder: {
+    borderWidth: 1,
+    borderColor: "#888",
+  },
+  selectFreeMinsText: {
+    fontSize: 16,
   },
 });
 
