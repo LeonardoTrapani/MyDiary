@@ -94,7 +94,7 @@ export const calculateFreeDays = async (req: Request, res: Response) => {
   const { expirationDate: expirationDateBody } = req.body;
   let daysPerPage = req.body.daysPerPage || CONTS_DAYS_PER_PAGE;
   const { pageNumber } = req.params;
-  const expirationDate = moment(expirationDateBody);
+  const expirationDate = moment(expirationDateBody).subtract(1, "day");
   const { userId } = req;
   try {
     const week = await fetchWeek(+userId!);
