@@ -16,18 +16,36 @@ import {
 import { BoldText, MediumText, RegularText } from "../components/StyledText";
 import { CardView, View } from "../components/Themed";
 import globalStyles from "../constants/Syles";
-import { useFreeDays } from "../util/react-query-hooks";
+import { useFreeDays, useValidToken } from "../util/react-query-hooks";
 import { minutesToHoursMinutesFun } from "../util/generalUtils";
 import MyDurationPicker from "../components/MyDurationPicker";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import SolidButton from "../components/SolidButton";
+import { useMutation } from "@tanstack/react-query";
+import { createHomework } from "../api/homework";
+import { useGetDataFromAxiosError } from "../util/axiosUtils";
+import { AxiosError } from "axios";
+import ErrorComponent from "../components/ErrorComponent";
 
 const PlannedDatesScreen = ({
   route,
+  navigation,
 }: AddHomeworkStackScreenProps<"PlannedDates">) => {
   const { isLoading, hasNextPage, fetchNextPage, isFetchingNextPage, data } =
     useFreeDays(route.params);
+  const { data: validToken } = useValidToken();
 
+  const createHomeworkMutation = useMutation(
+    () => {
+      return createHomework(validToken, route.params, selectedDays);
+    },
+    {
+      onSuccess: () => {
+        navigation.getParent()?.goBack();
+      },
+    }
+  );
   const freeDays = useMemo(() => {
     return data?.pages.map((page) => page.page.freeDays).flat();
   }, [data?.pages]);
@@ -44,6 +62,17 @@ const PlannedDatesScreen = ({
     if (hasNextPage) {
       fetchNextPage();
     }
+  };
+
+  const createHomeworkHandler = () => {
+    if (route.params.duration - totalAssignedMinutes !== 0) {
+      return Alert.alert(
+        "Can't create homework",
+        "Assign all the time to create the homework",
+        [{ text: "Ok" }]
+      );
+    }
+    createHomeworkMutation.mutate();
   };
 
   const assignedMinutesChangeHandler = (minutes: number, i: number) => {
@@ -78,11 +107,20 @@ const PlannedDatesScreen = ({
     setSelectedDays(newSelectedDays);
   };
 
+  const gax = useGetDataFromAxiosError(
+    createHomeworkMutation.error as AxiosError,
+    "an error has occurred creating the homework"
+  );
+
   const { text } = useTheme().colors;
   return (
     <>
       <PlannedDatesSecondaryHeader
         timeToAssign={route.params.duration - totalAssignedMinutes}
+        isCreateHomeworkLoading={createHomeworkMutation.isLoading}
+        onCreate={createHomeworkHandler}
+        hasError={createHomeworkMutation.isError}
+        error={gax()}
       />
       <View>
         {isLoading ? (
@@ -121,6 +159,7 @@ const FreeDayList: React.FC<{
 }) => {
   const { bottom } = useSafeAreaInsets();
   const { text } = useTheme().colors;
+
   return (
     <>
       <FlatList
@@ -134,7 +173,6 @@ const FreeDayList: React.FC<{
           ) {
             showLoading = true;
           }
-          console.log(bottom);
           return (
             <>
               <FreeDayComponent
@@ -310,6 +348,7 @@ const SelectFreeMinsTimePicker: React.FC<{
   assignedMinutes: number;
   timeToAssign: number;
 }> = (props) => {
+  const { primary } = useTheme().colors;
   const [isOpened, setIsOpened] = useState(false);
   const maximumTime =
     props.assignedMinutes + props.timeToAssign < props.dayTimeLimit
@@ -338,7 +377,7 @@ const SelectFreeMinsTimePicker: React.FC<{
         }}
         style={[styles.selectFreeMinsBorder, styles.selectFreeMinsTimePicker]}
       >
-        <BoldText style={styles.selectFreeMinsText}>
+        <BoldText style={[{ color: primary }, styles.selectFreeMinsText]}>
           {minutesToHoursMinutesFun(props.assignedMinutes)}
         </BoldText>
       </TouchableOpacity>
@@ -367,17 +406,33 @@ const PercentageAssignedTime: React.FC<{
   );
 };
 
-const PlannedDatesSecondaryHeader: React.FC<{ timeToAssign: number }> = (
-  props
-) => {
+const PlannedDatesSecondaryHeader: React.FC<{
+  onCreate: () => void;
+  hasError: boolean;
+  error: string | null;
+  timeToAssign: number;
+  isCreateHomeworkLoading: boolean;
+}> = (props) => {
   return (
     <CardView style={styles.secondaryHeader}>
+      {props.hasError && <ErrorComponent text={props.error} />}
       <CardView style={styles.headerRow}>
         <RegularText style={styles.headerText}>Time to assign:</RegularText>
         <BoldText style={styles.headerText}>
           {minutesToHoursMinutesFun(props.timeToAssign)}
         </BoldText>
       </CardView>
+      <SolidButton
+        onPress={props.onCreate}
+        title="create homework"
+        isLoading={props.isCreateHomeworkLoading}
+        style={{
+          height: 30,
+          borderRadius: 4,
+          marginVertical: 8,
+        }}
+        textStyle={{ fontSize: 18 }}
+      />
     </CardView>
   );
 };

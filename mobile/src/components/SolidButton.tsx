@@ -1,6 +1,8 @@
 import {
   ActivityIndicator,
+  StyleProp,
   StyleSheet,
+  TextStyle,
   TouchableHighlightProps,
   TouchableOpacity,
 } from "react-native";
@@ -14,6 +16,7 @@ import globalStyles from "../constants/Syles";
 interface CustomTouchableOpacityProps extends TouchableHighlightProps {
   title: string;
   isLoading?: boolean;
+  textStyle?: StyleProp<TextStyle>;
 }
 
 const SolidButton: React.FC<CustomTouchableOpacityProps> = (props) => {
@@ -48,6 +51,7 @@ const SolidButton: React.FC<CustomTouchableOpacityProps> = (props) => {
               {
                 color: background,
               },
+              props.textStyle,
             ]}
           >
             {props.title}

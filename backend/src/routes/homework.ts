@@ -18,7 +18,7 @@ router.post(
   "/create",
   isAuthenticated,
   [
-    body("name", "plase enter a valid subject name with at least 3 characters")
+    body("name", "plase enter a valid subject name")
       .trim()
       .isString()
       .notEmpty(),

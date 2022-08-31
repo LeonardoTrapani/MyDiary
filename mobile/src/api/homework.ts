@@ -1,5 +1,5 @@
 import axios from "axios";
-import { FreeDaysResponse, HomeworkInfoType } from "../../types";
+import { FreeDaysResponse, HomeworkInfoType, SelectedDay } from "../../types";
 import { BACKEND_URL, PLANNED_DATES_PER_PAGE } from "../constants/constants";
 
 export const fetchFreeDays = async (
@@ -24,4 +24,29 @@ export const fetchFreeDays = async (
     }
   );
   return freeDays.data;
+};
+
+export const createHomework = async (
+  token: string | null | undefined,
+  homeworkInfo: HomeworkInfoType,
+  plannedDates: SelectedDay[]
+) => {
+  if (!token) {
+    throw "Not authenticated";
+  }
+  const homework = await axios.post(
+    BACKEND_URL + "/homework/create",
+    {
+      ...homeworkInfo,
+      name: homeworkInfo.title,
+      expirationDate: new Date(homeworkInfo.expirationDate),
+      plannedDates,
+    },
+    {
+      headers: {
+        Authorization: token,
+      },
+    }
+  );
+  return homework;
 };
