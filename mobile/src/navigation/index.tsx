@@ -29,7 +29,9 @@ import ChooseSubjectScreen, {
 } from "../screens/ChooseSubjectScreen";
 import { useAtom } from "jotai";
 import { activeSubjectAtom } from "../util/atoms";
-import PlannedDatesScreen from "../screens/PlannedDatesScreen";
+import PlannedDatesScreen, {
+  PlannedDatesInfoIcon,
+} from "../screens/PlannedDatesScreen";
 
 export default function Main({
   colorScheme,
@@ -181,8 +183,9 @@ const AddHomeworkModalNavigation = () => {
         name="PlannedDates"
         component={PlannedDatesScreen}
         options={{
-          title: "Planned Dates",
+          title: "",
           presentation: "card",
+          headerRight: PlannedDatesInfoIcon,
           headerBackTitle: "homework",
         }}
       />
