@@ -127,14 +127,20 @@ const PlannedDatesScreen = ({
           <ActivityIndicator color={text} />
         ) : (
           <View style={styles.bodyContainer}>
-            <FreeDayList
-              freeDays={freeDays}
-              totalTimeToAssign={route.params.duration - totalAssignedMinutes}
-              isFetchingNextPage={isFetchingNextPage}
-              loadMore={loadMore}
-              onChange={assignedMinutesChangeHandler}
-              totalDuration={route.params.duration}
-            />
+            {!freeDays || freeDays?.length > 0 ? (
+              <FreeDayList
+                freeDays={freeDays}
+                totalTimeToAssign={route.params.duration - totalAssignedMinutes}
+                isFetchingNextPage={isFetchingNextPage}
+                loadMore={loadMore}
+                onChange={assignedMinutesChangeHandler}
+                totalDuration={route.params.duration}
+              />
+            ) : (
+              <RegularText style={{ fontSize: 17 }}>
+                No free days found
+              </RegularText>
+            )}
           </View>
         )}
       </View>

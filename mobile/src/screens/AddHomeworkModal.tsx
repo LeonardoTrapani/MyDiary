@@ -56,7 +56,6 @@ const AddHomeworkmodal = ({
   const {
     value: titleValue,
     onChangeText: onChangeTitle,
-    isValid: isTitleValid,
     validate: validateTitle,
     hasError: titleHasError,
   } = useInput([
@@ -70,7 +69,6 @@ const AddHomeworkmodal = ({
     value: descriptionValue,
     onChangeText: onChangeDescription,
     validate: validateDescription,
-    isValid: isDescriptionValid,
     hasError: descriptionHasError,
   } = useInput([
     {
@@ -224,6 +222,7 @@ const AddHomeworkmodal = ({
         <DateTimePicker
           isVisible={isExpDateOpened}
           mode="date"
+          date={expDate || new Date()}
           minimumDate={addDaysFromToday(1)}
           onConfirm={(date: Date) => {
             setExpDateOpened(false);
