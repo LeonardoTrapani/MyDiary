@@ -1,22 +1,22 @@
-import * as SecureStore from 'expo-secure-store';
-import axios, { AxiosError } from 'axios';
-import { BACKEND_URL } from '../constants/constants';
-import { Week } from '../util/react-query-hooks';
+import * as SecureStore from "expo-secure-store";
+import axios, { AxiosError } from "axios";
+import { BACKEND_URL } from "../constants/constants";
+import { Week } from "../util/react-query-hooks";
 
 export const validateToken = async () => {
   const token = await getToken();
   if (token) {
-    const res = await axios.get<boolean>(BACKEND_URL + '/validateToken', {
+    const res = await axios.get<boolean>(BACKEND_URL + "/validateToken", {
       headers: {
         Authorization: token,
       },
     });
     if (res.data === false) {
       console.warn(
-        'token was not valid, so deleting (' + res.data,
-        token + ')'
+        "token was not valid, so deleting (" + res.data,
+        token + ")"
       );
-      await SecureStore.deleteItemAsync('token');
+      await SecureStore.deleteItemAsync("token");
     }
     return token;
   } else {
@@ -25,26 +25,26 @@ export const validateToken = async () => {
 };
 
 export const getToken = async () => {
-  const token = await SecureStore.getItemAsync('token');
+  const token = await SecureStore.getItemAsync("token");
   if (!token) {
     return null;
   }
-  return 'Bearer ' + token;
+  return "Bearer " + token;
 };
 
 export const login = async (email: string, password: string) => {
   const res = await axios.post<{
     token: string;
     weekCreated: boolean;
-  }>(BACKEND_URL + '/login', {
+  }>(BACKEND_URL + "/login", {
     email,
     password,
   });
 
   try {
-    await SecureStore.setItemAsync('token', res.data.token);
+    await SecureStore.setItemAsync("token", res.data.token);
     await SecureStore.setItemAsync(
-      'weekCreated',
+      "weekCreated",
       JSON.stringify(res.data.weekCreated)
     );
   } catch (error) {
@@ -58,15 +58,15 @@ export const signup = async (
   email: string,
   password: string
 ) => {
-  const res = await axios.post(BACKEND_URL + '/signup', {
+  const res = await axios.post(BACKEND_URL + "/signup", {
     email,
     username,
     password,
   });
 
   try {
-    await SecureStore.setItemAsync('token', res.data.token);
-    await SecureStore.setItemAsync('weekCreated', JSON.stringify(false));
+    await SecureStore.setItemAsync("token", res.data.token);
+    await SecureStore.setItemAsync("weekCreated", JSON.stringify(false));
   } catch (error) {
     throw new Error("Couldn't login");
   }
@@ -76,9 +76,9 @@ export const signup = async (
 export const getWeek = async () => {
   const token = await getToken();
   if (!token) {
-    throw new Error('Cannot find token');
+    throw new Error("Cannot find token");
   }
-  const res = await axios.get<Week>(BACKEND_URL + '/week/get', {
+  const res = await axios.get<Week>(BACKEND_URL + "/week/get", {
     headers: {
       Authentication: token,
     },
@@ -87,7 +87,7 @@ export const getWeek = async () => {
 };
 
 export const getWeekWithToken = async (token: string) => {
-  const res = await axios.get<{ week: Week }>(BACKEND_URL + '/week/get', {
+  const res = await axios.get<{ week: Week }>(BACKEND_URL + "/week/get", {
     headers: {
       Authorization: token,
     },
@@ -96,14 +96,14 @@ export const getWeekWithToken = async (token: string) => {
 };
 
 export const getIsWeekCreated = async () => {
-  const res = await SecureStore.getItemAsync('weekCreated');
+  const res = await SecureStore.getItemAsync("weekCreated");
   if (!res) {
     return false;
   }
   const weekCreated = JSON.parse(res);
-  if (typeof weekCreated !== 'boolean') {
-    console.warn(weekCreated, ' is not a boolean, deleting everything');
-    await SecureStore.deleteItemAsync('weekCreated');
+  if (typeof weekCreated !== "boolean") {
+    console.warn(weekCreated, " is not a boolean, deleting everything");
+    await SecureStore.deleteItemAsync("weekCreated");
     return false;
   }
   return weekCreated;
@@ -113,10 +113,10 @@ export const getIsWeekCreated = async () => {
 export const getIsWeekCreatedWithToken = async ({
   queryKey,
 }: // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  any) => {
+any) => {
   try {
     const token = queryKey[1];
-    const res = await SecureStore.getItemAsync('weekCreated');
+    const res = await SecureStore.getItemAsync("weekCreated");
     let weekCreated;
     !res ? (weekCreated = false) : (weekCreated = JSON.parse(res));
     if (weekCreated === false && token) {
@@ -135,6 +135,6 @@ export const getIsWeekCreatedWithToken = async ({
   }
 };
 export const logout = async () => {
-  await SecureStore.deleteItemAsync('weekCreated');
-  await SecureStore.deleteItemAsync('token');
+  await SecureStore.deleteItemAsync("weekCreated");
+  await SecureStore.deleteItemAsync("token");
 };

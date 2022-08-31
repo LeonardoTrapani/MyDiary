@@ -20,6 +20,7 @@ import { useFreeDays } from "../util/react-query-hooks";
 import { minutesToHoursMinutesFun } from "../util/generalUtils";
 import MyDurationPicker from "../components/MyDurationPicker";
 import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const PlannedDatesScreen = ({
   route,
@@ -118,6 +119,7 @@ const FreeDayList: React.FC<{
   isFetchingNextPage,
   totalTimeToAssign,
 }) => {
+  const { bottom } = useSafeAreaInsets();
   const { text } = useTheme().colors;
   return (
     <>
@@ -132,6 +134,7 @@ const FreeDayList: React.FC<{
           ) {
             showLoading = true;
           }
+          console.log(bottom);
           return (
             <>
               <FreeDayComponent
@@ -142,6 +145,9 @@ const FreeDayList: React.FC<{
                 totalTimeToAssign={totalTimeToAssign}
               />
               {showLoading && <ActivityIndicator color={text} />}
+              {freeDays && index === freeDays?.length - 1 && (
+                <View style={{ height: bottom * 2 }}></View>
+              )}
             </>
           );
         }}
@@ -394,11 +400,11 @@ export const PlannedDatesInfoIcon: React.FC = () => {
     </TouchableOpacity>
   );
 };
+
 const styles = StyleSheet.create({
   secondaryHeader: {
-    height: 100,
     borderBottomColor: "#ddd",
-    padding: 10,
+    paddingBottom: 10,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
   },

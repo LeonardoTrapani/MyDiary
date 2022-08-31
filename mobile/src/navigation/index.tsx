@@ -151,7 +151,9 @@ const AddHomeworkStack =
 
 const AddHomeworkModalNavigation = () => {
   return (
-    <AddHomeworkStack.Navigator>
+    <AddHomeworkStack.Navigator
+      screenOptions={{ headerBackTitleVisible: false }}
+    >
       <AddHomeworkStack.Screen
         name="Root"
         component={AddHomeworkModal}
@@ -186,6 +188,7 @@ const AddHomeworkModalNavigation = () => {
           title: "",
           presentation: "card",
           headerRight: PlannedDatesInfoIcon,
+          headerShadowVisible: false,
           headerBackTitle: "homework",
         }}
       />
