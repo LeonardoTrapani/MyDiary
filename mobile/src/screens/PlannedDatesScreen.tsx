@@ -97,6 +97,7 @@ const PlannedDatesScreen = ({
             isFetchingNextPage={isFetchingNextPage}
             loadMore={loadMore}
             onChange={assignedMinutesChangeHandler}
+            totalDuration={route.params.duration}
           />
         </View>
       )}
@@ -110,10 +111,12 @@ const FreeDayList: React.FC<{
   loadMore: () => void;
   isFetchingNextPage: boolean;
   totalTimeToAssign: number;
+  totalDuration: number;
 }> = ({
   freeDays,
   onChange,
   loadMore,
+  totalDuration,
   isFetchingNextPage,
   totalTimeToAssign,
 }) => {
@@ -136,6 +139,7 @@ const FreeDayList: React.FC<{
               <FreeDayComponent
                 freeDay={item}
                 onChange={onChange}
+                totalDuration={totalDuration}
                 i={index}
                 totalTimeToAssign={totalTimeToAssign}
               />
@@ -154,6 +158,7 @@ const FreeDayComponent: React.FC<{
   freeDay: FreeDay;
   i: number;
   totalTimeToAssign: number;
+  totalDuration: number;
   onChange: (minutes: number, i: number) => void;
 }> = (props) => {
   const formattedDate = new Date(props.freeDay.date).toDateString();
@@ -162,22 +167,28 @@ const FreeDayComponent: React.FC<{
   );
   const { card } = useTheme().colors;
   return (
-    <View
-      style={[
-        styles.freeDayContainer,
-        globalStyles.smallShadow,
-        { backgroundColor: card },
-      ]}
-    >
-      <MediumText style={styles.freeDayDate}>{formattedDate}</MediumText>
-      <SelectFreeMinsComponent
-        timeToAssign={props.totalTimeToAssign}
-        onChangeMintes={(minutes) => {
-          setAssignedMinutes(minutes);
-          props.onChange(minutes, props.i);
-        }}
-        assignedMinutes={assignedMinutes}
+    <View style={styles.freeDayContainer}>
+      <PercentageAssignedTime
+        totalDuration={props.totalDuration}
+        assignedTime={assignedMinutes}
       />
+      <View
+        style={[
+          styles.freeDayInternalContainer,
+          globalStyles.smallShadow,
+          { backgroundColor: card },
+        ]}
+      >
+        <MediumText style={styles.freeDayDate}>{formattedDate}</MediumText>
+        <SelectFreeMinsComponent
+          timeToAssign={props.totalTimeToAssign}
+          onChangeMintes={(minutes) => {
+            setAssignedMinutes(minutes);
+            props.onChange(minutes, props.i);
+          }}
+          assignedMinutes={assignedMinutes}
+        />
+      </View>
     </View>
   );
 };
@@ -280,6 +291,27 @@ const SelectFreeMinsTimePicker: React.FC<{
   );
 };
 
+const PercentageAssignedTime: React.FC<{
+  assignedTime: number;
+  totalDuration: number;
+}> = (props) => {
+  const { primary } = useTheme().colors;
+  const percentage = (props.assignedTime * 100) / props.totalDuration;
+  return (
+    <CardView style={[styles.percentagesContainer]}>
+      <View
+        style={[
+          styles.percentage,
+          { backgroundColor: primary, width: `${percentage}%` },
+        ]}
+      ></View>
+      <View
+        style={[styles.percentage, { flexGrow: 1, backgroundColor: "#eee" }]}
+      ></View>
+    </CardView>
+  );
+};
+
 const styles = StyleSheet.create({
   freeDayDate: {
     fontSize: 19,
@@ -288,6 +320,8 @@ const styles = StyleSheet.create({
   freeDayContainer: {
     justifyContent: "space-between",
     marginVertical: 10,
+  },
+  freeDayInternalContainer: {
     padding: 20,
   },
   freeMinutes: {
@@ -346,6 +380,12 @@ const styles = StyleSheet.create({
   },
   selectFreeMinsText: {
     fontSize: 16,
+  },
+  percentage: {
+    height: 3,
+  },
+  percentagesContainer: {
+    flexDirection: "row",
   },
 });
 
