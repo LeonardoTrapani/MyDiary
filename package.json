@@ -3,9 +3,9 @@
     "concurrently": "^7.3.0"
   },
   "scripts": {
-    "start": "concurrently \"cd backend && yarn start\" \"cd backend && yarn watch\" \"cd mobile && yarn start\" \"cd frontend && yarn dev\"",
-    "mobile": "concurrently \"cd mobile && yarn start\"",
-    "frontend": "concurrently \"cd frontend && yarn start\"",
-    "backend": "concurrently \"cd backend && yarn start\" \"cd backend && yarn watch\""
+    "start": "concurrently --kill-all --default-input-target 2 --handle-input \"cd backend && yarn start\" \"cd backend && yarn watch\" \"cd mobile && yarn start\" \"cd frontend && yarn dev\"",
+    "mobile": "concurrently --kill-all \"cd mobile && yarn start\"",
+    "frontend": "concurrently --kill-all \"cd frontend && yarn start\"",
+    "server": "concurrently --kill-all --handle-input \"cd backend && yarn start\" \"cd backend && yarn watch\" "
   }
 }
