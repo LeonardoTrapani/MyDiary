@@ -82,15 +82,6 @@ const PlannedDatesScreen = ({
         <ActivityIndicator color={text} />
       ) : (
         <View style={styles.bodyContainer}>
-          <BoldText style={styles.titleText}>
-            When are you planning to do this homework?
-          </BoldText>
-          <RegularText style={styles.timeLeftText}>
-            Time left to assig:{" "}
-            {minutesToHoursMinutesFun(
-              route.params.duration - totalAssignedMinutes
-            )}
-          </RegularText>
           <FreeDayList
             freeDays={freeDays}
             totalTimeToAssign={route.params.duration - totalAssignedMinutes}
@@ -320,6 +311,7 @@ const styles = StyleSheet.create({
   freeDayContainer: {
     justifyContent: "space-between",
     marginVertical: 10,
+    marginHorizontal: 20,
   },
   freeDayInternalContainer: {
     padding: 20,
@@ -336,12 +328,12 @@ const styles = StyleSheet.create({
   freeDayBodyContainer: {
     marginTop: 20,
     marginBottom: 10,
+    marginHorizontal: 20,
   },
   bodyText: {
     fontSize: 16,
   },
   bodyContainer: {
-    marginHorizontal: 20,
     height: "100%",
   },
   titleText: {

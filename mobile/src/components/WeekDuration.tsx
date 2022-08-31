@@ -1,10 +1,10 @@
-import React, { useMemo, useState } from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
-import globalStyles from '../constants/Syles';
-import MyTimePicker from './MyDurationPicker';
-import { RegularText } from './StyledText';
-import TextButton from './TextButton';
-import { View } from './Themed';
+import React, { useMemo, useState } from "react";
+import { StyleSheet, TouchableOpacity } from "react-native";
+import globalStyles from "../constants/Syles";
+import MyDurationPicker from "./MyDurationPicker";
+import { RegularText } from "./StyledText";
+import TextButton from "./TextButton";
+import { View } from "./Themed";
 
 const WeekDuration: React.FC<{
   name: string;
@@ -32,7 +32,7 @@ const WeekDuration: React.FC<{
           textStyle={styles.time}
           onPress={open}
         />
-        <MyTimePicker
+        <MyDurationPicker
           isVisible={isOpened}
           onCancel={onCancel}
           onConfirm={(date) => {
@@ -53,10 +53,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   touchable: {
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    justifyContent: "space-between",
     padding: 13,
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   name: {
     fontSize: 17,
