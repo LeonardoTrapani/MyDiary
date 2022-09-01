@@ -210,9 +210,7 @@ const FreeDayComponent: React.FC<{
   onChange: (minutes: number, i: number) => void;
 }> = (props) => {
   const formattedDate = new Date(props.freeDay.date).toDateString();
-  const [assignedMinutes, setAssignedMinutes] = useState(
-    props.freeDay.freeMins - props.freeDay.minutesToAssign
-  );
+  const [assignedMinutes, setAssignedMinutes] = useState(0);
   //navigation.setOptions({ title: 'Updated!' })
   const { card } = useTheme().colors;
   return (
