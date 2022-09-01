@@ -4,12 +4,12 @@ import React, { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, TouchableOpacity } from "react-native";
 import { RootTabScreenProps } from "../../types";
 import FloatingButton from "../components/FloatingButton";
+import DateTimePicker from "react-native-modal-datetime-picker";
 import { RegularText } from "../components/StyledText";
 import { CardView, View } from "../components/Themed";
 import globalStyles from "../constants/Syles";
 import { useCalendarDay } from "../util/react-query-hooks";
 import ErrorComponent from "../components/ErrorComponent";
-import { formatCalendarDay } from "../util/generalUtils";
 import moment from "moment";
 
 const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
@@ -32,7 +32,6 @@ const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
   } = useCalendarDay(moment(currentCalendarDate));
 
   useEffect(() => {
-    console.log(currentCalendarDate);
     if (!calendarDay || isCalendarDayFetching) {
       return;
     }
@@ -59,8 +58,8 @@ const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
           <>
             <DateChangeButton
               date={moment(currentCalendarDate).toDate()}
+              onShowCalendar={() => setIsCalendarOpened(true)}
               onPageForward={() => {
-                console.log("ADDING ONE DAY");
                 setCurrentCalendarDate((prev) => {
                   return moment(prev)
                     .startOf("day")
@@ -69,7 +68,6 @@ const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
                 });
               }}
               onPageBackward={() => {
-                console.log("REMOVING ONE DAY");
                 setCurrentCalendarDate((prev) => {
                   return moment(prev)
                     .startOf("day")
@@ -77,11 +75,22 @@ const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
                     .toISOString();
                 });
               }}
-              onToggleCalendar={() => {
-                setIsCalendarOpened((prev) => !prev);
-              }}
             />
             <HomeworkBody />
+            <DateTimePicker
+              date={moment(currentCalendarDate).toDate()}
+              mode="date"
+              isVisible={isCalendarOpened}
+              onConfirm={(date) => {
+                setIsCalendarOpened(false);
+                setCurrentCalendarDate(
+                  moment(date).startOf("day").toISOString()
+                );
+              }}
+              onCancel={() => {
+                setIsCalendarOpened(false);
+              }}
+            />
           </>
         )
       )}
@@ -100,16 +109,16 @@ const HomeworkBody: React.FC = () => {
 
 const DateChangeButton: React.FC<{
   date: Date;
-  onToggleCalendar: () => void;
+  onShowCalendar: () => void;
   onPageForward: () => void;
   onPageBackward: () => void;
 }> = (props) => {
   return (
     <View style={styles.dateChangeContainer}>
-      <TouchableOpacity onPress={props.onToggleCalendar}>
+      <TouchableOpacity onPress={props.onShowCalendar}>
         <CardView style={[styles.dateChangeButton, globalStyles.shadow]}>
           <DateChangeBack onPress={props.onPageBackward} />
-          <TouchableOpacity onPress={props.onToggleCalendar}>
+          <TouchableOpacity onPress={props.onShowCalendar}>
             <RegularText style={styles.dateChangeDateText}>
               {props.date.toDateString()}
             </RegularText>

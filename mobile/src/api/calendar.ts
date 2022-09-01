@@ -8,7 +8,6 @@ export const getDayCalendar = async (
   date: Moment,
   token: string | null | undefined
 ) => {
-  console.log("FETCHING");
   if (!token) {
     throw new Error("Not authenticated");
   }
