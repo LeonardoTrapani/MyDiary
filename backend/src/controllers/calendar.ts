@@ -4,7 +4,7 @@ import { prisma } from "../app";
 import { fetchFreeDays, getFreeDaysArray } from "./homework";
 import { Moment } from "moment";
 import moment from "moment";
-import { fetchWeek } from "./week";
+import { fetchWeek, findfreeMinutesInDay } from "./week";
 
 type Calendar = CalendarDay[];
 
@@ -134,7 +134,7 @@ const isCalendarDayDisabled = (
   freeMinutes: number,
   homeworkInDays: CalendarHomework[]
 ) => {
-  const currDate = moment();
+  const currDate = moment().startOf("day");
   if (
     date.isBefore(currDate.subtract(1, "days")) ||
     date.month() !== month ||
@@ -143,4 +143,86 @@ const isCalendarDayDisabled = (
     return true;
   }
   return false;
+};
+
+export const getSingleCalendarDay = async (req: Request, res: Response) => {
+  const { userId } = req;
+  const { page } = req.params;
+  const date = moment().add(+page, "days");
+
+  const day = await prisma.day.findFirst({
+    where: {
+      userId: +userId!,
+      date: date.startOf("day").toISOString(),
+    },
+    select: {
+      date: true,
+      freeMins: true,
+      minutesToAssign: true,
+      user: {
+        select: {
+          homework: {
+            where: {
+              deleted: false,
+              subject: {
+                deleted: false,
+              },
+              plannedDates: {
+                some: {
+                  date: date.startOf("day").toISOString(),
+                  AND: {
+                    deleted: false,
+                  },
+                },
+              },
+            },
+            select: {
+              completed: true,
+              id: true,
+              description: true,
+              expirationDate: true,
+              duration: true,
+              name: true,
+              subject: {
+                select: {
+                  name: true,
+                  color: true,
+                  id: true,
+                },
+              },
+              plannedDates: {
+                where: {
+                  date: date.startOf("day").toISOString(),
+                  deleted: false,
+                },
+                select: {
+                  date: true,
+                  id: true,
+                  minutesAssigned: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+  if (day) {
+    res.json(day);
+    return;
+  }
+  const week = await fetchWeek(+userId!);
+  if (!week) {
+    throwResponseError("the week does not exist", 400, res);
+    return;
+  }
+  const freeMinsInDay = findfreeMinutesInDay(date, week);
+  res.json({
+    date,
+    freeMins: freeMinsInDay,
+    minutesToAssign: freeMinsInDay,
+    user: {
+      homework: [],
+    },
+  });
 };

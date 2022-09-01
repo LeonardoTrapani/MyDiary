@@ -1,14 +1,10 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { isPositiveNotZero, throwResponseError } from "../utilities";
 import { prisma } from "../app";
 import moment from "moment";
 import { fetchWeek, findfreeMinutesInDay } from "./week";
 
-export const getAllDays = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const getAllDays = async (req: Request, res: Response) => {
   const { userId } = req;
   try {
     const days = await prisma.day.findMany({
@@ -28,11 +24,7 @@ export const getAllDays = async (
   }
 };
 
-export const createDay = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const createDay = async (req: Request, res: Response) => {
   const { date, freeMinutes } = req.body;
   const { userId } = req;
   try {
@@ -49,11 +41,7 @@ export const createDay = async (
   }
 };
 
-export const editDay = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const editDay = async (req: Request, res: Response) => {
   try {
     const { id, freeMinutes } = req.body;
     const day = await prisma.day.findUnique({

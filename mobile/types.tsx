@@ -1,8 +1,3 @@
-/**
- * Learn more about using TypeScript with React Navigation:
- * https://reactnavigation.org/docs/typescript/
- */
-
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import {
   CompositeScreenProps,
@@ -17,6 +12,37 @@ declare global {
     interface RootParamList extends RootStackParamList {}
   }
 }
+
+export type CalendarDayType = {
+  date: Date;
+  user: {
+    homework: {
+      completed: boolean;
+      id: number;
+      name: string;
+      subject: {
+        id: number;
+        name: string;
+        color: string;
+      };
+      plannedDates: {
+        date: Date;
+        id: number;
+        minutesAssigned: number;
+      }[];
+      description: string;
+      expirationDate: Date;
+      duration: number;
+    }[];
+  };
+  freeMins: number;
+  minutesToAssign: number;
+} | null;
+
+export type PlannedDate = {
+  date: Date;
+  minutesAssigned: number;
+};
 
 export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;

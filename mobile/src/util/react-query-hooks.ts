@@ -1,6 +1,11 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { FreeDaysResponse, HomeworkInfoType } from "../../types";
+import {
+  CalendarDayType,
+  FreeDaysResponse,
+  HomeworkInfoType,
+} from "../../types";
 import { getIsWeekCreatedWithToken, getWeek, validateToken } from "../api/auth";
+import { getDayCalendar } from "../api/calendar";
 import { fetchFreeDays } from "../api/homework";
 import { getSubjects } from "../api/subject";
 
@@ -59,4 +64,13 @@ export const useFreeDays = (homeworkInfo: HomeworkInfoType) => {
     }
   );
   return infQuery;
+};
+
+export const useCalendarDay = (page: number) => {
+  const { data: validToken, isFetched: isValidTokenFetched } = useValidToken();
+  return useQuery<CalendarDayType>(
+    ["calendarDay", page],
+    () => getDayCalendar(page, validToken),
+    { enabled: isValidTokenFetched, keepPreviousData: true }
+  );
 };
