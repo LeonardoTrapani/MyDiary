@@ -20,6 +20,9 @@ import moment from "moment";
 const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
   const { primary } = useTheme().colors;
   const [isCalendarOpened, setIsCalendarOpened] = useState(false);
+  const [homeworkBodyHeight, setHomeworkBodyHeight] = useState<
+    number | undefined
+  >(undefined);
   const [currentCalendarDate, setCurrentCalendarDate] = useState(
     moment().startOf("day").toISOString()
   );
@@ -81,7 +84,21 @@ const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
                 });
               }}
             />
-            <HomeworkBody calendarDay={calendarDay} />
+
+            <View
+              style={[styles.homeworkBodyContainer]}
+              onLayout={(event) => {
+                const { height } = event.nativeEvent.layout;
+                setHomeworkBodyHeight(height);
+              }}
+            >
+              <HomeworkBody
+                calendarDay={calendarDay}
+                height={homeworkBodyHeight}
+                freeTime={calendarDay.freeMins}
+                minutesToAssign={calendarDay.minutesToAssign}
+              />
+            </View>
             <DateTimePicker
               date={moment(currentCalendarDate).toDate()}
               mode="date"
@@ -110,20 +127,35 @@ const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
 
 const HomeworkBody: React.FC<{
   calendarDay: CalendarDayType;
+  freeTime: number;
+  minutesToAssign: number;
+  height: number | undefined;
 }> = (props) => {
-  if (!props.calendarDay) {
+  if (!props.calendarDay || !props.height) {
     return <></>;
   }
-  return (
-    <View>
-      <RegularText>
-        Minutes to assign: {props.calendarDay.minutesToAssign}
-      </RegularText>
-      <RegularText>Free minutes: {props.calendarDay.freeMins}</RegularText>
-      <FlatList
-        data={props.calendarDay.user.homework}
-        renderItem={({ item }) => <CalendarDayHomework homework={item} />}
-      />
+  return props.calendarDay.user.homework.length ? (
+    <FlatList
+      data={props.calendarDay.user.homework}
+      scrollEnabled={false}
+      renderItem={({ item }) => (
+        <CalendarDayHomework
+          homework={item}
+          freeTime={props.freeTime}
+          parentHeight={props.height as number}
+        />
+      )}
+    />
+  ) : (
+    <View
+      style={{
+        paddingBottom: 60,
+        justifyContent: "center",
+        alignItems: "center",
+        flex: 1,
+      }}
+    >
+      <RegularText style={{ fontSize: 18 }}>No homework yet...</RegularText>
     </View>
   );
 };
@@ -147,9 +179,27 @@ const CalendarDayHomework: React.FC<{
     expirationDate: string;
     duration: number;
   };
+  freeTime: number;
+  parentHeight: number;
 }> = (props) => {
+  if (props.homework.plannedDates.length > 1) {
+    console.warn(
+      "planned dates length is more than 1? ",
+      props.homework.plannedDates
+    );
+  }
+  const height =
+    (props.parentHeight * props.homework.plannedDates[0].minutesAssigned) /
+    props.freeTime;
   return (
-    <CardView>
+    <CardView
+      style={[
+        {
+          backgroundColor: props.homework.subject.color,
+          height,
+        },
+      ]}
+    >
       <RegularText>{props.homework.name}</RegularText>
     </CardView>
   );
@@ -222,6 +272,10 @@ const styles = StyleSheet.create({
   dateChangeFront: {
     marginLeft: 8,
     marginRight: 4,
+  },
+  homeworkBodyContainer: {
+    flex: 1,
+    paddingHorizontal: 10,
   },
 });
 

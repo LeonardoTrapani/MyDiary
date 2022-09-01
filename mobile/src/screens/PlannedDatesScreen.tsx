@@ -242,7 +242,7 @@ const FreeDayComponent: React.FC<{
         </CardView>
         <SelectFreeMinsComponent
           timeToAssign={props.totalTimeToAssign}
-          dayTimeLimit={props.freeDay.freeMins}
+          dayTimeLimit={props.freeDay.minutesToAssign}
           onChangeMintes={(minutes) => {
             setAssignedMinutes(minutes);
             props.onChange(minutes, props.i);
