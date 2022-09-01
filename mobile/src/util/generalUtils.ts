@@ -1,3 +1,5 @@
+import moment, { Moment } from "moment";
+
 export const generateUUID = () => {
   let dt = new Date().getTime();
   const uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
@@ -25,4 +27,9 @@ export const minutesToHoursMinutesFun = (minutes: number) => {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
   return `${h}h ${m}m`;
+};
+
+export const formatCalendarDay = (date: Date | string | Moment) => {
+  const res = moment(date).format("YYYY-MM-DD");
+  return res;
 };

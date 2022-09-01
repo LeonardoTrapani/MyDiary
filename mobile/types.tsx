@@ -14,7 +14,7 @@ declare global {
 }
 
 export type CalendarDayType = {
-  date: Date;
+  date: string;
   user: {
     homework: {
       completed: boolean;
@@ -26,23 +26,18 @@ export type CalendarDayType = {
         color: string;
       };
       plannedDates: {
-        date: Date;
+        date: string;
         id: number;
         minutesAssigned: number;
       }[];
       description: string;
-      expirationDate: Date;
+      expirationDate: string;
       duration: number;
     }[];
   };
   freeMins: number;
   minutesToAssign: number;
 } | null;
-
-export type PlannedDate = {
-  date: Date;
-  minutesAssigned: number;
-};
 
 export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;

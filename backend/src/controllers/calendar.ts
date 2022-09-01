@@ -148,7 +148,7 @@ const isCalendarDayDisabled = (
 export const getSingleCalendarDay = async (req: Request, res: Response) => {
   const { userId } = req;
   const { page } = req.params;
-  const date = moment().add(+page, "days");
+  const date = moment().add(+page - 1, "days");
 
   const day = await prisma.day.findFirst({
     where: {
