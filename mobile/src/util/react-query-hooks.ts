@@ -1,4 +1,5 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { Moment } from "moment";
 import {
   CalendarDayType,
   FreeDaysResponse,
@@ -19,6 +20,7 @@ export const useIsWeekCreated = () => {
     ["isWeekCreated", validToken],
     getIsWeekCreatedWithToken,
     {
+      refetchOnMount: true,
       enabled: isValidTokenFetched,
     }
   );
@@ -35,7 +37,7 @@ export type Week = {
 };
 
 export const useWeek = () => {
-  return useQuery<Week | null>(["week"], getWeek);
+  return useQuery<Week | null>(["week"], getWeek, { refetchOnMount: true });
 };
 
 export type Subject = {
@@ -48,6 +50,7 @@ export const useSubjects = () => {
   const { data: validToken, isFetched: isValidTokenFetched } = useValidToken();
   return useQuery<Subject[]>(["subject", validToken], getSubjects, {
     enabled: isValidTokenFetched,
+    refetchOnMount: true,
   });
 };
 
@@ -57,6 +60,7 @@ export const useFreeDays = (homeworkInfo: HomeworkInfoType) => {
     ["freeDays"],
     ({ pageParam = 1 }) => fetchFreeDays(pageParam, homeworkInfo, validToken),
     {
+      refetchOnMount: true,
       enabled: isValidTokenFetched,
       getNextPageParam: (lastPage) => {
         return lastPage.nextCursor;
@@ -66,11 +70,15 @@ export const useFreeDays = (homeworkInfo: HomeworkInfoType) => {
   return infQuery;
 };
 
-export const useCalendarDay = (page: number) => {
+export const useCalendarDay = (date: Moment) => {
   const { data: validToken, isFetched: isValidTokenFetched } = useValidToken();
   return useQuery<CalendarDayType>(
-    ["calendarDay", page],
-    () => getDayCalendar(page, validToken),
-    { enabled: isValidTokenFetched, keepPreviousData: true }
+    ["calendarDay", date],
+    () => getDayCalendar(date, validToken),
+    {
+      enabled: isValidTokenFetched,
+      refetchOnMount: true,
+      keepPreviousData: true,
+    }
   );
 };

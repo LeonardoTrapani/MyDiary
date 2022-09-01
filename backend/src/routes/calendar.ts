@@ -18,9 +18,9 @@ router.get(
 );
 
 router.get(
-  "/day/:page",
+  "/day/:date",
   isAuthenticated,
-  [param("page", "please enter a valid page").notEmpty().isNumeric()],
+  [param("date", "please enter a valid date").notEmpty().isISO8601()],
   validateExpressValidation,
   getSingleCalendarDay
 );

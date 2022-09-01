@@ -15,25 +15,37 @@ import moment from "moment";
 
 const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
   const { primary } = useTheme().colors;
-  const [page, setPage] = useState(1);
   const [isCalendarOpened, setIsCalendarOpened] = useState(false);
+  const [currentCalendarDate, setCurrentCalendarDate] = useState(
+    moment().startOf("day").toISOString()
+  );
 
   const addHomeworkHandler = () => {
     navigation.navigate("AddHomework");
   };
+
   const {
     data: calendarDay,
     error,
     isError,
     isLoading: isCalendarDayLoading,
-  } = useCalendarDay(page);
+    isFetching: isCalendarDayFetching,
+  } = useCalendarDay(moment(currentCalendarDate));
 
   useEffect(() => {
-    if (calendarDay) {
-      setCurrentCalendarDate(moment(calendarDay.date));
+    console.log(currentCalendarDate);
+    if (!calendarDay || isCalendarDayFetching) {
+      return;
     }
-  }, [calendarDay]);
-  const [currentCalendarDate, setCurrentCalendarDate] = useState(moment());
+    if (moment(currentCalendarDate).isSame(calendarDay.date, "days")) {
+      return;
+    }
+    console.warn("SERVER DATE IS DIFFERENT FROM LOCAL DATE: ", {
+      current: moment(currentCalendarDate).toDate(),
+      server: calendarDay.date,
+    });
+    setCurrentCalendarDate(calendarDay.date);
+  }, [calendarDay, currentCalendarDate, isCalendarDayFetching]);
 
   const calendarDayError = error as Error;
 
@@ -47,21 +59,23 @@ const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
         calendarDay && (
           <>
             <DateChangeButton
-              date={currentCalendarDate.toDate()}
+              date={moment(currentCalendarDate).toDate()}
               onPageForward={() => {
+                console.log("ADDING ONE DAY");
                 setCurrentCalendarDate((prev) => {
-                  return prev.add(1, "day");
-                });
-                setPage((prev) => {
-                  return prev + 1;
+                  return moment(prev)
+                    .startOf("day")
+                    .add(1, "day")
+                    .toISOString();
                 });
               }}
               onPageBackward={() => {
+                console.log("REMOVING ONE DAY");
                 setCurrentCalendarDate((prev) => {
-                  return prev.subtract(1, "day");
-                });
-                setPage((prev) => {
-                  return prev - 1;
+                  return moment(prev)
+                    .startOf("day")
+                    .subtract(1, "day")
+                    .toISOString();
                 });
               }}
               onToggleCalendar={() => {
@@ -73,17 +87,7 @@ const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
                 initialDate={formatCalendarDay(currentCalendarDate)}
                 current={formatCalendarDay(currentCalendarDate)}
                 onMonthChange={(date) => {
-                  const diff = moment(date.dateString).diff(
-                    currentCalendarDate,
-                    "days"
-                  );
-                  setCurrentCalendarDate((prev) => {
-                    return prev.add(diff, "day");
-                  });
-
-                  setPage((prev) => {
-                    return prev + diff;
-                  });
+                  setCurrentCalendarDate(moment(date.dateString).toISOString());
                 }}
               />
             ) : (
