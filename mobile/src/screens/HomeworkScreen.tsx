@@ -1,7 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { Calendar } from "react-native-calendars";
 import { ActivityIndicator, StyleSheet, TouchableOpacity } from "react-native";
 import { RootTabScreenProps } from "../../types";
 import FloatingButton from "../components/FloatingButton";
@@ -82,17 +81,7 @@ const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
                 setIsCalendarOpened((prev) => !prev);
               }}
             />
-            {isCalendarOpened ? (
-              <Calendar
-                initialDate={formatCalendarDay(currentCalendarDate)}
-                current={formatCalendarDay(currentCalendarDate)}
-                onMonthChange={(date) => {
-                  setCurrentCalendarDate(moment(date.dateString).toISOString());
-                }}
-              />
-            ) : (
-              <HomeworkBody />
-            )}
+            <HomeworkBody />
           </>
         )
       )}
