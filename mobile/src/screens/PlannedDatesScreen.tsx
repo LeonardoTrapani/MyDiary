@@ -22,7 +22,7 @@ import MyDurationPicker from "../components/MyDurationPicker";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import SolidButton from "../components/SolidButton";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createHomework } from "../api/homework";
 import { useGetDataFromAxiosError } from "../util/axiosUtils";
 import { AxiosError } from "axios";
@@ -36,12 +36,14 @@ const PlannedDatesScreen = ({
     useFreeDays(route.params);
   const { data: validToken } = useValidToken();
 
+  const queryClient = useQueryClient();
   const createHomeworkMutation = useMutation(
     () => {
       return createHomework(validToken, route.params, selectedDays);
     },
     {
       onSuccess: () => {
+        queryClient.invalidateQueries(["calendarDay"]);
         navigation.getParent()?.goBack();
       },
     }
