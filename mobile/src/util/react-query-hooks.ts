@@ -60,13 +60,13 @@ export const useFreeDays = (homeworkInfo: HomeworkInfoType) => {
     ["freeDays"],
     ({ pageParam = 1 }) => fetchFreeDays(pageParam, homeworkInfo, validToken),
     {
-      refetchOnMount: true,
       enabled: isValidTokenFetched,
       getNextPageParam: (lastPage) => {
         return lastPage.nextCursor;
       },
     }
   );
+  console.log(infQuery.isFetching);
   return infQuery;
 };
 

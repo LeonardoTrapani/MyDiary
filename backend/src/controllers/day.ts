@@ -106,7 +106,7 @@ export const createOrUpdateDay = async (
 export const createOrUpdateDayCountingPreviousMinutes = async (
   userId: number,
   date: Date | string,
-  freeMinutes: number,
+  assignedMinutes: number,
   res: Response
 ) => {
   const existingDay = await prisma.day.findFirst({
@@ -120,7 +120,10 @@ export const createOrUpdateDayCountingPreviousMinutes = async (
   });
 
   if (existingDay) {
-    await decrementMinutesToAssignToExistingDay(freeMinutes, existingDay.id);
+    await decrementMinutesToAssignToExistingDay(
+      existingDay.id,
+      assignedMinutes
+    );
     return;
   }
 
@@ -130,7 +133,7 @@ export const createOrUpdateDayCountingPreviousMinutes = async (
     return;
   }
   const minutesInDay = findfreeMinutesInDay(moment(date).startOf("day"), week);
-  if (minutesInDay - freeMinutes < 0) {
+  if (minutesInDay - assignedMinutes < 0) {
     throwResponseError("the minutes are less than 0 somehow", 400, res);
     return;
   }
@@ -138,7 +141,7 @@ export const createOrUpdateDayCountingPreviousMinutes = async (
     data: {
       date: moment(date).startOf("day").toDate(),
       freeMins: minutesInDay,
-      minutesToAssign: minutesInDay - freeMinutes,
+      minutesToAssign: minutesInDay - assignedMinutes,
       userId: +userId!,
     },
   });
@@ -200,7 +203,7 @@ export const editExistingDay = async (
 
 export const decrementMinutesToAssignToExistingDay = async (
   existingDayId: number,
-  freeMinutes: number
+  minutesAssigned: number
 ) => {
   await prisma.day.update({
     where: {
@@ -208,9 +211,10 @@ export const decrementMinutesToAssignToExistingDay = async (
     },
     data: {
       minutesToAssign: {
-        decrement: freeMinutes,
+        decrement: minutesAssigned,
       },
     },
   });
+  console.log("DECREMENTING:", { minutesAssigned, existingDayId });
   return;
 };

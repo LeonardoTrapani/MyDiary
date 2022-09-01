@@ -237,7 +237,7 @@ const FreeDayComponent: React.FC<{
         >
           <MediumText style={styles.freeDayDate}>{formattedDate}</MediumText>
           <RegularText style={{ fontSize: 17 }}>
-            max: {minutesToHoursMinutesFun(props.freeDay.freeMins)}
+            max: {minutesToHoursMinutesFun(props.freeDay.minutesToAssign)}
           </RegularText>
         </CardView>
         <SelectFreeMinsComponent

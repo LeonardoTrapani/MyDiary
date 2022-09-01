@@ -1,8 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, TouchableOpacity } from "react-native";
-import { RootTabScreenProps } from "../../types";
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
+import { CalendarDayType, RootTabScreenProps } from "../../types";
 import FloatingButton from "../components/FloatingButton";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import { RegularText } from "../components/StyledText";
@@ -76,7 +81,7 @@ const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
                 });
               }}
             />
-            <HomeworkBody />
+            <HomeworkBody calendarDay={calendarDay} />
             <DateTimePicker
               date={moment(currentCalendarDate).toDate()}
               mode="date"
@@ -103,8 +108,51 @@ const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
   );
 };
 
-const HomeworkBody: React.FC = () => {
-  return <View></View>;
+const HomeworkBody: React.FC<{
+  calendarDay: CalendarDayType;
+}> = (props) => {
+  if (!props.calendarDay) {
+    return <></>;
+  }
+  return (
+    <View>
+      <RegularText>
+        Minutes to assign: {props.calendarDay.minutesToAssign}
+      </RegularText>
+      <RegularText>Free minutes: {props.calendarDay.freeMins}</RegularText>
+      <FlatList
+        data={props.calendarDay.user.homework}
+        renderItem={({ item }) => <CalendarDayHomework homework={item} />}
+      />
+    </View>
+  );
+};
+
+const CalendarDayHomework: React.FC<{
+  homework: {
+    completed: boolean;
+    id: number;
+    name: string;
+    subject: {
+      id: number;
+      name: string;
+      color: string;
+    };
+    plannedDates: {
+      date: string;
+      id: number;
+      minutesAssigned: number;
+    }[];
+    description: string;
+    expirationDate: string;
+    duration: number;
+  };
+}> = (props) => {
+  return (
+    <CardView>
+      <RegularText>{props.homework.name}</RegularText>
+    </CardView>
+  );
 };
 
 const DateChangeButton: React.FC<{
@@ -115,17 +163,15 @@ const DateChangeButton: React.FC<{
 }> = (props) => {
   return (
     <View style={styles.dateChangeContainer}>
-      <TouchableOpacity onPress={props.onShowCalendar}>
-        <CardView style={[styles.dateChangeButton, globalStyles.shadow]}>
-          <DateChangeBack onPress={props.onPageBackward} />
-          <TouchableOpacity onPress={props.onShowCalendar}>
-            <RegularText style={styles.dateChangeDateText}>
-              {props.date.toDateString()}
-            </RegularText>
-          </TouchableOpacity>
-          <DateChangeFront onPress={props.onPageForward} />
-        </CardView>
-      </TouchableOpacity>
+      <CardView style={[styles.dateChangeButton, globalStyles.shadow]}>
+        <DateChangeBack onPress={props.onPageBackward} />
+        <TouchableOpacity onPress={props.onShowCalendar}>
+          <RegularText style={styles.dateChangeDateText}>
+            {props.date.toDateString()}
+          </RegularText>
+        </TouchableOpacity>
+        <DateChangeFront onPress={props.onPageForward} />
+      </CardView>
     </View>
   );
 };
