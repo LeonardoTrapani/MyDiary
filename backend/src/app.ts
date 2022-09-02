@@ -31,11 +31,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// app.use((req: Request, res: Response, next: NextFunction) => {
-//   console.log('request arrived');
-//   next();
-// });
-
 app.use(authRoutes);
 app.use("/homework", homeworkRoutes);
 app.use("/day", dayRoutes);

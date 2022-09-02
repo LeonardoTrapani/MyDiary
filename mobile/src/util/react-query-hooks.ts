@@ -66,7 +66,6 @@ export const useFreeDays = (homeworkInfo: HomeworkInfoType) => {
       },
     }
   );
-  console.log(infQuery.isFetching);
   return infQuery;
 };
 

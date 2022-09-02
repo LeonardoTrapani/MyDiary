@@ -15,7 +15,6 @@ export const createHomework = async (req: Request, res: Response) => {
     date: string;
   }[];
 
-  console.log(plannedDates);
   try {
     const subject = await prisma.subject.findUnique({
       where: {

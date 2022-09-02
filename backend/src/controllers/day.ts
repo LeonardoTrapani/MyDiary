@@ -215,6 +215,5 @@ export const decrementMinutesToAssignToExistingDay = async (
       },
     },
   });
-  console.log("DECREMENTING:", { minutesAssigned, existingDayId });
   return;
 };

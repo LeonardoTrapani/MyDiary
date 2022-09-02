@@ -1,9 +1,9 @@
-import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
-import { NavigateFunction } from 'react-router-dom';
+import { createSlice, Dispatch, PayloadAction } from "@reduxjs/toolkit";
+import { NavigateFunction } from "react-router-dom";
 
-import { BACKEND_URL } from '../utilities/contants';
-import { CustomRequestInit } from '../utilities/hooks';
-import { datesEqualOnDay } from '../utilities/utilities';
+import { BACKEND_URL } from "../utilities/contants";
+import { CustomRequestInit } from "../utilities/hooks";
+import { datesEqualOnDay } from "../utilities/utilities";
 
 interface createHomeworkState {
   isLoading: boolean;
@@ -46,7 +46,7 @@ const initialState: createHomeworkState = {
   selectedDays: [],
 };
 const createHomeworkSlice = createSlice({
-  name: 'createHomework',
+  name: "createHomework",
   initialState,
   reducers: {
     setFreeDays(state, action: PayloadAction<freeDay[]>) {
@@ -149,7 +149,7 @@ const createHomeworkSlice = createSlice({
       state.homeworkCreating.timeToAssign = timeToAssign;
 
       if (freeDayIndex === -1) {
-        return console.error('free day not found');
+        return console.error("free day not found");
       }
 
       state.freeDays[freeDayIndex].assignedTime = action.payload.assignedTime;
@@ -188,9 +188,9 @@ export const searchFreeDays = (
       dispatch(createHomeworkActions.setLoading(true));
 
       const res = await fetchAuthorized()(
-        BACKEND_URL + '/homework/freeDays/' + options.page,
+        BACKEND_URL + "/homework/freeDays/" + options.page,
         {
-          method: 'POST',
+          method: "POST",
           requestBody: {
             expirationDate: options.expirationDateValue,
             duration: options.durationValue,
@@ -224,7 +224,7 @@ export const submitCreateHomework = (
 ) => {
   return async (dispatch: Dispatch) => {
     if (!isValid) {
-      console.log('TODO: snackbar or make time red untill next change');
+      console.warn("TODO: snackbar or make time red untill next change");
       return;
     }
     dispatch(createHomeworkActions.setLoading(true));
@@ -236,8 +236,8 @@ export const submitCreateHomework = (
     });
 
     try {
-      await fetchAuthorized()(BACKEND_URL + '/homework/create', {
-        method: 'POST',
+      await fetchAuthorized()(BACKEND_URL + "/homework/create", {
+        method: "POST",
         requestBody: {
           name,
           description,
@@ -249,10 +249,10 @@ export const submitCreateHomework = (
       });
       dispatch(createHomeworkActions.setLoading(false));
       dispatch(createHomeworkActions.reset());
-      navigate('/');
+      navigate("/");
     } catch (err) {
       dispatch(createHomeworkActions.setLoading(false));
-      console.log('ERROR');
+      console.error("ERROR");
     }
   };
 };
