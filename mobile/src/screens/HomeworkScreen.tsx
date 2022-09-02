@@ -57,6 +57,16 @@ const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
   const calendarDayError = error as Error;
 
   const { heights, totalHeight: totalHeight } = useMemo(() => {
+    if (!calendarDay || !homeworkBodyHeight) {
+      return { heights: [], totalHeight: 0 };
+    }
+    const overflows =
+      calendarDay?.user.homework.length * MINIMUM_HOMEWORK_HEIGHT >
+      homeworkBodyHeight;
+
+    if (overflows) {
+      return calculateHeightsWithoutAdapting(calendarDay, homeworkBodyHeight);
+    }
     return calculateHeights(
       calendarDay,
       homeworkBodyHeight,
@@ -342,6 +352,39 @@ const calculateHeights: (
       freeMins - minutesToRemove
     );
   }
+  return { totalHeight, heights };
+};
+
+const calculateHeightsWithoutAdapting: (
+  calendarDay: CalendarDayType | undefined,
+  maxHeight: number | undefined
+) => {
+  totalHeight: number;
+  heights: number[];
+} = (calendarDay, maxHeight) => {
+  if (!calendarDay || !maxHeight) {
+    return { totalHeight: 0, heights: [] };
+  }
+
+  let totalHeight = 0;
+  const heights = [];
+
+  for (let i = 0; i < calendarDay.user.homework.length; i++) {
+    const currentHomework = calendarDay.user.homework[i];
+
+    const currentHomeworkHeight =
+      (maxHeight * currentHomework.plannedDates[0].minutesAssigned) /
+      calendarDay.freeMins;
+
+    totalHeight += currentHomeworkHeight;
+    if (heights[i]) {
+      heights[i] = currentHomeworkHeight;
+    } else {
+      heights.push(currentHomeworkHeight);
+    }
+  }
+
+  console.log(heights);
   return { totalHeight, heights };
 };
 
