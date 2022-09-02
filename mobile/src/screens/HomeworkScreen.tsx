@@ -62,17 +62,21 @@ const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
     }
     const overflows =
       calendarDay?.user.homework.length * MINIMUM_HOMEWORK_HEIGHT >
-      homeworkBodyHeight;
+      homeworkBodyHeight / 1.5;
 
     if (overflows) {
-      return calculateHeightsWithoutAdapting(calendarDay, homeworkBodyHeight);
+      return calculateHeightsWithoutAdapting(
+        calendarDay,
+        homeworkBodyHeight,
+        calendarDay.freeMins
+      );
     }
     return calculateHeights(
       calendarDay,
       homeworkBodyHeight,
       {},
       [],
-      calendarDay?.freeMins
+      calendarDay.freeMins
     );
   }, [calendarDay, homeworkBodyHeight]);
 
@@ -357,34 +361,42 @@ const calculateHeights: (
 
 const calculateHeightsWithoutAdapting: (
   calendarDay: CalendarDayType | undefined,
-  maxHeight: number | undefined
+  maxHeight: number | undefined,
+  freeMins: number | undefined
 ) => {
   totalHeight: number;
   heights: number[];
-} = (calendarDay, maxHeight) => {
-  if (!calendarDay || !maxHeight) {
+} = (calendarDay, maxHeight, freeMins) => {
+  if (!calendarDay || !maxHeight || !freeMins) {
     return { totalHeight: 0, heights: [] };
   }
+  const heights: number[] = [];
 
   let totalHeight = 0;
-  const heights = [];
 
   for (let i = 0; i < calendarDay.user.homework.length; i++) {
     const currentHomework = calendarDay.user.homework[i];
 
     const currentHomeworkHeight =
-      (maxHeight * currentHomework.plannedDates[0].minutesAssigned) /
-      calendarDay.freeMins;
+      (maxHeight * currentHomework.plannedDates[0].minutesAssigned) / freeMins;
 
-    totalHeight += currentHomeworkHeight;
-    if (heights[i]) {
-      heights[i] = currentHomeworkHeight;
+    if (currentHomeworkHeight < MINIMUM_HOMEWORK_HEIGHT) {
+      if (heights[i]) {
+        heights[i] = MINIMUM_HOMEWORK_HEIGHT;
+      } else {
+        heights.push(MINIMUM_HOMEWORK_HEIGHT);
+      }
+      totalHeight += MINIMUM_HOMEWORK_HEIGHT;
     } else {
-      heights.push(currentHomeworkHeight);
+      if (heights[i]) {
+        heights[i] = currentHomeworkHeight;
+      } else {
+        heights.push(currentHomeworkHeight);
+      }
+      totalHeight += currentHomeworkHeight;
     }
   }
 
-  console.log(heights);
   return { totalHeight, heights };
 };
 
