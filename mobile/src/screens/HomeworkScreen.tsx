@@ -56,20 +56,13 @@ const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
 
   const calendarDayError = error as Error;
 
-  const [totalHeight, setTotalHeight] = useState(0);
-  const { heights, totalHeight: funcTotalHeight } = useMemo(() => {
-    return calculateHeights(
-      calendarDay,
-      homeworkBodyHeight,
-      {},
-      MINIMUM_HOMEWORK_HEIGHT
-    );
+  const { heights, totalHeight: totalHeight } = useMemo(() => {
+    return calculateHeights(calendarDay, homeworkBodyHeight);
   }, [calendarDay, homeworkBodyHeight]);
 
-  useEffect(() => {
-    setTotalHeight(funcTotalHeight);
-  }, [funcTotalHeight]);
-
+  {
+    console.log(totalHeight, homeworkBodyHeight);
+  }
   return (
     <View style={styles.container}>
       {isCalendarDayLoading ? (
@@ -111,6 +104,9 @@ const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
                 calendarDay={calendarDay}
                 freeTime={calendarDay.freeMins}
                 heights={heights}
+                scrollEnabled={
+                  totalHeight > (homeworkBodyHeight || 0) ? true : false
+                }
                 totalHeight={totalHeight}
                 minutesToAssign={calendarDay.minutesToAssign}
               />
@@ -147,6 +143,7 @@ const HomeworkBody: React.FC<{
   minutesToAssign: number;
   heights: number[];
   totalHeight: number;
+  scrollEnabled: boolean;
 }> = (props) => {
   if (!props.calendarDay || !props.heights) {
     return <></>;
@@ -156,7 +153,7 @@ const HomeworkBody: React.FC<{
       <View style={{ height: props.totalHeight }}>
         <FlatList
           data={props.calendarDay.user.homework}
-          scrollEnabled={false}
+          scrollEnabled={props.scrollEnabled}
           renderItem={({ item, index }) => (
             <CalendarDayHomework
               homework={item}
@@ -229,7 +226,7 @@ const HorizontalBar: React.FC<{ color: string }> = (props) => {
         backgroundColor: props.color,
         width: 7,
         borderRadius: 10000,
-        marginBottom: 12,
+        marginBottom: 6,
       }}
     ></View>
   );
@@ -276,73 +273,103 @@ const DateChangeFront: React.FC<{ onPress: () => void }> = (props) => {
 
 const calculateHeights: (
   calendarDay: CalendarDayType | undefined,
-  homeworkBodyHeight: number | undefined,
-  heightsToGoToMinimumIndex: {
-    [key: string]: boolean;
-  },
-  minimumHomeworkHeight: number
-) => { heights: number[]; totalHeight: number } = (
-  calendarDay,
-  homeworkBodyHeight,
-  heightsToGoToMinimumIndex,
-  minimumHomeworkHeight
+  maxHeight: number | undefined
 ) => {
+  totalHeight: number;
+  heights: number[];
+} = (calendarDay, maxHeight) => {
+  if (!calendarDay || !maxHeight) {
+    return { totalHeight: 0, heights: [] };
+  }
+  const heights: number[] = [];
   let totalHeight = 0;
-  let heightToRemove = 0;
-  if (!calendarDay || !homeworkBodyHeight) {
-    return { heights: [], totalHeight: 0 };
-  }
-
-  if (
-    calendarDay.user.homework.length &&
-    homeworkBodyHeight / calendarDay?.user.homework.length <
-      minimumHomeworkHeight
-  ) {
-    const newMinHomeworkHeight =
-      homeworkBodyHeight / calendarDay?.user.homework.length;
-    console.log(
-      "CHANGING MINIMUM HOMEWORK HEIGHT TO ",
-      newMinHomeworkHeight,
-      " FROM ",
-      minimumHomeworkHeight
-    );
-    return calculateHeights(
-      calendarDay,
-      homeworkBodyHeight,
-      {},
-      newMinHomeworkHeight
-    );
-  }
-
-  const heights = [];
   for (let i = 0; i < calendarDay.user.homework.length; i++) {
-    const homework = calendarDay.user.homework[i];
-    if (heightsToGoToMinimumIndex[i] === true) {
-      heights.push(minimumHomeworkHeight);
-      totalHeight += minimumHomeworkHeight;
-      continue;
-    }
-    const height =
-      (homeworkBodyHeight * homework.plannedDates[0].minutesAssigned) /
+    const currentHomework = calendarDay.user.homework[i];
+
+    const currentHomeworkHeight =
+      (maxHeight * currentHomework.plannedDates[0].minutesAssigned) /
       calendarDay.freeMins;
-    if (height < minimumHomeworkHeight) {
-      heightsToGoToMinimumIndex[i] = true;
-      heightToRemove += minimumHomeworkHeight - height;
-    } else {
-      totalHeight += height;
-      heights.push(height);
-    }
+    totalHeight += currentHomeworkHeight;
+
+    heights.push(currentHomeworkHeight);
   }
-  if (heightToRemove > 0) {
-    return calculateHeights(
-      calendarDay,
-      homeworkBodyHeight - heightToRemove,
-      heightsToGoToMinimumIndex,
-      minimumHomeworkHeight
-    );
-  }
-  return { heights, totalHeight };
+  return { totalHeight, heights };
 };
+
+//
+//const calculateHeights: (
+//calendarDay: CalendarDayType | undefined,
+//homeworkBodyHeight: number | undefined,
+//heightsToGoToMinimumIndex: {
+//[key: string]: boolean;
+//},
+//minimumHomeworkHeight: number
+//) => { heights: number[]; totalHeight: number } = (
+//calendarDay,
+//homeworkBodyHeight,
+//heightsThatNeedToGoToMinimumIndex,
+//minimumHomeworkHeight
+//) => {
+//console.log("START: ", homeworkBodyHeight);
+//let totalHeight = 0;
+//let heightToRemove = 0;
+//if (!calendarDay || !homeworkBodyHeight) {
+//return { heights: [], totalHeight: 0 };
+//}
+
+//if (
+//calendarDay.user.homework.length &&
+//homeworkBodyHeight / calendarDay?.user.homework.length <
+//minimumHomeworkHeight
+//) {
+//const newMaximumHeight =
+//calendarDay.user.homework.length * minimumHomeworkHeight;
+//return calculateHeights(
+//calendarDay,
+//newMaximumHeight,
+//{},
+//minimumHomeworkHeight
+//);
+//}
+
+//const heights = [];
+//for (let i = 0; i < calendarDay.user.homework.length; i++) {
+//const homework = calendarDay.user.homework[i];
+//if (heightsThatNeedToGoToMinimumIndex[i] === true) {
+//heights.push(minimumHomeworkHeight);
+//console.log("ADDING TO HEIGHT: ", minimumHomeworkHeight);
+//totalHeight += minimumHomeworkHeight;
+//continue;
+//}
+//const height =
+//(homeworkBodyHeight * homework.plannedDates[0].minutesAssigned) /
+//calendarDay.freeMins;
+//if (height < minimumHomeworkHeight) {
+//heightsThatNeedToGoToMinimumIndex[i] = true;
+//heightToRemove += minimumHomeworkHeight - height;
+//} else {
+//totalHeight += height;
+//console.log("ADDING TO HEIGHT: ", height);
+//heights.push(height);
+//}
+//}
+//if (heightToRemove > 0) {
+////console.log(
+////"CHANGING MAXIMUM HEIGHT: ",
+////homeworkBodyHeight - heightToRemove,
+////" (FROM ",
+////homeworkBodyHeight,
+////")"
+////);
+//return calculateHeights(
+//calendarDay,
+//homeworkBodyHeight - heightToRemove,
+//heightsThatNeedToGoToMinimumIndex,
+//minimumHomeworkHeight
+//);
+//}
+//return { heights, totalHeight };
+//};
 
 const styles = StyleSheet.create({
   container: {
