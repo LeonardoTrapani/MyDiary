@@ -167,7 +167,9 @@ const HomeworkBody: React.FC<{
   }
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ height: props.totalHeight }}>
+      <View
+        style={{ height: props.scrollEnabled ? undefined : props.totalHeight }}
+      >
         <FlatList
           data={props.calendarDay.user.homework}
           scrollEnabled={props.scrollEnabled}
