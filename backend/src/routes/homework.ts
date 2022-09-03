@@ -25,7 +25,8 @@ router.post(
     body("description", "the description maximum length is 400 characters")
       .trim()
       .isLength({ max: 400 })
-      .notEmpty(),
+      .notEmpty()
+      .withMessage("please enter a description"),
     body("expirationDate", "please insert a valid expiration date")
       .isISO8601()
       .custom((value) => {

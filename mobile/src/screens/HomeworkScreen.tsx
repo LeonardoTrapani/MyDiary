@@ -173,6 +173,7 @@ const HomeworkBody: React.FC<{
         <FlatList
           data={props.calendarDay.user.homework}
           scrollEnabled={props.scrollEnabled}
+          persistentScrollbar={true}
           renderItem={({ item, index }) => (
             <CalendarDayHomework
               homework={item}
@@ -233,21 +234,23 @@ const CalendarDayHomework: React.FC<{
       ]}
     >
       <HorizontalBar color={props.homework.subject.color} />
-      <RegularText>{props.homework.name}</RegularText>
+      <RegularText
+        style={[
+          styles.homeworkText,
+          props.height === MINIMUM_HOMEWORK_HEIGHT
+            ? styles.homeworkCenterText
+            : styles.homeworkNotCenterText,
+        ]}
+      >
+        {props.homework.name}
+      </RegularText>
     </View>
   );
 };
 
 const HorizontalBar: React.FC<{ color: string }> = (props) => {
   return (
-    <View
-      style={{
-        backgroundColor: props.color,
-        width: 7,
-        borderRadius: 10000,
-        marginBottom: 6,
-      }}
-    ></View>
+    <View style={[styles.homeworkBar, { backgroundColor: props.color }]}></View>
   );
 };
 
@@ -408,7 +411,7 @@ const styles = StyleSheet.create({
   },
   dateChangeButton: {
     height: 40,
-    marginVertical: 15,
+    marginVertical: 10,
     borderRadius: 10000,
     alignSelf: "flex-start",
     flexDirection: "row",
@@ -434,6 +437,22 @@ const styles = StyleSheet.create({
   homeworkBodyContainer: {
     flex: 1,
     paddingHorizontal: 10,
+    marginBottom: 90,
+  },
+  homeworkText: {
+    paddingHorizontal: 10,
+    fontSize: 15,
+  },
+  homeworkNotCenterText: {
+    paddingVertical: 13,
+  },
+  homeworkCenterText: {
+    alignSelf: "center",
+  },
+  homeworkBar: {
+    width: 7,
+    borderRadius: 10000,
+    marginVertical: 4.5,
   },
 });
 
