@@ -1,4 +1,8 @@
-import { useTheme } from "@react-navigation/native";
+import {
+  NavigationProp,
+  useNavigation,
+  useTheme,
+} from "@react-navigation/native";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -6,8 +10,12 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { CalendarDayType, RootTabScreenProps } from "../../types";
-import FloatingButton from "../components/FloatingButton";
+import {
+  CalendarDayType,
+  HomeworkStackParamList,
+  HomeworkStackScreenprops,
+  RootStackParamList,
+} from "../../types";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import { RegularText } from "../components/StyledText";
 import { CardView, View } from "../components/Themed";
@@ -18,9 +26,10 @@ import moment from "moment";
 import { MINIMUM_HOMEWORK_HEIGHT } from "../constants/constants";
 import { minutesToHoursMinutesFun } from "../util/generalUtils";
 import { Ionicons } from "@expo/vector-icons";
+import TextButton from "../components/TextButton";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
-  const { primary } = useTheme().colors;
+const HomeworkScreen = ({ navigation }: HomeworkStackScreenprops<"Root">) => {
   const [isCalendarOpened, setIsCalendarOpened] = useState(false);
   const [homeworkBodyHeight, setHomeworkBodyHeight] = useState<
     number | undefined
@@ -29,10 +38,6 @@ const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
     moment().startOf("day").toISOString()
   );
 
-  const addHomeworkHandler = () => {
-    navigation.navigate("AddHomework");
-  };
-
   const {
     data: calendarDay,
     error,
@@ -40,7 +45,6 @@ const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
     isLoading: isCalendarDayLoading,
     isFetching: isCalendarDayFetching,
   } = useCalendarDay(moment(currentCalendarDate));
-
   useEffect(() => {
     if (!calendarDay || isCalendarDayFetching) {
       return;
@@ -83,6 +87,22 @@ const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
 
   return (
     <View style={styles.container}>
+      <MyHomeworkHeader
+        navigation={navigation}
+        onToday={() => {
+          setCurrentCalendarDate(moment().startOf("day").toISOString());
+        }}
+        onPageForward={() => {
+          setCurrentCalendarDate((prev) => {
+            return moment(prev).startOf("day").add(1, "day").toISOString();
+          });
+        }}
+        onShowCalendar={() => setIsCalendarOpened(true)}
+        onPageBackward={() => {
+          setCurrentCalendarDate(moment().startOf("day").toISOString());
+        }}
+        currentCalendarDate={currentCalendarDate}
+      />
       {isCalendarDayLoading ? (
         <ActivityIndicator />
       ) : isError ? (
@@ -90,27 +110,6 @@ const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
       ) : (
         calendarDay && (
           <>
-            <DateChangeButton
-              date={moment(currentCalendarDate).toDate()}
-              onShowCalendar={() => setIsCalendarOpened(true)}
-              onPageForward={() => {
-                setCurrentCalendarDate((prev) => {
-                  return moment(prev)
-                    .startOf("day")
-                    .add(1, "day")
-                    .toISOString();
-                });
-              }}
-              onPageBackward={() => {
-                setCurrentCalendarDate((prev) => {
-                  return moment(prev)
-                    .startOf("day")
-                    .subtract(1, "day")
-                    .toISOString();
-                });
-              }}
-            />
-
             <View
               style={[styles.homeworkBodyContainer]}
               onLayout={(event) => {
@@ -146,10 +145,45 @@ const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
           </>
         )
       )}
-      <FloatingButton
-        color={primary}
-        ionIconName="ios-add"
-        onPress={addHomeworkHandler}
+    </View>
+  );
+};
+
+const MyHomeworkHeader: React.FC<{
+  onToday: () => void;
+  currentCalendarDate: string;
+  onShowCalendar: () => void;
+  onPageForward: () => void;
+  onPageBackward: () => void;
+  navigation: NativeStackNavigationProp<
+    HomeworkStackParamList,
+    "Root",
+    undefined
+  >;
+}> = (props) => {
+  return (
+    <View style={styles.headerContainer}>
+      <TextButton
+        title="today"
+        onPress={props.onToday}
+        style={[styles.headerText, styles.headerleft]}
+      />
+      <DateChangeButton
+        date={moment(props.currentCalendarDate).toDate()}
+        onShowCalendar={props.onShowCalendar}
+        onPageForward={props.onPageForward}
+        onPageBackward={props.onPageBackward}
+        //setCurrentCalendarDate((prev) => {
+        //return moment(prev).startOf("day").subtract(1, "day").toISOString();
+        //});
+      />
+      <TextButton
+        title="edit"
+        textStyle={{ textAlign: "right" }}
+        onPress={() => {
+          props.navigation.navigate("Edit");
+        }}
+        style={[styles.headerText, styles.subheaderRight]}
       />
     </View>
   );
@@ -166,7 +200,6 @@ const HomeworkBody: React.FC<{
   if (!props.calendarDay || !props.heights) {
     return <></>;
   }
-  console.log(props.minutesToAssign, props.calendarDay.user.homework.length);
   return (
     <View style={{ flex: 1 }}>
       <View
@@ -461,12 +494,43 @@ const calculateHeightsWithoutAdapting: (
   return { totalHeight, heights };
 };
 
+export const EditDayIcon: React.FC = () => {
+  const { primary } = useTheme().colors;
+
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  return (
+    <TouchableOpacity
+      style={{ marginLeft: 14 }}
+      onPress={() => {
+        navigation.navigate("AddHomework");
+      }}
+    >
+      <Ionicons name="ios-pencil" size={20} color={primary} />
+    </TouchableOpacity>
+  );
+};
+
+//export const AddHomeworkIcon: React.FC = () => {
+//const { primary } = useTheme().colors;
+
+//const navigation = useNavigation<NavigationProp<RootTabParamList>>();
+//return (
+//<TouchableOpacity
+//onPress={() => {
+//navigation.getParent()?.navigate("AddHomework");
+//}}
+//>
+//<Ionicons name="md-add" size={32} color={primary} />
+//</TouchableOpacity>
+//);
+//};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
   dateChangeButton: {
-    height: 40,
+    height: 32,
     marginVertical: 10,
     borderRadius: 10000,
     alignSelf: "flex-start",
@@ -493,16 +557,16 @@ const styles = StyleSheet.create({
   homeworkBodyContainer: {
     flex: 1,
     paddingHorizontal: 10,
-    marginBottom: 90,
+    marginVertical: 10,
   },
   homeworkText: {
     fontSize: 15,
-    marginLeft: 10,
+    marginLeft: 7,
     flex: 1,
     alignSelf: "flex-start",
   },
   homeworkNotCenterText: {
-    paddingVertical: 13,
+    paddingVertical: 6,
   },
   homeworkCenterText: {
     alignSelf: "center",
@@ -530,6 +594,20 @@ const styles = StyleSheet.create({
   timeBarContainer: {
     flexDirection: "column",
     alignItems: "center",
+  },
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  headerText: {
+    width: 50,
+  },
+  subheaderRight: {
+    marginRight: 10,
+  },
+  headerleft: {
+    marginLeft: 10,
   },
 });
 

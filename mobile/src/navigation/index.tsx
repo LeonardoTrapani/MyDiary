@@ -8,6 +8,7 @@ import NotFoundScreen from "../screens/NotFoundScreen";
 import TabOneScreen from "../screens/TabOneScreen";
 import {
   AddHomeworkStackParamList,
+  HomeworkStackParamList,
   RootStackParamList,
   RootTabParamList,
 } from "../../types";
@@ -32,6 +33,7 @@ import { activeSubjectAtom } from "../util/atoms";
 import PlannedDatesScreen, {
   PlannedDatesInfoIcon,
 } from "../screens/PlannedDatesScreen";
+import EditScreen from "../screens/EditScreen";
 
 export default function Main({
   colorScheme,
@@ -112,7 +114,9 @@ const NavigatorBody: React.FC = () => {
         <Stack.Screen
           name="Root"
           component={BottomTabNavigator}
-          options={{ headerShown: false }}
+          options={{
+            headerShown: false,
+          }}
         />
         <Stack.Screen
           name="NotFound"
@@ -198,16 +202,16 @@ const AddHomeworkModalNavigation = () => {
 
 const BottomTabNavigator = () => {
   return (
-    <BottomTab.Navigator initialRouteName="Home">
+    <BottomTab.Navigator initialRouteName="Homework">
       <BottomTab.Screen
         name="Homework"
-        component={HomeworkScreen}
+        component={HomeworkStackNavigation}
         options={() => ({
           title: "Logo",
           tabBarIcon: ({ color, size }) => {
             return <Ionicons name="home" size={size} color={color} />;
           },
-          tabBarShowLabel: false,
+          headerShown: false,
         })}
       />
       <BottomTab.Screen
@@ -237,3 +241,28 @@ const BottomTabNavigator = () => {
     </BottomTab.Navigator>
   );
 };
+
+const HomeworkStackNavigation = () => {
+  return (
+    <HomeworkStack.Navigator initialRouteName="Root">
+      <HomeworkStack.Screen
+        name="Root"
+        component={HomeworkScreen}
+        options={{
+          title: "LOGO",
+        }}
+      />
+      <HomeworkStack.Screen
+        name="Edit"
+        component={EditScreen}
+        options={{
+          presentation: "card",
+          title: "Edit Day",
+          headerBackTitleVisible: false,
+        }}
+      />
+    </HomeworkStack.Navigator>
+  );
+};
+
+const HomeworkStack = createNativeStackNavigator<HomeworkStackParamList>();
