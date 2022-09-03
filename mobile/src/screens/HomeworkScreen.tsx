@@ -1,4 +1,3 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -17,6 +16,8 @@ import { useCalendarDay } from "../util/react-query-hooks";
 import ErrorComponent from "../components/ErrorComponent";
 import moment from "moment";
 import { MINIMUM_HOMEWORK_HEIGHT } from "../constants/constants";
+import { minutesToHoursMinutesFun } from "../util/generalUtils";
+import { Ionicons } from "@expo/vector-icons";
 
 const HomeworkScreen = ({ navigation }: RootTabScreenProps<"Homework">) => {
   const { primary } = useTheme().colors;
@@ -165,6 +166,7 @@ const HomeworkBody: React.FC<{
   if (!props.calendarDay || !props.heights) {
     return <></>;
   }
+  console.log(props.minutesToAssign, props.calendarDay.user.homework.length);
   return (
     <View style={{ flex: 1 }}>
       <View
@@ -173,25 +175,44 @@ const HomeworkBody: React.FC<{
         <FlatList
           data={props.calendarDay.user.homework}
           scrollEnabled={props.scrollEnabled}
-          persistentScrollbar={true}
+          showsVerticalScrollIndicator={false}
           renderItem={({ item, index }) => (
             <CalendarDayHomework
               homework={item}
               freeTime={props.freeTime}
+              i={index}
               height={props.heights[index]}
+              showAtRight={index % 2 === 0}
             />
           )}
         />
       </View>
-      <FreeTimeComponent />
+      {(props.minutesToAssign > 0 ||
+        (props.calendarDay.user.homework.length === 0 &&
+          props.minutesToAssign === 0)) && (
+        <FreeTimeComponent timeToAssign={props.minutesToAssign} />
+      )}
     </View>
   );
 };
 
-const FreeTimeComponent: React.FC = () => {
+const FreeTimeComponent: React.FC<{ timeToAssign: number }> = (props) => {
   return (
-    <View style={{ flex: 1, flexDirection: "row" }}>
-      <HorizontalBar color="#aaa" />
+    <View
+      style={[
+        {
+          flexDirection: "row",
+          justifyContent: "space-between",
+          flex: 1,
+        },
+        styles.calendarDayHomework,
+      ]}
+    >
+      <HomeworkBar color="#aaa" />
+      <RegularText style={[styles.homeworkText, styles.homeworkNotCenterText]}>
+        Free Time
+      </RegularText>
+      <TimeBar i={-1} time={props.timeToAssign} />
     </View>
   );
 };
@@ -217,6 +238,8 @@ const CalendarDayHomework: React.FC<{
   };
   freeTime: number;
   height: number;
+  showAtRight: boolean;
+  i: number;
 }> = (props) => {
   if (props.homework.plannedDates.length > 1) {
     console.warn(
@@ -225,15 +248,17 @@ const CalendarDayHomework: React.FC<{
     );
   }
   return (
-    <View
+    <TouchableOpacity
       style={[
         {
           flexDirection: "row",
+          justifyContent: "space-between",
           height: props.height,
         },
+        styles.calendarDayHomework,
       ]}
     >
-      <HorizontalBar color={props.homework.subject.color} />
+      <HomeworkBar color={props.homework.subject.color} />
       <RegularText
         style={[
           styles.homeworkText,
@@ -244,13 +269,44 @@ const CalendarDayHomework: React.FC<{
       >
         {props.homework.name}
       </RegularText>
-    </View>
+      <TouchableOpacity
+        style={[
+          styles.checkIconContainer,
+          props.height === MINIMUM_HOMEWORK_HEIGHT
+            ? styles.homeworkCenterText
+            : styles.homeworkNotCenterText,
+        ]}
+      ></TouchableOpacity>
+      <TimeBar
+        time={props.homework.plannedDates[0].minutesAssigned}
+        i={props.i}
+      />
+    </TouchableOpacity>
   );
 };
 
-const HorizontalBar: React.FC<{ color: string }> = (props) => {
+const HomeworkBar: React.FC<{ color: string }> = (props) => {
   return (
     <View style={[styles.homeworkBar, { backgroundColor: props.color }]}></View>
+  );
+};
+
+const TimeBar: React.FC<{
+  time: number;
+  i: number;
+}> = (props) => {
+  return (
+    <View style={styles.timeBarContainer}>
+      {props.i === 0 && (
+        <RegularText style={styles.timeBarText}>
+          {minutesToHoursMinutesFun(0, 1)}
+        </RegularText>
+      )}
+      <View style={[styles.timeBar]}></View>
+      <RegularText style={[styles.timeBarText]}>
+        {minutesToHoursMinutesFun(props.time, 1)}
+      </RegularText>
+    </View>
   );
 };
 
@@ -440,8 +496,10 @@ const styles = StyleSheet.create({
     marginBottom: 90,
   },
   homeworkText: {
-    paddingHorizontal: 10,
     fontSize: 15,
+    marginLeft: 10,
+    flex: 1,
+    alignSelf: "flex-start",
   },
   homeworkNotCenterText: {
     paddingVertical: 13,
@@ -450,9 +508,28 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   homeworkBar: {
-    width: 7,
-    borderRadius: 10000,
-    marginVertical: 4.5,
+    width: 5,
+    //borderRadius: 10000,
+    borderRadius: 5,
+    marginVertical: 2,
+  },
+  calendarDayHomework: {},
+  checkIcon: {
+    marginRight: 6,
+    marginTop: 0,
+  },
+  checkIconContainer: {},
+  timeBar: {
+    width: 2,
+    flex: 1,
+    backgroundColor: "#aaa",
+  },
+  timeBarText: {
+    color: "#666",
+  },
+  timeBarContainer: {
+    flexDirection: "column",
+    alignItems: "center",
   },
 });
 

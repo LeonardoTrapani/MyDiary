@@ -23,10 +23,26 @@ export const addDays = (from: Date, daysToAdd: number) => {
   return result;
 };
 
-export const minutesToHoursMinutesFun = (minutes: number) => {
+export const minutesToHoursMinutesFun = (
+  minutes: number,
+  format: number | undefined = 0
+) => {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
-  return `${h}h ${m}m`;
+  if (format === 0) {
+    return `${h}h ${m}m`;
+  }
+  if (format === 1) {
+    let hFormatted = h.toString();
+    if (h.toString().length === 1) {
+      hFormatted = `0${h}`;
+    }
+    let mFormatted = m.toString();
+    if (m.toString().length === 1) {
+      mFormatted = `0${m}`;
+    }
+    return `${hFormatted}:${mFormatted}`;
+  }
 };
 
 export const formatCalendarDay = (date: Date | string | Moment) => {
