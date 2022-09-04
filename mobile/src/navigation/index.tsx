@@ -35,6 +35,7 @@ import { activeSubjectAtom } from "../util/atoms";
 import PlannedDatesScreen, {
   PlannedDatesInfoIcon,
 } from "../screens/PlannedDatesScreen";
+import SingleHomeworkScreen from "../screens/SingleHomeworkScreen";
 
 export default function Main({
   colorScheme,
@@ -245,8 +246,8 @@ const BottomTabNavigator = () => {
 
 const HomeStackNavigation = () => {
   return (
-    <HomeworkStack.Navigator initialRouteName="Root">
-      <HomeworkStack.Screen
+    <HomeStack.Navigator initialRouteName="Root">
+      <HomeStack.Screen
         name="Root"
         component={HomeScreen}
         options={{
@@ -254,8 +255,15 @@ const HomeStackNavigation = () => {
           headerRight: AddHomeworkIcon,
         }}
       />
-    </HomeworkStack.Navigator>
+      <HomeStack.Screen
+        name="SingleHomework"
+        component={SingleHomeworkScreen}
+        options={{
+          title: "Homework",
+        }}
+      />
+    </HomeStack.Navigator>
   );
 };
 
-const HomeworkStack = createNativeStackNavigator<HomeStackParamList>();
+const HomeStack = createNativeStackNavigator<HomeStackParamList>();

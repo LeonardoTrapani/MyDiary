@@ -1,9 +1,4 @@
-import express, {
-  NextFunction,
-  Request,
-  Response,
-  ErrorRequestHandler,
-} from "express";
+import express, { Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
@@ -38,7 +33,7 @@ app.use("/week", weekRoutes);
 app.use("/calendar", calendarRoutes);
 app.use("/subject", subjectRoutes);
 
-app.use((req: Request, res: Response, next: NextFunction) => {
+app.use((res: Response) => {
   const response: ErrorResponse = {
     message: "Page not found",
     statusCode: 404,
@@ -46,16 +41,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   res.status(response.statusCode).json(response);
 });
 
-app.use(
-  (
-    err: ErrorRequestHandler,
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    res.status(500).json("An error has occurred");
-  }
-);
+app.use((res: Response) => {
+  res.status(500).json("An error has occurred");
+});
 
 app.listen(process.env.PORT, () => {
   console.log("app listening on port " + process.env.PORT);

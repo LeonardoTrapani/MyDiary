@@ -100,8 +100,8 @@ export type HomeStackScreenProps<Screen extends keyof HomeStackParamList> =
   NativeStackScreenProps<HomeStackParamList, Screen>;
 
 export type HomeStackParamList = {
+  SingleHomework: { homeworkId: number; title: string };
   Root: undefined;
-  Homework: undefined;
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
