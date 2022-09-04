@@ -12,15 +12,15 @@ import {
 } from "react-native";
 import {
   CalendarDayType,
-  HomeworkStackParamList,
-  HomeworkStackScreenprops,
+  HomeStackParamList,
+  HomeStackScreenProps,
   RootStackParamList,
 } from "../../types";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import { RegularText } from "../components/StyledText";
 import { CardView, View } from "../components/Themed";
 import globalStyles from "../constants/Syles";
-import { useCalendarDay } from "../util/react-query-hooks";
+import { useCalendarDay, useValidToken } from "../util/react-query-hooks";
 import ErrorComponent from "../components/ErrorComponent";
 import moment from "moment";
 import { MINIMUM_HOMEWORK_HEIGHT } from "../constants/constants";
@@ -28,8 +28,11 @@ import { minutesToHoursMinutesFun } from "../util/generalUtils";
 import { Ionicons } from "@expo/vector-icons";
 import TextButton from "../components/TextButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import MyDurationPicker from "../components/MyDurationPicker";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { editDay } from "../api/day";
 
-const HomeworkScreen = ({ navigation }: HomeworkStackScreenprops<"Root">) => {
+const HomeScreen = ({ navigation }: HomeStackScreenProps<"Root">) => {
   const [isCalendarOpened, setIsCalendarOpened] = useState(false);
   const [homeworkBodyHeight, setHomeworkBodyHeight] = useState<
     number | undefined
@@ -99,9 +102,13 @@ const HomeworkScreen = ({ navigation }: HomeworkStackScreenprops<"Root">) => {
         }}
         onShowCalendar={() => setIsCalendarOpened(true)}
         onPageBackward={() => {
-          setCurrentCalendarDate(moment().startOf("day").toISOString());
+          setCurrentCalendarDate((prev) =>
+            moment(prev).startOf("day").subtract(1, "day").toISOString()
+          );
         }}
         currentCalendarDate={currentCalendarDate}
+        freeMinutes={calendarDay?.freeMins}
+        minutesToAssign={calendarDay?.minutesToAssign}
       />
       {isCalendarDayLoading ? (
         <ActivityIndicator />
@@ -155,37 +162,89 @@ const MyHomeworkHeader: React.FC<{
   onShowCalendar: () => void;
   onPageForward: () => void;
   onPageBackward: () => void;
-  navigation: NativeStackNavigationProp<
-    HomeworkStackParamList,
-    "Root",
-    undefined
-  >;
+  navigation: NativeStackNavigationProp<HomeStackParamList, "Root", undefined>;
+  minutesToAssign: number | undefined;
+  freeMinutes: number | undefined;
 }> = (props) => {
+  const { data: validToken } = useValidToken();
+
+  const queryClient = useQueryClient();
+  const editDayMutation = useMutation(
+    (dayInfo: { date: string; freeMinutes: number }) => {
+      return editDay(dayInfo.date, dayInfo.freeMinutes, validToken);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["calendarDay"]);
+      },
+    }
+  );
+
+  const [durationPickerVisible, setDurationPickerVisible] = useState(false);
+  const minutesAssigned =
+    typeof props.freeMinutes !== "undefined" &&
+    typeof props.minutesToAssign !== "undefined"
+      ? props.freeMinutes - props.minutesToAssign
+      : 0;
+
+  const [durationDate, setDurationDate] = useState(
+    moment().startOf("day").toDate()
+  );
+
+  useEffect(() => {
+    if (typeof props.freeMinutes !== "undefined") {
+      setDurationDate(
+        moment().startOf("day").add(props.freeMinutes, "minutes").toDate()
+      );
+    }
+  }, [props.freeMinutes]);
+
   return (
-    <View style={styles.headerContainer}>
-      <TextButton
-        title="today"
-        onPress={props.onToday}
-        style={[styles.headerText, styles.headerleft]}
-      />
-      <DateChangeButton
-        date={moment(props.currentCalendarDate).toDate()}
-        onShowCalendar={props.onShowCalendar}
-        onPageForward={props.onPageForward}
-        onPageBackward={props.onPageBackward}
-        //setCurrentCalendarDate((prev) => {
-        //return moment(prev).startOf("day").subtract(1, "day").toISOString();
-        //});
-      />
-      <TextButton
-        title="edit"
-        textStyle={{ textAlign: "right" }}
-        onPress={() => {
-          props.navigation.navigate("Edit");
-        }}
-        style={[styles.headerText, styles.subheaderRight]}
-      />
-    </View>
+    <>
+      <View style={styles.headerContainer}>
+        <TextButton
+          title="today"
+          onPress={props.onToday}
+          style={[styles.headerText, styles.headerleft]}
+        />
+        <DateChangeButton
+          date={moment(props.currentCalendarDate).toDate()}
+          onShowCalendar={props.onShowCalendar}
+          onPageForward={props.onPageForward}
+          onPageBackward={props.onPageBackward}
+        />
+        <TextButton
+          title="edit"
+          textStyle={{ textAlign: "right" }}
+          onPress={() => {
+            setDurationPickerVisible(true);
+          }}
+          style={[styles.headerText, styles.subheaderRight]}
+        />
+        <MyDurationPicker
+          isVisible={durationPickerVisible}
+          date={durationDate}
+          minimumTime={minutesAssigned}
+          onCancel={() => {
+            setDurationPickerVisible(false);
+          }}
+          onConfirm={(date) => {
+            const mins =
+              moment(date).get("minutes") + moment(date).get("hours") * 60;
+            console.log(mins);
+            setDurationDate(date);
+            setDurationPickerVisible(false);
+            editDayMutation.mutate({
+              freeMinutes: mins,
+              date: props.currentCalendarDate,
+            });
+          }}
+        />
+      </View>
+      {editDayMutation.isError && (
+        <ErrorComponent text={editDayMutation.error as string} />
+      )}
+    </>
   );
 };
 
@@ -494,37 +553,20 @@ const calculateHeightsWithoutAdapting: (
   return { totalHeight, heights };
 };
 
-export const EditDayIcon: React.FC = () => {
+export const AddHomeworkIcon: React.FC = () => {
   const { primary } = useTheme().colors;
 
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   return (
     <TouchableOpacity
-      style={{ marginLeft: 14 }}
       onPress={() => {
         navigation.navigate("AddHomework");
       }}
     >
-      <Ionicons name="ios-pencil" size={20} color={primary} />
+      <Ionicons name="ios-add" size={32} color={primary} />
     </TouchableOpacity>
   );
 };
-
-//export const AddHomeworkIcon: React.FC = () => {
-//const { primary } = useTheme().colors;
-
-//const navigation = useNavigation<NavigationProp<RootTabParamList>>();
-//return (
-//<TouchableOpacity
-//onPress={() => {
-//navigation.getParent()?.navigate("AddHomework");
-//}}
-//>
-//<Ionicons name="md-add" size={32} color={primary} />
-//</TouchableOpacity>
-//);
-//};
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -611,4 +653,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeworkScreen;
+export default HomeScreen;

@@ -8,7 +8,7 @@ import NotFoundScreen from "../screens/NotFoundScreen";
 import TabOneScreen from "../screens/TabOneScreen";
 import {
   AddHomeworkStackParamList,
-  HomeworkStackParamList,
+  HomeStackParamList,
   RootStackParamList,
   RootTabParamList,
 } from "../../types";
@@ -20,7 +20,9 @@ import useInitialLoading from "../util/useInitialLoading";
 import { useIsWeekCreated, useValidToken } from "../util/react-query-hooks";
 import { MyDarkTheme, MyLightTheme } from "../constants/Colors";
 import CreateWeekScreen from "../screens/CreateWeekScreen";
-import HomeworkScreen from "../screens/HomeworkScreen";
+import HomeScreen, {
+  AddHomeworkIcon as AddHomeworkIcon,
+} from "../screens/HomeworkScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import { Ionicons } from "@expo/vector-icons";
 import AddHomeworkModal from "../screens/AddHomeworkModal";
@@ -33,7 +35,6 @@ import { activeSubjectAtom } from "../util/atoms";
 import PlannedDatesScreen, {
   PlannedDatesInfoIcon,
 } from "../screens/PlannedDatesScreen";
-import EditScreen from "../screens/EditScreen";
 
 export default function Main({
   colorScheme,
@@ -202,10 +203,10 @@ const AddHomeworkModalNavigation = () => {
 
 const BottomTabNavigator = () => {
   return (
-    <BottomTab.Navigator initialRouteName="Homework">
+    <BottomTab.Navigator initialRouteName="Home">
       <BottomTab.Screen
-        name="Homework"
-        component={HomeworkStackNavigation}
+        name="Home"
+        component={HomeStackNavigation}
         options={() => ({
           title: "Logo",
           tabBarIcon: ({ color, size }) => {
@@ -242,27 +243,19 @@ const BottomTabNavigator = () => {
   );
 };
 
-const HomeworkStackNavigation = () => {
+const HomeStackNavigation = () => {
   return (
     <HomeworkStack.Navigator initialRouteName="Root">
       <HomeworkStack.Screen
         name="Root"
-        component={HomeworkScreen}
+        component={HomeScreen}
         options={{
           title: "LOGO",
-        }}
-      />
-      <HomeworkStack.Screen
-        name="Edit"
-        component={EditScreen}
-        options={{
-          presentation: "card",
-          title: "Edit Day",
-          headerBackTitleVisible: false,
+          headerRight: AddHomeworkIcon,
         }}
       />
     </HomeworkStack.Navigator>
   );
 };
 
-const HomeworkStack = createNativeStackNavigator<HomeworkStackParamList>();
+const HomeworkStack = createNativeStackNavigator<HomeStackParamList>();

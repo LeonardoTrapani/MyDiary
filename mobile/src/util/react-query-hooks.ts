@@ -20,7 +20,6 @@ export const useIsWeekCreated = () => {
     ["isWeekCreated", validToken],
     getIsWeekCreatedWithToken,
     {
-      refetchOnMount: true,
       enabled: isValidTokenFetched,
     }
   );
@@ -37,7 +36,7 @@ export type Week = {
 };
 
 export const useWeek = () => {
-  return useQuery<Week | null>(["week"], getWeek, { refetchOnMount: true });
+  return useQuery<Week | null>(["week"], getWeek, {});
 };
 
 export type Subject = {
@@ -50,7 +49,6 @@ export const useSubjects = () => {
   const { data: validToken, isFetched: isValidTokenFetched } = useValidToken();
   return useQuery<Subject[]>(["subject", validToken], getSubjects, {
     enabled: isValidTokenFetched,
-    refetchOnMount: true,
   });
 };
 
@@ -76,7 +74,6 @@ export const useCalendarDay = (date: Moment) => {
     () => getDayCalendar(date, validToken),
     {
       enabled: isValidTokenFetched,
-      refetchOnMount: true,
       keepPreviousData: true,
     }
   );

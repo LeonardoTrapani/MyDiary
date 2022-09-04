@@ -1,8 +1,8 @@
 import React from "react";
-import { HomeworkStackScreenprops } from "../../types";
+import { HomeStackScreenProps } from "../../types";
 import { View } from "../components/Themed";
 
-const EditScreen = ({ navigation }: HomeworkStackScreenprops<"Edit">) => {
+const EditScreen = ({ navigation }: HomeStackScreenProps<"Edit">) => {
   return <View></View>;
 };
 

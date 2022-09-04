@@ -21,7 +21,7 @@ const linking: LinkingOptions<RootStackParamList> = {
             },
           },
 
-          Homework: {
+          Home: {
             screens: {
               HomeworkScreen: "Homework",
             },

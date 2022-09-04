@@ -91,18 +91,17 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
   NativeStackScreenProps<RootStackParamList, Screen>;
 
 export type RootTabParamList = {
-  Homework: NativeStackScreenProps<HomeworkStackParamList>;
+  Home: NativeStackScreenProps<HomeStackParamList>;
   TabThree: undefined;
   Settings: undefined;
 };
 
-export type HomeworkStackScreenprops<
-  Screen extends keyof HomeworkStackParamList
-> = NativeStackScreenProps<HomeworkStackParamList, Screen>;
+export type HomeStackScreenProps<Screen extends keyof HomeStackParamList> =
+  NativeStackScreenProps<HomeStackParamList, Screen>;
 
-export type HomeworkStackParamList = {
+export type HomeStackParamList = {
   Root: undefined;
-  Edit: undefined;
+  Homework: undefined;
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
