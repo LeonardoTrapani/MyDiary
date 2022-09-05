@@ -260,6 +260,7 @@ const HomeStackNavigation = () => {
         component={SingleHomeworkScreen}
         options={{
           title: "Homework",
+          headerBackTitleVisible: false,
         }}
       />
     </HomeStack.Navigator>

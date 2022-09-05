@@ -13,6 +13,23 @@ declare global {
   }
 }
 
+export type SingleHomeworkType = {
+  name: string;
+  description: string;
+  expirationDate: string;
+  plannedDates: {
+    date: string;
+    minutesAssigned: number;
+  }[];
+  subject: {
+    id: number;
+    color: string;
+    name: number;
+  };
+  duration: number;
+  completed: boolean;
+};
+
 export type CalendarDayType = {
   date: string;
   user: {
