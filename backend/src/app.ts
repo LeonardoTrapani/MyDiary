@@ -1,4 +1,4 @@
-import express, { Response } from "express";
+import express, { Response, Request } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
@@ -33,7 +33,7 @@ app.use("/week", weekRoutes);
 app.use("/calendar", calendarRoutes);
 app.use("/subject", subjectRoutes);
 
-app.use((res: Response) => {
+app.use((_req: Request, res: Response) => {
   const response: ErrorResponse = {
     message: "Page not found",
     statusCode: 404,
@@ -41,7 +41,7 @@ app.use((res: Response) => {
   res.status(response.statusCode).json(response);
 });
 
-app.use((res: Response) => {
+app.use((_req: Request, res: Response) => {
   res.status(500).json("An error has occurred");
 });
 

@@ -79,3 +79,38 @@ export const getSingleHomework = async (
     throw getDataFromAxiosError(axiosError);
   }
 };
+
+export const completePlannedDate = async (
+  plannedDateId: number,
+  token: string | null | undefined,
+  completed: boolean
+) => {
+  if (!token) {
+    throw "Not authenticated";
+  }
+  try {
+    if (completed === true) {
+      return await axios.post(
+        BACKEND_URL + "/plannedDate/uncomplete/" + plannedDateId,
+        {},
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+    }
+    return await axios.post(
+      BACKEND_URL + "/plannedDate/uncomplete/" + plannedDateId,
+      {},
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+  } catch (err) {
+    const axiosError = err as AxiosError;
+    throw getDataFromAxiosError(axiosError);
+  }
+};

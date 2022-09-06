@@ -3,6 +3,7 @@ import {
   FlatList,
   ScrollView,
   StyleSheet,
+  TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { HomeStackScreenProps, SingleHomeworkType } from "../../types";
@@ -11,8 +12,13 @@ import ErrorComponent from "../components/ErrorComponent";
 import { ItalicText, MediumText, RegularText } from "../components/StyledText";
 import { CardView, View } from "../components/Themed";
 import { minutesToHoursMinutesFun } from "../util/generalUtils";
-import { useSingleHomework } from "../util/react-query-hooks";
+import { useSingleHomework, useValidToken } from "../util/react-query-hooks";
 import globalStyles from "../constants/Syles";
+import { Ionicons } from "@expo/vector-icons";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { completePlannedDate } from "../api/homework";
+import Colors from "../constants/Colors";
+import useColorScheme from "../util/useColorScheme";
 
 const SingleHomeworkScreen = ({
   navigation,
@@ -88,7 +94,7 @@ const SingleHomewrk: React.FC<{
         </RegularText>
       </View>
       <View style={styles.row}>
-        <RegularText style={styles.rowText}>Delivery Date: </RegularText>
+        <RegularText style={styles.rowText}>Delivery Date:</RegularText>
         <RegularText style={styles.rowText}>
           {new Date(props.singleHomework.expirationDate).toLocaleDateString()}
         </RegularText>
@@ -124,8 +130,54 @@ export const PlannedDate: React.FC<{
     completed: boolean;
   };
 }> = (props) => {
+  const { data: validToken } = useValidToken();
+  const queryClient = useQueryClient();
+  const completePlannedDateMutation = useMutation(
+    (pldCompInfo: { plannedDateId: number; completed: boolean }) => {
+      return completePlannedDate(
+        pldCompInfo.plannedDateId,
+        validToken,
+        pldCompInfo.completed
+      );
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["singleHomework"]);
+      },
+    }
+  );
+
+  const [isCompleted, setIsCompleted] = useState(props.plannedDate.completed);
+  const undoCompleteHandler = () => {
+    setIsCompleted(false);
+    completePlannedDateMutation.mutate({
+      plannedDateId: props.plannedDate.id,
+      completed: false,
+    });
+  };
+
+  const completeHandler = () => {
+    setIsCompleted(true);
+    completePlannedDateMutation.mutate({
+      plannedDateId: props.plannedDate.id,
+      completed: true,
+    });
+  };
+
+  const cs = useColorScheme();
+  const error = Colors[cs].errorColor;
   return (
     <CardView style={[styles.planneDateContainer, globalStyles.smallShadow]}>
+      {completePlannedDateMutation.isError && (
+        <RegularText
+          style={[
+            styles.plannedDateError,
+            { borderColor: error, color: error },
+          ]}
+        >
+          {completePlannedDateMutation.error as string}
+        </RegularText>
+      )}
       <CardView style={[styles.row, { marginBottom: 0, marginHorizontal: 0 }]}>
         <CardView>
           <MediumText style={styles.plannedDateDate}>
@@ -135,12 +187,26 @@ export const PlannedDate: React.FC<{
             {minutesToHoursMinutesFun(props.plannedDate.minutesAssigned)}
           </RegularText>
         </CardView>
-        <RegularText>
-          Completed: {props.plannedDate.completed ? "true" : "false"}
-        </RegularText>
+        {isCompleted ? (
+          <TouchableOpacity onPress={undoCompleteHandler}>
+            <CompletedIcon />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={completeHandler}>
+            <UncompletedIcon />
+          </TouchableOpacity>
+        )}
       </CardView>
     </CardView>
   );
+};
+
+export const UncompletedIcon: React.FC = () => {
+  return <Ionicons color="#aaaaaa" name="checkmark-circle-outline" size={26} />;
+};
+
+export const CompletedIcon: React.FC = () => {
+  return <Ionicons color="#32a854" name="checkmark-circle" size={26} />;
 };
 
 const DESCRIPTION_MAX_HEIGHT = 150;
@@ -199,6 +265,11 @@ const styles = StyleSheet.create({
   scrolViewContainer: {
     paddingHorizontal: 20,
     maxHeight: DESCRIPTION_MAX_HEIGHT,
+  },
+  plannedDateError: {
+    borderWidth: 0.3,
+    marginVertical: 5,
+    padding: 5,
   },
 });
 
