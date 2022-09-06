@@ -1,10 +1,10 @@
 import {
   ActivityIndicator,
-  Dimensions,
   FlatList,
+  ScrollView,
   StyleSheet,
 } from "react-native";
-import React, { useEffect, useLayoutEffect } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { HomeStackScreenProps, SingleHomeworkType } from "../../types";
 import Break from "../components/Break";
 import ErrorComponent from "../components/ErrorComponent";
@@ -13,7 +13,6 @@ import { CardView, View } from "../components/Themed";
 import { minutesToHoursMinutesFun } from "../util/generalUtils";
 import { useSingleHomework } from "../util/react-query-hooks";
 import globalStyles from "../constants/Syles";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const SingleHomeworkScreen = ({
   navigation,
@@ -39,7 +38,7 @@ const SingleHomeworkScreen = ({
   }, [navigation, singleHomework]);
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       {isSingleHomeworkLoading ? (
         <ActivityIndicator />
       ) : isSingleHomeworkError ? (
@@ -54,15 +53,31 @@ const SingleHomeworkScreen = ({
 const SingleHomewrk: React.FC<{
   singleHomework: SingleHomeworkType | undefined;
 }> = (props) => {
+  const [descriptionHeight, setDescriptionHeight] = useState<
+    undefined | number
+  >(undefined);
+
   if (!props.singleHomework) {
     return <ErrorComponent text="there is not homework" />;
   }
 
   return (
-    <View style={[styles.container]}>
-      <ItalicText style={styles.description}>
-        {props.singleHomework.description}
-      </ItalicText>
+    <View style={[styles.container, { flex: 1 }]}>
+      <View style={styles.scrolViewContainer}>
+        <ScrollView
+          scrollEnabled={(descriptionHeight || 0) > DESCRIPTION_MAX_HEIGHT}
+        >
+          <ItalicText
+            style={styles.description}
+            onLayout={(event) => {
+              const { height } = event.nativeEvent.layout;
+              setDescriptionHeight(height);
+            }}
+          >
+            {props.singleHomework.description}
+          </ItalicText>
+        </ScrollView>
+      </View>
       <View style={styles.breakContainer}>
         <Break />
       </View>
@@ -95,9 +110,8 @@ const SingleHomewrk: React.FC<{
       <MediumText style={styles.plannedDatesTitle}>Planned Dates</MediumText>
       <FlatList
         data={props.singleHomework.plannedDates}
-        style={styles.plannedDatesList}
         renderItem={({ item }) => <PlannedDate plannedDate={item} />}
-      ></FlatList>
+      />
     </View>
   );
 };
@@ -129,6 +143,8 @@ export const PlannedDate: React.FC<{
   );
 };
 
+const DESCRIPTION_MAX_HEIGHT = 150;
+
 const styles = StyleSheet.create({
   container: {
     marginVertical: 20,
@@ -153,7 +169,6 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: "#888",
     height: 22,
-    backgroundColor: "red",
   },
   plannedDatesTitle: {
     fontSize: 21,
@@ -174,7 +189,6 @@ const styles = StyleSheet.create({
     fontSize: 17,
   },
   description: {
-    paddingHorizontal: 20,
     fontSize: 16,
   },
   breakContainer: {
@@ -182,8 +196,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     height: 0.4,
   },
-  plannedDatesList: {
-    marginVertical: 20,
+  scrolViewContainer: {
+    paddingHorizontal: 20,
+    maxHeight: DESCRIPTION_MAX_HEIGHT,
   },
 });
 
