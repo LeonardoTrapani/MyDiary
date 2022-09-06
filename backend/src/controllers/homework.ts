@@ -277,6 +277,8 @@ export const getSingleHomework = async (req: Request, res: Response) => {
         select: {
           date: true,
           minutesAssigned: true,
+          completed: true,
+          id: true,
         },
         where: {
           deleted: false,

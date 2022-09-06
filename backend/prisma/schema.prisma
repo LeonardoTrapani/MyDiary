@@ -61,6 +61,7 @@ model Subject {
 model PlannedDate {
   id              Int      @id @default(autoincrement())
   date            DateTime
+  completed       Boolean @default(false)
   minutesAssigned Int      @default(0)
   homework        Homework @relation(fields: [homeworkId], references: [id])
   homeworkId      Int

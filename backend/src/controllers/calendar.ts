@@ -198,6 +198,7 @@ export const getSingleCalendarDay = async (req: Request, res: Response) => {
                 select: {
                   date: true,
                   id: true,
+                  completed: true,
                   minutesAssigned: true,
                 },
               },
