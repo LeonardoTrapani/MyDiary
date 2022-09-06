@@ -132,6 +132,7 @@ export const PlannedDate: React.FC<{
 }> = (props) => {
   const { data: validToken } = useValidToken();
   const queryClient = useQueryClient();
+
   const completePlannedDateMutation = useMutation(
     (pldCompInfo: { plannedDateId: number; completed: boolean }) => {
       return completePlannedDate(
@@ -148,6 +149,10 @@ export const PlannedDate: React.FC<{
   );
 
   const [isCompleted, setIsCompleted] = useState(props.plannedDate.completed);
+
+  useEffect(() => {
+    setIsCompleted(props.plannedDate.completed);
+  }, [props.plannedDate.completed]);
   const undoCompleteHandler = () => {
     setIsCompleted(false);
     completePlannedDateMutation.mutate({

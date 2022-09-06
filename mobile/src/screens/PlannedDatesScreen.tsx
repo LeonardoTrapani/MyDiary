@@ -450,7 +450,7 @@ export const PlannedDatesInfoIcon: React.FC = () => {
   return (
     <TouchableOpacity
       onPress={() => {
-        console.log("SHOW INFO (NOT HANDLED)");
+        console.warn("SHOW INFO (NOT HANDLED)");
       }}
     >
       <Ionicons

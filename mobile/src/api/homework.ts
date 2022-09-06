@@ -91,7 +91,7 @@ export const completePlannedDate = async (
   try {
     if (completed === true) {
       return await axios.post(
-        BACKEND_URL + "/plannedDate/uncomplete/" + plannedDateId,
+        BACKEND_URL + "/plannedDate/complete/" + plannedDateId,
         {},
         {
           headers: {
@@ -100,7 +100,7 @@ export const completePlannedDate = async (
         }
       );
     }
-    return await axios.post(
+    const r = await axios.post(
       BACKEND_URL + "/plannedDate/uncomplete/" + plannedDateId,
       {},
       {
@@ -109,6 +109,7 @@ export const completePlannedDate = async (
         },
       }
     );
+    return r.data;
   } catch (err) {
     const axiosError = err as AxiosError;
     throw getDataFromAxiosError(axiosError);
