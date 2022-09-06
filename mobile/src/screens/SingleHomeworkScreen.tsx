@@ -1,13 +1,19 @@
-import { useTheme } from "@react-navigation/native";
+import {
+  ActivityIndicator,
+  Dimensions,
+  FlatList,
+  StyleSheet,
+} from "react-native";
 import React, { useEffect, useLayoutEffect } from "react";
-import { ActivityIndicator, FlatList, StyleSheet } from "react-native";
 import { HomeStackScreenProps, SingleHomeworkType } from "../../types";
 import Break from "../components/Break";
 import ErrorComponent from "../components/ErrorComponent";
-import { MediumText, RegularText } from "../components/StyledText";
+import { ItalicText, MediumText, RegularText } from "../components/StyledText";
 import { CardView, View } from "../components/Themed";
 import { minutesToHoursMinutesFun } from "../util/generalUtils";
 import { useSingleHomework } from "../util/react-query-hooks";
+import globalStyles from "../constants/Syles";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const SingleHomeworkScreen = ({
   navigation,
@@ -53,7 +59,13 @@ const SingleHomewrk: React.FC<{
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container]}>
+      <ItalicText style={styles.description}>
+        {props.singleHomework.description}
+      </ItalicText>
+      <View style={styles.breakContainer}>
+        <Break />
+      </View>
       <View style={styles.row}>
         <RegularText style={styles.rowText}>Duration:</RegularText>
         <RegularText style={styles.rowText}>
@@ -66,7 +78,7 @@ const SingleHomewrk: React.FC<{
           {new Date(props.singleHomework.expirationDate).toLocaleDateString()}
         </RegularText>
       </View>
-      <View style={styles.row}>
+      <View style={[styles.row, { marginBottom: 0 }]}>
         <RegularText style={styles.rowText}>
           {props.singleHomework.subject.name}
         </RegularText>
@@ -83,6 +95,7 @@ const SingleHomewrk: React.FC<{
       <MediumText style={styles.plannedDatesTitle}>Planned Dates</MediumText>
       <FlatList
         data={props.singleHomework.plannedDates}
+        style={styles.plannedDatesList}
         renderItem={({ item }) => <PlannedDate plannedDate={item} />}
       ></FlatList>
     </View>
@@ -97,10 +110,9 @@ export const PlannedDate: React.FC<{
     completed: boolean;
   };
 }> = (props) => {
-  const { card } = useTheme().colors;
   return (
-    <View style={[styles.planneDateContainer, { backgroundColor: card }]}>
-      <CardView style={[styles.row, { marginBottom: 0 }]}>
+    <CardView style={[styles.planneDateContainer, globalStyles.smallShadow]}>
+      <CardView style={[styles.row, { marginBottom: 0, marginHorizontal: 0 }]}>
         <CardView>
           <MediumText style={styles.plannedDateDate}>
             {new Date(props.plannedDate.date).toDateString()}
@@ -113,13 +125,13 @@ export const PlannedDate: React.FC<{
           Completed: {props.plannedDate.completed ? "true" : "false"}
         </RegularText>
       </CardView>
-    </View>
+    </CardView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    marginVertical: 20,
   },
   name: {
     fontSize: 28,
@@ -130,9 +142,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 10,
+    marginHorizontal: 20,
   },
   rowText: {
-    fontSize: 17,
+    fontSize: 16,
   },
   subjectCircle: {
     aspectRatio: 3,
@@ -142,17 +155,16 @@ const styles = StyleSheet.create({
     height: 22,
     backgroundColor: "red",
   },
-  breakContainer: {
-    marginTop: 20,
-    marginBottom: 30,
-  },
   plannedDatesTitle: {
     fontSize: 21,
+    marginHorizontal: 20,
   },
   planneDateContainer: {
     marginVertical: 15,
-    padding: 15,
+    marginHorizontal: 20,
     borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
   },
   plannedDateDate: {
     fontSize: 16,
@@ -160,6 +172,18 @@ const styles = StyleSheet.create({
   plannedDateMinutesAssigned: {
     marginTop: 2,
     fontSize: 17,
+  },
+  description: {
+    paddingHorizontal: 20,
+    fontSize: 16,
+  },
+  breakContainer: {
+    marginVertical: 20,
+    marginHorizontal: 20,
+    height: 0.4,
+  },
+  plannedDatesList: {
+    marginVertical: 20,
   },
 });
 

@@ -5,8 +5,8 @@ const Break: React.FC = () => {
   return (
     <View
       style={{
-        height: 0.6,
-        backgroundColor: "#999",
+        height: 0.5,
+        backgroundColor: "#bbb",
       }}
     />
   );
