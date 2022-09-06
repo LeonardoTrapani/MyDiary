@@ -1,10 +1,11 @@
+import { useTheme } from "@react-navigation/native";
 import React, { useEffect, useLayoutEffect } from "react";
-import { ActivityIndicator, FlatList } from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet } from "react-native";
 import { HomeStackScreenProps, SingleHomeworkType } from "../../types";
+import Break from "../components/Break";
 import ErrorComponent from "../components/ErrorComponent";
-import MinutesToHoursMinutes from "../components/MinutesToHourMinuets";
-import { RegularText } from "../components/StyledText";
-import { View } from "../components/Themed";
+import { MediumText, RegularText } from "../components/StyledText";
+import { CardView, View } from "../components/Themed";
 import { minutesToHoursMinutesFun } from "../util/generalUtils";
 import { useSingleHomework } from "../util/react-query-hooks";
 
@@ -52,38 +53,114 @@ const SingleHomewrk: React.FC<{
   }
 
   return (
-    <View>
-      <View
-        style={{
-          backgroundColor: props.singleHomework.subject.color,
-          height: 50,
-          width: 50,
-        }}
-      ></View>
-      <RegularText>
-        Duration: {minutesToHoursMinutesFun(props.singleHomework.duration)}
-      </RegularText>
-      <RegularText>Completed: {props.singleHomework.completed}</RegularText>
-      <RegularText>
-        Expiration Date:{" "}
-        {new Date(props.singleHomework.expirationDate).toLocaleDateString()}
-      </RegularText>
-      <RegularText>
-        Completed: {props.singleHomework.completed ? "true" : "false"}
-      </RegularText>
+    <View style={styles.container}>
+      <View style={styles.row}>
+        <RegularText style={styles.rowText}>Duration:</RegularText>
+        <RegularText style={styles.rowText}>
+          {minutesToHoursMinutesFun(props.singleHomework.duration)}
+        </RegularText>
+      </View>
+      <View style={styles.row}>
+        <RegularText style={styles.rowText}>Delivery Date: </RegularText>
+        <RegularText style={styles.rowText}>
+          {new Date(props.singleHomework.expirationDate).toLocaleDateString()}
+        </RegularText>
+      </View>
+      <View style={styles.row}>
+        <RegularText style={styles.rowText}>
+          {props.singleHomework.subject.name}
+        </RegularText>
+        <View
+          style={[
+            styles.subjectCircle,
+            { backgroundColor: props.singleHomework.subject.color },
+          ]}
+        />
+      </View>
+      <View style={styles.breakContainer}>
+        <Break />
+      </View>
+      <MediumText style={styles.plannedDatesTitle}>Planned Dates</MediumText>
       <FlatList
         data={props.singleHomework.plannedDates}
-        renderItem={({ item }) => (
-          <View style={{ marginVertical: 40 }}>
-            <RegularText>
-              Date: {new Date(item.date).toLocaleDateString()}
-            </RegularText>
-            <RegularText>Minutes Assigned: {item.minutesAssigned}</RegularText>
-          </View>
-        )}
+        renderItem={({ item }) => <PlannedDate plannedDate={item} />}
       ></FlatList>
     </View>
   );
 };
+
+export const PlannedDate: React.FC<{
+  plannedDate: {
+    date: string;
+    minutesAssigned: number;
+    id: number;
+    completed: boolean;
+  };
+}> = (props) => {
+  const { card } = useTheme().colors;
+  return (
+    <View style={[styles.planneDateContainer, { backgroundColor: card }]}>
+      <CardView style={[styles.row, { marginBottom: 0 }]}>
+        <CardView>
+          <MediumText style={styles.plannedDateDate}>
+            {new Date(props.plannedDate.date).toDateString()}
+          </MediumText>
+          <RegularText style={styles.plannedDateMinutesAssigned}>
+            {minutesToHoursMinutesFun(props.plannedDate.minutesAssigned)}
+          </RegularText>
+        </CardView>
+        <RegularText>
+          Completed: {props.plannedDate.completed ? "true" : "false"}
+        </RegularText>
+      </CardView>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+  },
+  name: {
+    fontSize: 28,
+    letterSpacing: -0.5,
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  rowText: {
+    fontSize: 17,
+  },
+  subjectCircle: {
+    aspectRatio: 3,
+    borderRadius: 1000,
+    borderWidth: 0.5,
+    borderColor: "#888",
+    height: 22,
+    backgroundColor: "red",
+  },
+  breakContainer: {
+    marginTop: 20,
+    marginBottom: 30,
+  },
+  plannedDatesTitle: {
+    fontSize: 21,
+  },
+  planneDateContainer: {
+    marginVertical: 15,
+    padding: 15,
+    borderRadius: 12,
+  },
+  plannedDateDate: {
+    fontSize: 16,
+  },
+  plannedDateMinutesAssigned: {
+    marginTop: 2,
+    fontSize: 17,
+  },
+});
 
 export default SingleHomeworkScreen;
