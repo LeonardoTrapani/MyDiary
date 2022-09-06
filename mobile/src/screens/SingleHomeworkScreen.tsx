@@ -99,6 +99,12 @@ const SingleHomewrk: React.FC<{
           {new Date(props.singleHomework.expirationDate).toLocaleDateString()}
         </RegularText>
       </View>
+      <View style={[styles.row]}>
+        <RegularText style={styles.rowText}>Completed:</RegularText>
+        <RegularText>
+          {props.singleHomework.completed ? "true" : "false"}
+        </RegularText>
+      </View>
       <View style={[styles.row, { marginBottom: 0 }]}>
         <RegularText style={styles.rowText}>
           {props.singleHomework.subject.name}
@@ -144,6 +150,7 @@ export const PlannedDate: React.FC<{
     {
       onSuccess: () => {
         queryClient.invalidateQueries(["singleHomework"]);
+        queryClient.invalidateQueries(["calendarDay"]);
       },
     }
   );

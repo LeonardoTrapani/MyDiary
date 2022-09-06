@@ -17,6 +17,23 @@ export const completePlannedDate = async (req: Request, res: Response) => {
     throwResponseError("Planned date not existing", 400, res);
     return;
   }
+
+  await prisma.homework.updateMany({
+    where: {
+      plannedDates: {
+        some: {
+          id: +id,
+        },
+        every: {
+          completed: true,
+        },
+      },
+    },
+    data: {
+      completed: true,
+    },
+  });
+
   res.json(r);
   return;
 };
@@ -24,7 +41,7 @@ export const completePlannedDate = async (req: Request, res: Response) => {
 export const uncompletePlannedDate = async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  const r = await prisma.plannedDate.update({
+  const newPlannedDate = await prisma.plannedDate.updateMany({
     where: {
       id: +id,
     },
@@ -32,10 +49,24 @@ export const uncompletePlannedDate = async (req: Request, res: Response) => {
       completed: false,
     },
   });
-  if (!r) {
+
+  await prisma.homework.updateMany({
+    where: {
+      plannedDates: {
+        some: {
+          id: +id,
+        },
+      },
+    },
+    data: {
+      completed: false,
+    },
+  });
+
+  if (!newPlannedDate) {
     throwResponseError("Planned date not existing", 400, res);
     return;
   }
-  res.json(r);
+  res.json(newPlannedDate);
   return;
 };
