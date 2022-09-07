@@ -32,14 +32,20 @@ import MyDurationPicker from "../components/MyDurationPicker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { editDay } from "../api/day";
 
-const HomeScreen = ({ navigation }: HomeStackScreenProps<"Root">) => {
+const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
   const [isCalendarOpened, setIsCalendarOpened] = useState(false);
   const [homeworkBodyHeight, setHomeworkBodyHeight] = useState<
     number | undefined
   >(undefined);
-  const [currentCalendarDate, setCurrentCalendarDate] = useState(
-    moment().startOf("day").toISOString()
-  );
+
+  const initialDate = moment().startOf("day").toISOString();
+  const [currentCalendarDate, setCurrentCalendarDate] = useState(initialDate);
+
+  useEffect(() => {
+    if (route.params?.date) {
+      setCurrentCalendarDate(route.params.date);
+    }
+  }, [route.params?.date]);
 
   const {
     data: calendarDay,

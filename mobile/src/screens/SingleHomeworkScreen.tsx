@@ -6,7 +6,11 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { HomeStackScreenProps, SingleHomeworkType } from "../../types";
+import {
+  HomeStackParamList,
+  HomeStackScreenProps,
+  SingleHomeworkType,
+} from "../../types";
 import Break from "../components/Break";
 import ErrorComponent from "../components/ErrorComponent";
 import { ItalicText, MediumText, RegularText } from "../components/StyledText";
@@ -19,6 +23,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { completePlannedDate } from "../api/homework";
 import Colors from "../constants/Colors";
 import useColorScheme from "../util/useColorScheme";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import moment from "moment";
 
 const SingleHomeworkScreen = ({
   navigation,
@@ -50,7 +56,10 @@ const SingleHomeworkScreen = ({
       ) : isSingleHomeworkError ? (
         <ErrorComponent text={singleHomeworkError as string} />
       ) : (
-        <SingleHomewrk singleHomework={singleHomework} />
+        <SingleHomewrk
+          singleHomework={singleHomework}
+          navigation={navigation}
+        />
       )}
     </View>
   );
@@ -58,6 +67,11 @@ const SingleHomeworkScreen = ({
 
 const SingleHomewrk: React.FC<{
   singleHomework: SingleHomeworkType | undefined;
+  navigation: NativeStackNavigationProp<
+    HomeStackParamList,
+    "SingleHomework",
+    undefined
+  >;
 }> = (props) => {
   const [descriptionHeight, setDescriptionHeight] = useState<
     undefined | number
@@ -128,7 +142,9 @@ const SingleHomewrk: React.FC<{
       <MediumText style={styles.plannedDatesTitle}>Planned Dates</MediumText>
       <FlatList
         data={props.singleHomework.plannedDates}
-        renderItem={({ item }) => <PlannedDate plannedDate={item} />}
+        renderItem={({ item }) => (
+          <PlannedDate plannedDate={item} navigation={props.navigation} />
+        )}
       />
     </View>
   );
@@ -141,6 +157,11 @@ export const PlannedDate: React.FC<{
     id: number;
     completed: boolean;
   };
+  navigation: NativeStackNavigationProp<
+    HomeStackParamList,
+    "SingleHomework",
+    undefined
+  >;
 }> = (props) => {
   const { data: validToken } = useValidToken();
   const queryClient = useQueryClient();
@@ -184,38 +205,47 @@ export const PlannedDate: React.FC<{
 
   const cs = useColorScheme();
   const error = Colors[cs].errorColor;
+
+  const pressHandler = () => {
+    props.navigation.navigate("Root", { date: props.plannedDate.date });
+  };
+
   return (
-    <CardView style={[styles.planneDateContainer, globalStyles.smallShadow]}>
-      {completePlannedDateMutation.isError && (
-        <RegularText
-          style={[
-            styles.plannedDateError,
-            { borderColor: error, color: error },
-          ]}
-        >
-          {completePlannedDateMutation.error as string}
-        </RegularText>
-      )}
-      <CardView style={[styles.row, { marginBottom: 0, marginHorizontal: 0 }]}>
-        <CardView>
-          <MediumText style={styles.plannedDateDate}>
-            {new Date(props.plannedDate.date).toDateString()}
-          </MediumText>
-          <RegularText style={styles.plannedDateMinutesAssigned}>
-            {minutesToHoursMinutesFun(props.plannedDate.minutesAssigned)}
+    <TouchableOpacity onPress={pressHandler}>
+      <CardView style={[styles.planneDateContainer, globalStyles.smallShadow]}>
+        {completePlannedDateMutation.isError && (
+          <RegularText
+            style={[
+              styles.plannedDateError,
+              { borderColor: error, color: error },
+            ]}
+          >
+            {completePlannedDateMutation.error as string}
           </RegularText>
-        </CardView>
-        {isCompleted ? (
-          <TouchableOpacity onPress={undoCompleteHandler}>
-            <CompletedIcon />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity onPress={completeHandler}>
-            <UncompletedIcon />
-          </TouchableOpacity>
         )}
+        <CardView
+          style={[styles.row, { marginBottom: 0, marginHorizontal: 0 }]}
+        >
+          <CardView>
+            <MediumText style={styles.plannedDateDate}>
+              {new Date(props.plannedDate.date).toDateString()}
+            </MediumText>
+            <RegularText style={styles.plannedDateMinutesAssigned}>
+              {minutesToHoursMinutesFun(props.plannedDate.minutesAssigned)}
+            </RegularText>
+          </CardView>
+          {isCompleted ? (
+            <TouchableOpacity onPress={undoCompleteHandler}>
+              <CompletedIcon />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity onPress={completeHandler}>
+              <UncompletedIcon />
+            </TouchableOpacity>
+          )}
+        </CardView>
       </CardView>
-    </CardView>
+    </TouchableOpacity>
   );
 };
 
