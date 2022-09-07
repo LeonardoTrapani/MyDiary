@@ -24,7 +24,6 @@ import { completePlannedDate } from "../api/homework";
 import Colors from "../constants/Colors";
 import useColorScheme from "../util/useColorScheme";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import moment from "moment";
 
 const SingleHomeworkScreen = ({
   navigation,
@@ -76,6 +75,8 @@ const SingleHomewrk: React.FC<{
   const [descriptionHeight, setDescriptionHeight] = useState<
     undefined | number
   >(undefined);
+  const cs = useColorScheme();
+  const { errorColor } = Colors[cs];
 
   if (!props.singleHomework) {
     return <ErrorComponent text="there is not homework" />;
@@ -120,12 +121,6 @@ const SingleHomewrk: React.FC<{
         </RegularText>
       </View>
       <View style={[styles.row]}>
-        <RegularText style={styles.rowText}>Completed:</RegularText>
-        <RegularText>
-          {props.singleHomework.completed ? "true" : "false"}
-        </RegularText>
-      </View>
-      <View style={[styles.row, { marginBottom: 0 }]}>
         <RegularText style={styles.rowText}>
           {props.singleHomework.subject.name}
         </RegularText>
@@ -135,6 +130,16 @@ const SingleHomewrk: React.FC<{
             { backgroundColor: props.singleHomework.subject.color },
           ]}
         />
+      </View>
+      <View style={[styles.row, { marginBottom: 0 }]}>
+        <RegularText style={styles.rowText}>Completed:</RegularText>
+        <RegularText>
+          {props.singleHomework.completed ? (
+            <Ionicons name="checkmark" size={22} color="#32a854" />
+          ) : (
+            <Ionicons name="close-outline" size={22} color={errorColor} />
+          )}
+        </RegularText>
       </View>
       <View style={styles.breakContainer}>
         <Break />
@@ -271,18 +276,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 12,
     marginHorizontal: 20,
   },
   rowText: {
     fontSize: 16,
   },
   subjectCircle: {
-    aspectRatio: 3,
+    aspectRatio: 2.5,
     borderRadius: 1000,
     borderWidth: 0.5,
     borderColor: "#888",
-    height: 22,
+    height: 19,
   },
   plannedDatesTitle: {
     fontSize: 21,

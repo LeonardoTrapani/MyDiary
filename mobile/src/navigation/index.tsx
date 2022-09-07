@@ -204,7 +204,10 @@ const AddHomeworkModalNavigation = () => {
 
 const BottomTabNavigator = () => {
   return (
-    <BottomTab.Navigator initialRouteName="Home">
+    <BottomTab.Navigator
+      initialRouteName="Home"
+      screenOptions={{ tabBarShowLabel: false }}
+    >
       <BottomTab.Screen
         name="Home"
         component={HomeStackNavigation}
@@ -226,7 +229,6 @@ const BottomTabNavigator = () => {
               <Ionicons name="stats-chart-sharp" size={size} color={color} />
             );
           },
-          tabBarShowLabel: false,
         }}
       />
       <BottomTab.Screen
