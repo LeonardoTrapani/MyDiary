@@ -216,22 +216,29 @@ export const PlannedDate: React.FC<{
   };
 
   return (
-    <TouchableOpacity onPress={pressHandler}>
-      <CardView style={[styles.planneDateContainer, globalStyles.smallShadow]}>
-        {completePlannedDateMutation.isError && (
-          <RegularText
-            style={[
-              styles.plannedDateError,
-              { borderColor: error, color: error },
-            ]}
-          >
-            {completePlannedDateMutation.error as string}
-          </RegularText>
-        )}
-        <CardView
-          style={[styles.row, { marginBottom: 0, marginHorizontal: 0 }]}
+    <CardView style={[styles.planneDateContainer, globalStyles.smallShadow]}>
+      {completePlannedDateMutation.isError && (
+        <RegularText
+          style={[
+            styles.plannedDateError,
+            { borderColor: error, color: error },
+          ]}
         >
-          <CardView>
+          {completePlannedDateMutation.error as string}
+        </RegularText>
+      )}
+
+      <CardView
+        style={[
+          styles.row,
+          {
+            marginBottom: 0,
+            marginHorizontal: 0,
+          },
+        ]}
+      >
+        <TouchableOpacity onPress={pressHandler} style={{ flex: 1 }}>
+          <CardView style={{ flex: 1 }}>
             <MediumText style={styles.plannedDateDate}>
               {new Date(props.plannedDate.date).toDateString()}
             </MediumText>
@@ -239,18 +246,18 @@ export const PlannedDate: React.FC<{
               {minutesToHoursMinutesFun(props.plannedDate.minutesAssigned)}
             </RegularText>
           </CardView>
-          {isCompleted ? (
-            <TouchableOpacity onPress={undoCompleteHandler}>
-              <CompletedIcon />
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity onPress={completeHandler}>
-              <UncompletedIcon />
-            </TouchableOpacity>
-          )}
-        </CardView>
+        </TouchableOpacity>
+        {isCompleted ? (
+          <TouchableOpacity onPress={undoCompleteHandler}>
+            <CompletedIcon />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={completeHandler}>
+            <UncompletedIcon />
+          </TouchableOpacity>
+        )}
       </CardView>
-    </TouchableOpacity>
+    </CardView>
   );
 };
 

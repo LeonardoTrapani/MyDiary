@@ -3,7 +3,7 @@ import {
   useNavigation,
   useTheme,
 } from "@react-navigation/native";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -17,16 +17,12 @@ import {
   RootStackParamList,
 } from "../../types";
 import DateTimePicker from "react-native-modal-datetime-picker";
-import { RegularText } from "../components/StyledText";
-import { CardView, View } from "../components/Themed";
-import globalStyles from "../constants/Syles";
+import { BoldText, RegularText } from "../components/StyledText";
+import { View } from "../components/Themed";
 import { useCalendarDay, useValidToken } from "../util/react-query-hooks";
 import ErrorComponent from "../components/ErrorComponent";
 import moment from "moment";
-import { MINIMUM_HOMEWORK_HEIGHT } from "../constants/constants";
-import { minutesToHoursMinutesFun } from "../util/generalUtils";
 import { Ionicons } from "@expo/vector-icons";
-import TextButton from "../components/TextButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import MyDurationPicker from "../components/MyDurationPicker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -34,9 +30,6 @@ import { editDay } from "../api/day";
 
 const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
   const [isCalendarOpened, setIsCalendarOpened] = useState(false);
-  const [homeworkBodyHeight, setHomeworkBodyHeight] = useState<
-    number | undefined
-  >(undefined);
 
   const initialDate = moment().startOf("day").toISOString();
   const [currentCalendarDate, setCurrentCalendarDate] = useState(initialDate);
@@ -54,6 +47,7 @@ const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
     isLoading: isCalendarDayLoading,
     isFetching: isCalendarDayFetching,
   } = useCalendarDay(moment(currentCalendarDate));
+
   useEffect(() => {
     if (!calendarDay || isCalendarDayFetching) {
       return;
@@ -69,30 +63,6 @@ const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
   }, [calendarDay, currentCalendarDate, isCalendarDayFetching]);
 
   const calendarDayError = error as Error;
-
-  const { heights, totalHeight: totalHeight } = useMemo(() => {
-    if (!calendarDay || !homeworkBodyHeight) {
-      return { heights: [], totalHeight: 0 };
-    }
-    const overflows =
-      calendarDay?.user.homework.length * MINIMUM_HOMEWORK_HEIGHT >
-      homeworkBodyHeight / 1.5;
-
-    if (overflows) {
-      return calculateHeightsWithoutAdapting(
-        calendarDay,
-        homeworkBodyHeight,
-        calendarDay.freeMins
-      );
-    }
-    return calculateHeights(
-      calendarDay,
-      homeworkBodyHeight,
-      {},
-      [],
-      calendarDay.freeMins
-    );
-  }, [calendarDay, homeworkBodyHeight]);
 
   return (
     <View style={styles.container}>
@@ -123,22 +93,12 @@ const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
       ) : (
         calendarDay && (
           <>
-            <View
-              style={[styles.homeworkBodyContainer]}
-              onLayout={(event) => {
-                const { height } = event.nativeEvent.layout;
-                setHomeworkBodyHeight(height);
-              }}
-            >
+            <View style={[styles.homeworkBodyContainer]}>
               <HomeworkBody
                 calendarDay={calendarDay}
                 freeTime={calendarDay.freeMins}
-                heights={heights}
-                scrollEnabled={
-                  totalHeight > (homeworkBodyHeight || 0) ? true : false
-                }
-                totalHeight={totalHeight}
                 minutesToAssign={calendarDay.minutesToAssign}
+                currentDate={currentCalendarDate}
               />
             </View>
             <DateTimePicker
@@ -208,43 +168,36 @@ const MyHomeworkHeader: React.FC<{
   return (
     <>
       <View style={styles.headerContainer}>
-        <TextButton
-          title="today"
-          onPress={props.onToday}
-          style={[styles.headerText, styles.headerleft]}
-        />
-        <DateChangeButton
-          date={moment(props.currentCalendarDate).toDate()}
-          onShowCalendar={props.onShowCalendar}
-          onPageForward={props.onPageForward}
-          onPageBackward={props.onPageBackward}
-        />
-        <TextButton
-          title="edit"
-          textStyle={{ textAlign: "right" }}
-          onPress={() => {
-            setDurationPickerVisible(true);
-          }}
-          style={[styles.headerText, styles.subheaderRight]}
-        />
-        <MyDurationPicker
-          isVisible={durationPickerVisible}
-          date={durationDate}
-          minimumTime={minutesAssigned}
-          onCancel={() => {
-            setDurationPickerVisible(false);
-          }}
-          onConfirm={(date) => {
-            const mins =
-              moment(date).get("minutes") + moment(date).get("hours") * 60;
-            setDurationDate(date);
-            setDurationPickerVisible(false);
-            editDayMutation.mutate({
-              freeMinutes: mins,
-              date: props.currentCalendarDate,
-            });
-          }}
-        />
+        <BoldText style={styles.bigDate}>
+          {moment(props.currentCalendarDate).toDate().toDateString()}
+        </BoldText>
+        <View style={styles.navigationContainer}>
+          <HeaderNavigation
+            date={moment(props.currentCalendarDate).toDate()}
+            onShowCalendar={props.onShowCalendar}
+            onPageForward={props.onPageForward}
+            onPageBackward={props.onPageBackward}
+            onToday={props.onToday}
+          />
+          <MyDurationPicker
+            isVisible={durationPickerVisible}
+            date={durationDate}
+            minimumTime={minutesAssigned}
+            onCancel={() => {
+              setDurationPickerVisible(false);
+            }}
+            onConfirm={(date) => {
+              const mins =
+                moment(date).get("minutes") + moment(date).get("hours") * 60;
+              setDurationDate(date);
+              setDurationPickerVisible(false);
+              editDayMutation.mutate({
+                freeMinutes: mins,
+                date: props.currentCalendarDate,
+              });
+            }}
+          />
+        </View>
       </View>
       {editDayMutation.isError && (
         <ErrorComponent text={editDayMutation.error as string} />
@@ -257,59 +210,23 @@ const HomeworkBody: React.FC<{
   calendarDay: CalendarDayType;
   freeTime: number;
   minutesToAssign: number;
-  heights: number[];
-  totalHeight: number;
-  scrollEnabled: boolean;
+  currentDate: string;
 }> = (props) => {
-  if (!props.calendarDay || !props.heights) {
+  if (!props.calendarDay) {
     return <></>;
   }
   return (
     <View style={{ flex: 1 }}>
-      <View
-        style={{ height: props.scrollEnabled ? undefined : props.totalHeight }}
-      >
-        <FlatList
-          data={props.calendarDay.user.homework}
-          scrollEnabled={props.scrollEnabled}
-          showsVerticalScrollIndicator={false}
-          renderItem={({ item, index }) => (
-            <CalendarDayHomework
-              homework={item}
-              freeTime={props.freeTime}
-              i={index}
-              height={props.heights[index]}
-              showAtRight={index % 2 === 0}
-            />
-          )}
-        />
-      </View>
-      {(props.minutesToAssign > 0 ||
-        (props.calendarDay.user.homework.length === 0 &&
-          props.minutesToAssign === 0)) && (
-        <FreeTimeComponent timeToAssign={props.minutesToAssign} />
-      )}
-    </View>
-  );
-};
-
-const FreeTimeComponent: React.FC<{ timeToAssign: number }> = (props) => {
-  return (
-    <View
-      style={[
-        {
-          flexDirection: "row",
-          justifyContent: "space-between",
-          flex: 1,
-        },
-        styles.calendarDayHomework,
-      ]}
-    >
-      <HomeworkBar color="#aaa" />
-      <RegularText style={[styles.homeworkText, styles.homeworkNotCenterText]}>
-        Free Time
-      </RegularText>
-      <TimeBar i={-1} time={props.timeToAssign} />
+      <FlatList
+        data={props.calendarDay.user.homework}
+        renderItem={({ item, index }) => (
+          <CalendarDayHomework
+            homework={item}
+            freeTime={props.freeTime}
+            i={index}
+          />
+        )}
+      />
     </View>
   );
 };
@@ -334,8 +251,6 @@ const CalendarDayHomework: React.FC<{
     duration: number;
   };
   freeTime: number;
-  height: number;
-  showAtRight: boolean;
   i: number;
 }> = (props) => {
   if (props.homework.plannedDates.length > 1) {
@@ -347,14 +262,6 @@ const CalendarDayHomework: React.FC<{
   const navigation = useNavigation<NavigationProp<HomeStackParamList>>();
   return (
     <TouchableOpacity
-      style={[
-        {
-          flexDirection: "row",
-          justifyContent: "space-between",
-          height: props.height,
-        },
-        styles.calendarDayHomework,
-      ]}
       onPress={() =>
         navigation.navigate("SingleHomework", {
           homeworkId: props.homework.id,
@@ -362,76 +269,35 @@ const CalendarDayHomework: React.FC<{
         })
       }
     >
-      <HomeworkBar color={props.homework.subject.color} />
-      <RegularText
-        style={[
-          styles.homeworkText,
-          props.height === MINIMUM_HOMEWORK_HEIGHT
-            ? styles.homeworkCenterText
-            : styles.homeworkNotCenterText,
-        ]}
-      >
-        {props.homework.name}
-      </RegularText>
-      <TouchableOpacity
-        style={[
-          styles.checkIconContainer,
-          props.height === MINIMUM_HOMEWORK_HEIGHT
-            ? styles.homeworkCenterText
-            : styles.homeworkNotCenterText,
-        ]}
-      ></TouchableOpacity>
-      <TimeBar
-        time={props.homework.plannedDates[0].minutesAssigned}
-        i={props.i}
-      />
+      <RegularText>{props.homework.name}</RegularText>
     </TouchableOpacity>
   );
 };
 
-const HomeworkBar: React.FC<{ color: string }> = (props) => {
-  return (
-    <View style={[styles.homeworkBar, { backgroundColor: props.color }]}></View>
-  );
-};
-
-const TimeBar: React.FC<{
-  time: number;
-  i: number;
-}> = (props) => {
-  return (
-    <View style={styles.timeBarContainer}>
-      {props.i === 0 && (
-        <RegularText style={styles.timeBarText}>
-          {minutesToHoursMinutesFun(0, 1)}
-        </RegularText>
-      )}
-      <View style={[styles.timeBar]}></View>
-      <RegularText style={[styles.timeBarText]}>
-        {minutesToHoursMinutesFun(props.time, 1)}
-      </RegularText>
-    </View>
-  );
-};
-
-const DateChangeButton: React.FC<{
+const HeaderNavigation: React.FC<{
   date: Date;
   onShowCalendar: () => void;
   onPageForward: () => void;
   onPageBackward: () => void;
+  onToday: () => void;
 }> = (props) => {
   return (
-    <View style={styles.dateChangeContainer}>
-      <CardView style={[styles.dateChangeButton, globalStyles.shadow]}>
-        <DateChangeBack onPress={props.onPageBackward} />
-        <TouchableOpacity onPress={props.onShowCalendar}>
-          <RegularText style={styles.dateChangeDateText}>
-            {props.date.toDateString()}
-          </RegularText>
-        </TouchableOpacity>
-        <DateChangeFront onPress={props.onPageForward} />
-      </CardView>
+    <View style={[styles.dateChangeButton]}>
+      <DateChangeBack onPress={props.onPageBackward} />
+      <DateToToday onPress={props.onToday} />
+      <DateChangeFront onPress={props.onPageForward} />
     </View>
+  );
+};
+
+const DateToToday: React.FC<{
+  onPress: () => void;
+}> = (props) => {
+  const { primary } = useTheme().colors;
+  return (
+    <TouchableOpacity style={styles.dateChangeBack} onPress={props.onPress}>
+      <Ionicons name="pin-sharp" size={24} color={primary} />
+    </TouchableOpacity>
   );
 };
 
@@ -440,7 +306,7 @@ const DateChangeBack: React.FC<{
 }> = (props) => {
   return (
     <TouchableOpacity style={styles.dateChangeBack} onPress={props.onPress}>
-      <Ionicons name="ios-chevron-back" size={22} />
+      <Ionicons name="ios-chevron-back" size={34} />
     </TouchableOpacity>
   );
 };
@@ -448,121 +314,9 @@ const DateChangeBack: React.FC<{
 const DateChangeFront: React.FC<{ onPress: () => void }> = (props) => {
   return (
     <TouchableOpacity style={styles.dateChangeFront} onPress={props.onPress}>
-      <Ionicons name="ios-chevron-forward" size={22} />
+      <Ionicons name="ios-chevron-forward" size={34} />
     </TouchableOpacity>
   );
-};
-
-const calculateHeights: (
-  calendarDay: CalendarDayType | undefined,
-  maxHeight: number | undefined,
-  alreadyModifiedHeightsIndexes: {
-    [key: string]: boolean;
-  },
-  heights: number[],
-  freeMins: number | undefined
-) => {
-  totalHeight: number;
-  heights: number[];
-} = (
-  calendarDay,
-  maxHeight,
-  alreadyModifiedHeightsIndexes,
-  heights,
-  freeMins
-) => {
-  if (!calendarDay || !maxHeight || !freeMins) {
-    return { totalHeight: 0, heights: [] };
-  }
-
-  let totalHeight = 0;
-  let minutesToRemove = 0;
-  let heightToRemove = 0;
-
-  let needToRerun = false;
-
-  for (let i = 0; i < calendarDay.user.homework.length; i++) {
-    const currentHomework = calendarDay.user.homework[i];
-
-    if (alreadyModifiedHeightsIndexes[i] === true) {
-      totalHeight += MINIMUM_HOMEWORK_HEIGHT;
-      continue;
-    }
-
-    const currentHomeworkHeight =
-      (maxHeight * currentHomework.plannedDates[0].minutesAssigned) / freeMins;
-
-    if (currentHomeworkHeight < MINIMUM_HOMEWORK_HEIGHT) {
-      if (heights[i]) {
-        heights[i] = MINIMUM_HOMEWORK_HEIGHT;
-      } else {
-        heights.push(MINIMUM_HOMEWORK_HEIGHT);
-      }
-      minutesToRemove += currentHomework.plannedDates[0].minutesAssigned;
-      heightToRemove += MINIMUM_HOMEWORK_HEIGHT;
-      alreadyModifiedHeightsIndexes[i] = true;
-      needToRerun = true;
-    } else {
-      totalHeight += currentHomeworkHeight;
-      if (heights[i]) {
-        heights[i] = currentHomeworkHeight;
-      } else {
-        heights.push(currentHomeworkHeight);
-      }
-    }
-  }
-
-  if (needToRerun) {
-    return calculateHeights(
-      calendarDay,
-      maxHeight - heightToRemove,
-      alreadyModifiedHeightsIndexes,
-      heights,
-      freeMins - minutesToRemove
-    );
-  }
-  return { totalHeight, heights };
-};
-
-const calculateHeightsWithoutAdapting: (
-  calendarDay: CalendarDayType | undefined,
-  maxHeight: number | undefined,
-  freeMins: number | undefined
-) => {
-  totalHeight: number;
-  heights: number[];
-} = (calendarDay, maxHeight, freeMins) => {
-  if (!calendarDay || !maxHeight || !freeMins) {
-    return { totalHeight: 0, heights: [] };
-  }
-  const heights: number[] = [];
-
-  let totalHeight = 0;
-
-  for (let i = 0; i < calendarDay.user.homework.length; i++) {
-    const currentHomework = calendarDay.user.homework[i];
-
-    const currentHomeworkHeight =
-      (maxHeight * currentHomework.plannedDates[0].minutesAssigned) / freeMins;
-
-    if (currentHomeworkHeight < MINIMUM_HOMEWORK_HEIGHT) {
-      if (heights[i]) {
-        heights[i] = MINIMUM_HOMEWORK_HEIGHT;
-      } else {
-        heights.push(MINIMUM_HOMEWORK_HEIGHT);
-      }
-      totalHeight += MINIMUM_HOMEWORK_HEIGHT;
-    } else {
-      if (heights[i]) {
-        heights[i] = currentHomeworkHeight;
-      } else {
-        heights.push(currentHomeworkHeight);
-      }
-      totalHeight += currentHomeworkHeight;
-    }
-  }
-
-  return { totalHeight, heights };
 };
 
 export const AddHomeworkIcon: React.FC = () => {
@@ -600,14 +354,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
   },
-  dateChangeBack: {
-    marginRight: 8,
-    marginLeft: 4,
-  },
-  dateChangeFront: {
-    marginLeft: 8,
-    marginRight: 4,
-  },
+  dateChangeBack: {},
+  dateChangeFront: {},
   homeworkBodyContainer: {
     flex: 1,
     paddingHorizontal: 10,
@@ -627,7 +375,6 @@ const styles = StyleSheet.create({
   },
   homeworkBar: {
     width: 5,
-    //borderRadius: 10000,
     borderRadius: 5,
     marginVertical: 2,
   },
@@ -650,9 +397,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   headerContainer: {
+    padding: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  navigationContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
   },
   headerText: {
     width: 50,
@@ -662,6 +414,10 @@ const styles = StyleSheet.create({
   },
   headerleft: {
     marginLeft: 10,
+  },
+  bigDate: {
+    fontSize: 28,
+    letterSpacing: -0.8,
   },
 });
 
