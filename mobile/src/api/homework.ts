@@ -1,6 +1,12 @@
-import axios from "axios";
-import { FreeDaysResponse, HomeworkInfoType, SelectedDay } from "../../types";
+import axios, { AxiosError } from "axios";
+import {
+  FreeDaysResponse,
+  HomeworkInfoType,
+  SelectedDay,
+  SingleHomeworkType,
+} from "../../types";
 import { BACKEND_URL, PLANNED_DATES_PER_PAGE } from "../constants/constants";
+import { getDataFromAxiosError } from "../util/axiosUtils";
 
 export const fetchFreeDays = async (
   pageNumber: number,
@@ -49,4 +55,63 @@ export const createHomework = async (
     }
   );
   return homework;
+};
+
+export const getSingleHomework = async (
+  homeworkId: number,
+  token: string | null | undefined
+) => {
+  if (!token) {
+    throw "Not authenticated";
+  }
+  try {
+    const singleHomework = await axios.get<SingleHomeworkType>(
+      BACKEND_URL + "/homework/" + homeworkId,
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+    return singleHomework.data;
+  } catch (err) {
+    const axiosError = err as AxiosError;
+    throw getDataFromAxiosError(axiosError);
+  }
+};
+
+export const completePlannedDate = async (
+  plannedDateId: number,
+  token: string | null | undefined,
+  completed: boolean
+) => {
+  if (!token) {
+    throw "Not authenticated";
+  }
+  try {
+    if (completed === true) {
+      return await axios.post(
+        BACKEND_URL + "/plannedDate/complete/" + plannedDateId,
+        {},
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+    }
+    const r = await axios.post(
+      BACKEND_URL + "/plannedDate/uncomplete/" + plannedDateId,
+      {},
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+    return r.data;
+  } catch (err) {
+    const axiosError = err as AxiosError;
+    throw getDataFromAxiosError(axiosError);
+  }
 };

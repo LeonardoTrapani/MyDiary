@@ -13,6 +13,26 @@ declare global {
   }
 }
 
+export type SingleHomeworkType = {
+  name: string;
+  description: string;
+  expirationDate: string;
+  timeToComplete: number;
+  plannedDates: {
+    date: string;
+    minutesAssigned: number;
+    id: number;
+    completed: boolean;
+  }[];
+  subject: {
+    id: number;
+    color: string;
+    name: number;
+  };
+  duration: number;
+  completed: boolean;
+};
+
 export type CalendarDayType = {
   date: string;
   user: {
@@ -20,6 +40,7 @@ export type CalendarDayType = {
       completed: boolean;
       id: number;
       name: string;
+      timeToComplete: number;
       subject: {
         id: number;
         name: string;
@@ -29,6 +50,7 @@ export type CalendarDayType = {
         date: string;
         id: number;
         minutesAssigned: number;
+        completed: boolean;
       }[];
       description: string;
       expirationDate: string;
@@ -100,8 +122,8 @@ export type HomeStackScreenProps<Screen extends keyof HomeStackParamList> =
   NativeStackScreenProps<HomeStackParamList, Screen>;
 
 export type HomeStackParamList = {
+  SingleHomework: { homeworkId: number; title: string };
   Root: undefined;
-  Homework: undefined;
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> =

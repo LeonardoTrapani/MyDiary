@@ -50,6 +50,7 @@ export const createHomework = async (req: Request, res: Response) => {
         userId: +userId!,
         description,
         duration: duration,
+        timeToComplete: duration,
         expirationDate: moment(expirationDate).startOf("day").toDate(),
         name: name,
         subjectId: subject.id,
@@ -80,6 +81,7 @@ export const getAllHomework = async (req: Request, res: Response) => {
       description: true,
       subject: true,
       expirationDate: true,
+      timeToComplete: true,
       plannedDates: true,
       duration: true,
       completed: true,
@@ -248,4 +250,49 @@ export const getOneFreeDay = (
     return freeDaysDay.isSame(currentDate, "days");
   });
   return { freeMinutes, freeDayToPut };
+};
+
+export const getSingleHomework = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { userId } = req;
+
+  const numUserId = +userId!;
+
+  const singleHomework = await prisma.homework.findFirst({
+    where: {
+      id: +id,
+      userId: numUserId,
+    },
+    select: {
+      completed: true,
+      description: true,
+      duration: true,
+      expirationDate: true,
+      timeToComplete: true,
+      subject: {
+        select: {
+          id: true,
+          color: true,
+          name: true,
+        },
+      },
+      plannedDates: {
+        select: {
+          date: true,
+          minutesAssigned: true,
+          completed: true,
+          id: true,
+        },
+        where: {
+          deleted: false,
+        },
+      },
+      name: true,
+    },
+  });
+  if (!singleHomework) {
+    return throwResponseError("Could not find the homework", 400, res);
+  }
+  res.json(singleHomework);
+  return;
 };

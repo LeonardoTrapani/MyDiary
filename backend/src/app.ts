@@ -1,9 +1,4 @@
-import express, {
-  NextFunction,
-  Request,
-  Response,
-  ErrorRequestHandler,
-} from "express";
+import express, { Response, Request } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
@@ -13,6 +8,7 @@ import homeworkRoutes from "./routes/homework";
 import dayRoutes from "./routes/day";
 import calendarRoutes from "./routes/calendar";
 import subjectRoutes from "./routes/subject";
+import plannedDateRoutes from "./routes/plannedDate";
 
 import { ErrorResponse } from "./models";
 
@@ -37,8 +33,9 @@ app.use("/day", dayRoutes);
 app.use("/week", weekRoutes);
 app.use("/calendar", calendarRoutes);
 app.use("/subject", subjectRoutes);
+app.use("/plannedDate", plannedDateRoutes);
 
-app.use((req: Request, res: Response, next: NextFunction) => {
+app.use((_req: Request, res: Response) => {
   const response: ErrorResponse = {
     message: "Page not found",
     statusCode: 404,
@@ -46,16 +43,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   res.status(response.statusCode).json(response);
 });
 
-app.use(
-  (
-    err: ErrorRequestHandler,
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    res.status(500).json("An error has occurred");
-  }
-);
+app.use((_req: Request, res: Response) => {
+  res.status(500).json("An error has occurred");
+});
 
 app.listen(process.env.PORT, () => {
   console.log("app listening on port " + process.env.PORT);

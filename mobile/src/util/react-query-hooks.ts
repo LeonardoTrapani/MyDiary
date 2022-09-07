@@ -4,10 +4,11 @@ import {
   CalendarDayType,
   FreeDaysResponse,
   HomeworkInfoType,
+  SingleHomeworkType,
 } from "../../types";
 import { getIsWeekCreatedWithToken, getWeek, validateToken } from "../api/auth";
 import { getDayCalendar } from "../api/calendar";
-import { fetchFreeDays } from "../api/homework";
+import { fetchFreeDays, getSingleHomework } from "../api/homework";
 import { getSubjects } from "../api/subject";
 
 export const useValidToken = () => {
@@ -75,6 +76,17 @@ export const useCalendarDay = (date: Moment) => {
     {
       enabled: isValidTokenFetched,
       keepPreviousData: true,
+    }
+  );
+};
+
+export const useSingleHomework = (homeworkId: number) => {
+  const { data: validToken, isFetched: isValidTokenFetched } = useValidToken();
+  return useQuery<SingleHomeworkType>(
+    ["singleHomework", homeworkId],
+    () => getSingleHomework(homeworkId, validToken),
+    {
+      enabled: isValidTokenFetched,
     }
   );
 };

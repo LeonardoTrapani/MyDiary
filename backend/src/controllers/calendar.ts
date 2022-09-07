@@ -182,6 +182,7 @@ export const getSingleCalendarDay = async (req: Request, res: Response) => {
               description: true,
               expirationDate: true,
               duration: true,
+              timeToComplete: true,
               name: true,
               subject: {
                 select: {
@@ -198,6 +199,7 @@ export const getSingleCalendarDay = async (req: Request, res: Response) => {
                 select: {
                   date: true,
                   id: true,
+                  completed: true,
                   minutesAssigned: true,
                 },
               },

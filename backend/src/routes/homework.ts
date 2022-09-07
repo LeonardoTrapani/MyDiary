@@ -3,6 +3,7 @@ import {
   calculateFreeDays,
   createHomework,
   getAllHomework,
+  getSingleHomework,
 } from "../controllers/homework";
 import {
   isAuthenticated,
@@ -84,5 +85,13 @@ router.post(
   validateExpressValidation,
   calculateFreeDays
 );
-router.post("");
+
+router.get(
+  "/:id",
+  isAuthenticated,
+  [param("id", "please enter a valid id").isNumeric()],
+  validateExpressValidation,
+  getSingleHomework
+);
+
 export default router;

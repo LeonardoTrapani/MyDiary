@@ -231,7 +231,6 @@ const MyHomeworkHeader: React.FC<{
           onConfirm={(date) => {
             const mins =
               moment(date).get("minutes") + moment(date).get("hours") * 60;
-            console.log(mins);
             setDurationDate(date);
             setDurationPickerVisible(false);
             editDayMutation.mutate({
@@ -339,6 +338,7 @@ const CalendarDayHomework: React.FC<{
       props.homework.plannedDates
     );
   }
+  const navigation = useNavigation<NavigationProp<HomeStackParamList>>();
   return (
     <TouchableOpacity
       style={[
@@ -349,6 +349,12 @@ const CalendarDayHomework: React.FC<{
         },
         styles.calendarDayHomework,
       ]}
+      onPress={() =>
+        navigation.navigate("SingleHomework", {
+          homeworkId: props.homework.id,
+          title: props.homework.name,
+        })
+      }
     >
       <HomeworkBar color={props.homework.subject.color} />
       <RegularText
@@ -563,7 +569,7 @@ export const AddHomeworkIcon: React.FC = () => {
         navigation.navigate("AddHomework");
       }}
     >
-      <Ionicons name="ios-add" size={32} color={primary} />
+      <Ionicons name="ios-add" size={28} color={primary} />
     </TouchableOpacity>
   );
 };
