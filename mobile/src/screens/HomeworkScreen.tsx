@@ -569,7 +569,7 @@ export const AddHomeworkIcon: React.FC = () => {
         navigation.navigate("AddHomework");
       }}
     >
-      <Ionicons name="ios-add" size={32} color={primary} />
+      <Ionicons name="ios-add" size={28} color={primary} />
     </TouchableOpacity>
   );
 };

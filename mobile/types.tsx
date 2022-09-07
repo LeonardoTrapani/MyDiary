@@ -17,6 +17,7 @@ export type SingleHomeworkType = {
   name: string;
   description: string;
   expirationDate: string;
+  timeToComplete: number;
   plannedDates: {
     date: string;
     minutesAssigned: number;
@@ -39,6 +40,7 @@ export type CalendarDayType = {
       completed: boolean;
       id: number;
       name: string;
+      timeToComplete: number;
       subject: {
         id: number;
         name: string;

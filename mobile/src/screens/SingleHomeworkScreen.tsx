@@ -88,15 +88,21 @@ const SingleHomewrk: React.FC<{
         <Break />
       </View>
       <View style={styles.row}>
+        <RegularText style={styles.rowText}>Delivery Date:</RegularText>
+        <RegularText style={styles.rowText}>
+          {new Date(props.singleHomework.expirationDate).toLocaleDateString()}
+        </RegularText>
+      </View>
+      <View style={styles.row}>
         <RegularText style={styles.rowText}>Duration:</RegularText>
         <RegularText style={styles.rowText}>
           {minutesToHoursMinutesFun(props.singleHomework.duration)}
         </RegularText>
       </View>
       <View style={styles.row}>
-        <RegularText style={styles.rowText}>Delivery Date:</RegularText>
+        <RegularText style={styles.rowText}>Time left to complete:</RegularText>
         <RegularText style={styles.rowText}>
-          {new Date(props.singleHomework.expirationDate).toLocaleDateString()}
+          {minutesToHoursMinutesFun(props.singleHomework.timeToComplete)}
         </RegularText>
       </View>
       <View style={[styles.row]}>
