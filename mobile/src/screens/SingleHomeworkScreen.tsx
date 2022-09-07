@@ -262,7 +262,7 @@ export const CompletedIcon: React.FC = () => {
   return <Ionicons color="#32a854" name="checkmark-circle" size={26} />;
 };
 
-const DESCRIPTION_MAX_HEIGHT = 160;
+const DESCRIPTION_MAX_HEIGHT = 123;
 
 const styles = StyleSheet.create({
   container: {
