@@ -27,7 +27,7 @@ export const completePlannedDate = async (req: Request, res: Response) => {
       id: +id,
     },
     data: {
-      completed: false,
+      completed: true,
     },
   });
 
