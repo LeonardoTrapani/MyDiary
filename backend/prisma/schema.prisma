@@ -34,7 +34,7 @@ model Homework {
   user           User          @relation(fields: [userId], references: [id])
   userId         Int
   name           String
-  description    String
+  description    String        @db.LongText
   expirationDate DateTime
   plannedDates   PlannedDate[]
   subject        Subject       @relation(fields: [subjectId], references: [id])
