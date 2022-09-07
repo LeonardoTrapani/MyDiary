@@ -5,7 +5,7 @@ import { prisma } from "../app";
 export const completePlannedDate = async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  const r = await prisma.plannedDate.update({
+  const plannedDateUpdated = await prisma.plannedDate.update({
     where: {
       id: +id,
     },
@@ -13,7 +13,7 @@ export const completePlannedDate = async (req: Request, res: Response) => {
       completed: true,
     },
   });
-  if (!r) {
+  if (!plannedDateUpdated.minutesAssigned) {
     throwResponseError("Planned date not existing", 400, res);
     return;
   }
@@ -31,17 +31,20 @@ export const completePlannedDate = async (req: Request, res: Response) => {
     },
     data: {
       completed: true,
+      timeToComplete: {
+        decrement: plannedDateUpdated.minutesAssigned,
+      },
     },
   });
 
-  res.json(r);
+  res.json(plannedDateUpdated);
   return;
 };
 
 export const uncompletePlannedDate = async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  const newPlannedDate = await prisma.plannedDate.updateMany({
+  const newPlannedDate = await prisma.plannedDate.update({
     where: {
       id: +id,
     },
@@ -60,6 +63,9 @@ export const uncompletePlannedDate = async (req: Request, res: Response) => {
     },
     data: {
       completed: false,
+      timeToComplete: {
+        increment: newPlannedDate.minutesAssigned,
+      },
     },
   });
 
