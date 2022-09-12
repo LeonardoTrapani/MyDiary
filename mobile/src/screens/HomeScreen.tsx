@@ -324,6 +324,7 @@ const CalendarDayHomework: React.FC<{
         <CompleteCircle
           onComplete={() => completeHandler()}
           isLoading={props.isCompleteLoading}
+          color={props.homework.subject.color}
         />
         <TouchableOpacity
           style={{ flex: 1 }}
@@ -353,6 +354,7 @@ const CalendarDayHomework: React.FC<{
 
 const CompleteCircle: React.FC<{
   onComplete: () => void;
+  color: string;
   isLoading: boolean;
 }> = (props) => {
   return (
@@ -364,7 +366,7 @@ const CompleteCircle: React.FC<{
         height: 22,
         aspectRatio: 1,
         borderRadius: 1000,
-        borderColor: "#666",
+        borderColor: props.color,
         borderWidth: 1,
         alignItems: "center",
         justifyContent: "center",
