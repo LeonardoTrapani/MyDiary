@@ -29,6 +29,7 @@ import { editDay } from "../api/day";
 import { minutesToHoursMinutesFun } from "../util/generalUtils";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import Break from "../components/Break";
+import { completePlannedDate } from "../api/homework";
 
 const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
   const initialDate = moment().startOf("day").toISOString();
@@ -223,11 +224,26 @@ const HomeworkBody: React.FC<{
   minutesToAssign: number;
   currentDate: string;
 }> = (props) => {
+  const { data: validToken } = useValidToken();
+
   const notCompletedHomework = useMemo(() => {
     return props.calendarDay?.user.homework.filter(
       (hmk) => hmk.plannedDates[0].completed === false
     );
   }, [props.calendarDay?.user.homework]);
+
+  const qc = useQueryClient();
+  const editDayMutation = useMutation(
+    (data: { id: number }) => {
+      return completePlannedDate(data.id, validToken, true);
+    },
+    {
+      onSuccess: () => {
+        qc.invalidateQueries(["calendarDay"]);
+        qc.invalidateQueries(["SingleHomework"]);
+      },
+    }
+  );
 
   const completedHomework = useMemo(() => {
     return props.calendarDay?.user.homework.filter(
@@ -238,25 +254,34 @@ const HomeworkBody: React.FC<{
   if (!props.calendarDay) {
     return <></>;
   }
+
+  const completeHandler = (id: number) => {
+    editDayMutation.mutate({ id });
+  };
+  //loading circle while not response
   return (
     <View style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
         <FlatList
           data={notCompletedHomework}
           renderItem={({ item, index }) => (
-            <CalendarDayHomework homework={item} i={index} />
+            <CalendarDayHomework
+              homework={item}
+              i={index}
+              onComplete={completeHandler}
+            />
           )}
         />
       </View>
-      <FlatList
-        data={completedHomework}
-        renderItem={({ item, index }) => (
-          <CalendarDayHomework homework={item} i={index} />
-        )}
-      />
     </View>
   );
 };
+//<FlatList
+//data={completedHomework}
+//renderItem={({ item, index }) => (
+//<CalendarDayHomework homework={item} i={index} />
+//)}
+///>
 const CalendarDayHomework: React.FC<{
   homework: {
     completed: boolean;
@@ -277,6 +302,7 @@ const CalendarDayHomework: React.FC<{
     duration: number;
   };
   i: number;
+  onComplete: (i: number) => void;
 }> = (props) => {
   if (props.homework.plannedDates.length > 1) {
     console.warn(
@@ -286,13 +312,13 @@ const CalendarDayHomework: React.FC<{
   }
   const navigation = useNavigation<NavigationProp<HomeStackParamList>>();
   const completeHandler = () => {
-    console.log("COMPLETED");
+    props.onComplete(props.homework.plannedDates[0].id);
   };
 
   return (
     <View>
       <View style={styles.calendarDayHomeworkContainer}>
-        <CompleteCircle onComplete={completeHandler} />
+        <CompleteCircle onComplete={() => completeHandler()} />
         <TouchableOpacity
           style={{ flex: 1 }}
           onPress={() =>
@@ -306,7 +332,9 @@ const CalendarDayHomework: React.FC<{
             {props.homework.name}
           </MediumText>
           <RegularText>
-            {minutesToHoursMinutesFun(props.homework.duration)}
+            {minutesToHoursMinutesFun(
+              props.homework.plannedDates[0].minutesAssigned
+            )}
           </RegularText>
         </TouchableOpacity>
       </View>
@@ -320,7 +348,7 @@ const CalendarDayHomework: React.FC<{
 const CompleteCircle: React.FC<{ onComplete: () => void }> = (props) => {
   return (
     <TouchableOpacity
-      onPress={() => props.onComplete}
+      onPress={props.onComplete}
       style={{
         alignSelf: "center",
         marginHorizontal: 10,
