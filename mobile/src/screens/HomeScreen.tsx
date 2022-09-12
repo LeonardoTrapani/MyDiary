@@ -16,8 +16,8 @@ import {
   HomeStackScreenProps,
   RootStackParamList,
 } from "../../types";
-import { BoldText, RegularText } from "../components/StyledText";
-import { CardView, View } from "../components/Themed";
+import { BoldText, MediumText, RegularText } from "../components/StyledText";
+import { View } from "../components/Themed";
 import { useCalendarDay, useValidToken } from "../util/react-query-hooks";
 import ErrorComponent from "../components/ErrorComponent";
 import moment from "moment";
@@ -27,8 +27,8 @@ import MyDurationPicker from "../components/MyDurationPicker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { editDay } from "../api/day";
 import { minutesToHoursMinutesFun } from "../util/generalUtils";
-import globalStyles from "../constants/Syles";
 import DateTimePicker from "react-native-modal-datetime-picker";
+import Break from "../components/Break";
 
 const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
   const initialDate = moment().startOf("day").toISOString();
@@ -285,25 +285,54 @@ const CalendarDayHomework: React.FC<{
     );
   }
   const navigation = useNavigation<NavigationProp<HomeStackParamList>>();
+  const completeHandler = () => {
+    console.log("COMPLETED");
+  };
+
   return (
-    <TouchableOpacity
-      onPress={() =>
-        navigation.navigate("SingleHomework", {
-          homeworkId: props.homework.id,
-          title: props.homework.name,
-        })
-      }
-    >
-      <CardView style={[styles.calendarDayHomework, globalStyles.smallShadow]}>
-        <RegularText>{props.homework.name}</RegularText>
-        <RegularText>
-          {minutesToHoursMinutesFun(props.homework.duration)}
-        </RegularText>
-      </CardView>
-    </TouchableOpacity>
+    <View>
+      <View style={styles.calendarDayHomeworkContainer}>
+        <CompleteCircle onComplete={completeHandler} />
+        <TouchableOpacity
+          style={{ flex: 1 }}
+          onPress={() =>
+            navigation.navigate("SingleHomework", {
+              homeworkId: props.homework.id,
+              title: props.homework.name,
+            })
+          }
+        >
+          <MediumText style={styles.homeworkText}>
+            {props.homework.name}
+          </MediumText>
+          <RegularText>
+            {minutesToHoursMinutesFun(props.homework.duration)}
+          </RegularText>
+        </TouchableOpacity>
+      </View>
+      <View style={{ marginBottom: 5, marginLeft: 40 }}>
+        <Break />
+      </View>
+    </View>
   );
 };
 
+const CompleteCircle: React.FC<{ onComplete: () => void }> = (props) => {
+  return (
+    <TouchableOpacity
+      onPress={() => props.onComplete}
+      style={{
+        alignSelf: "center",
+        marginHorizontal: 10,
+        height: 22,
+        aspectRatio: 1,
+        borderRadius: 1000,
+        borderColor: "#666",
+        borderWidth: 1,
+      }}
+    ></TouchableOpacity>
+  );
+};
 const HeaderNavigation: React.FC<{
   date: Date;
   onPageForward: () => void;
@@ -390,41 +419,6 @@ const styles = StyleSheet.create({
   },
   homeworkText: {
     fontSize: 15,
-    marginLeft: 7,
-    flex: 1,
-    alignSelf: "flex-start",
-  },
-  homeworkNotCenterText: {
-    paddingVertical: 6,
-  },
-  homeworkCenterText: {
-    alignSelf: "center",
-  },
-  homeworkBar: {
-    width: 5,
-    borderRadius: 5,
-    marginVertical: 2,
-  },
-  calendarDayHomework: {
-    margin: 9,
-    padding: 10,
-    borderRadius: 6,
-  },
-  checkIcon: {
-    marginRight: 6,
-    marginTop: 0,
-  },
-  timeBar: {
-    width: 2,
-    flex: 1,
-    backgroundColor: "#aaa",
-  },
-  timeBarText: {
-    color: "#666",
-  },
-  timeBarContainer: {
-    flexDirection: "column",
-    alignItems: "center",
   },
   headerContainer: {
     padding: 10,
@@ -448,6 +442,10 @@ const styles = StyleSheet.create({
   bigDate: {
     fontSize: 28,
     letterSpacing: -0.8,
+  },
+  calendarDayHomeworkContainer: {
+    flexDirection: "row",
+    paddingBottom: 5,
   },
 });
 

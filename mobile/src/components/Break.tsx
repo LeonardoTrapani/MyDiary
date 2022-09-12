@@ -6,6 +6,7 @@ const Break: React.FC = () => {
     <View
       style={{
         height: 0.5,
+        opacity: 0.6,
         backgroundColor: "#bbb",
       }}
     />
