@@ -3,7 +3,7 @@ import {
   useNavigation,
   useTheme,
 } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -16,9 +16,8 @@ import {
   HomeStackScreenProps,
   RootStackParamList,
 } from "../../types";
-import DateTimePicker from "react-native-modal-datetime-picker";
 import { BoldText, RegularText } from "../components/StyledText";
-import { View } from "../components/Themed";
+import { CardView, View } from "../components/Themed";
 import { useCalendarDay, useValidToken } from "../util/react-query-hooks";
 import ErrorComponent from "../components/ErrorComponent";
 import moment from "moment";
@@ -27,10 +26,11 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import MyDurationPicker from "../components/MyDurationPicker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { editDay } from "../api/day";
+import { minutesToHoursMinutesFun } from "../util/generalUtils";
+import globalStyles from "../constants/Syles";
+import DateTimePicker from "react-native-modal-datetime-picker";
 
 const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
-  const [isCalendarOpened, setIsCalendarOpened] = useState(false);
-
   const initialDate = moment().startOf("day").toISOString();
   const [currentCalendarDate, setCurrentCalendarDate] = useState(initialDate);
 
@@ -76,12 +76,12 @@ const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
             return moment(prev).startOf("day").add(1, "day").toISOString();
           });
         }}
-        onShowCalendar={() => setIsCalendarOpened(true)}
         onPageBackward={() => {
           setCurrentCalendarDate((prev) =>
             moment(prev).startOf("day").subtract(1, "day").toISOString()
           );
         }}
+        onSetCalendarDate={(date: string) => setCurrentCalendarDate(date)}
         currentCalendarDate={currentCalendarDate}
         freeMinutes={calendarDay?.freeMins}
         minutesToAssign={calendarDay?.minutesToAssign}
@@ -101,20 +101,6 @@ const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
                 currentDate={currentCalendarDate}
               />
             </View>
-            <DateTimePicker
-              date={moment(currentCalendarDate).toDate()}
-              mode="date"
-              isVisible={isCalendarOpened}
-              onConfirm={(date) => {
-                setIsCalendarOpened(false);
-                setCurrentCalendarDate(
-                  moment(date).startOf("day").toISOString()
-                );
-              }}
-              onCancel={() => {
-                setIsCalendarOpened(false);
-              }}
-            />
           </>
         )
       )}
@@ -124,8 +110,8 @@ const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
 
 const MyHomeworkHeader: React.FC<{
   onToday: () => void;
+  onSetCalendarDate: (date: string) => void;
   currentCalendarDate: string;
-  onShowCalendar: () => void;
   onPageForward: () => void;
   onPageBackward: () => void;
   navigation: NativeStackNavigationProp<HomeStackParamList, "Root", undefined>;
@@ -165,20 +151,30 @@ const MyHomeworkHeader: React.FC<{
     }
   }, [props.freeMinutes]);
 
+  const [isCalendarOpened, setIsCalendarOpened] = useState(false);
+
+  const onShowCalendar = () => {
+    setIsCalendarOpened(true);
+  };
+
+  const { primary } = useTheme().colors;
+
   return (
     <>
       <View style={styles.headerContainer}>
-        <BoldText style={styles.bigDate}>
-          {moment(props.currentCalendarDate).toDate().toDateString()}
-        </BoldText>
+        <TouchableOpacity onPress={onShowCalendar}>
+          <BoldText style={[styles.bigDate, { color: primary }]}>
+            {moment(props.currentCalendarDate).toDate().toDateString()}
+          </BoldText>
+        </TouchableOpacity>
         <View style={styles.navigationContainer}>
           <HeaderNavigation
             date={moment(props.currentCalendarDate).toDate()}
-            onShowCalendar={props.onShowCalendar}
             onPageForward={props.onPageForward}
             onPageBackward={props.onPageBackward}
             onToday={props.onToday}
           />
+          {/*for edit day*/}
           <MyDurationPicker
             isVisible={durationPickerVisible}
             date={durationDate}
@@ -197,6 +193,21 @@ const MyHomeworkHeader: React.FC<{
               });
             }}
           />
+
+          <DateTimePicker
+            date={moment(props.currentCalendarDate).toDate()}
+            mode="date"
+            isVisible={isCalendarOpened}
+            onConfirm={(date) => {
+              setIsCalendarOpened(false);
+              props.onSetCalendarDate(
+                moment(date).startOf("day").toISOString()
+              );
+            }}
+            onCancel={() => {
+              setIsCalendarOpened(false);
+            }}
+          />
         </View>
       </View>
       {editDayMutation.isError && (
@@ -212,25 +223,40 @@ const HomeworkBody: React.FC<{
   minutesToAssign: number;
   currentDate: string;
 }> = (props) => {
+  const notCompletedHomework = useMemo(() => {
+    return props.calendarDay?.user.homework.filter(
+      (hmk) => hmk.plannedDates[0].completed === false
+    );
+  }, [props.calendarDay?.user.homework]);
+
+  const completedHomework = useMemo(() => {
+    return props.calendarDay?.user.homework.filter(
+      (hmk) => hmk.plannedDates[0].completed === true
+    );
+  }, [props.calendarDay?.user.homework]);
+
   if (!props.calendarDay) {
     return <></>;
   }
   return (
     <View style={{ flex: 1 }}>
+      <View style={{ flex: 1 }}>
+        <FlatList
+          data={notCompletedHomework}
+          renderItem={({ item, index }) => (
+            <CalendarDayHomework homework={item} i={index} />
+          )}
+        />
+      </View>
       <FlatList
-        data={props.calendarDay.user.homework}
+        data={completedHomework}
         renderItem={({ item, index }) => (
-          <CalendarDayHomework
-            homework={item}
-            freeTime={props.freeTime}
-            i={index}
-          />
+          <CalendarDayHomework homework={item} i={index} />
         )}
       />
     </View>
   );
 };
-
 const CalendarDayHomework: React.FC<{
   homework: {
     completed: boolean;
@@ -250,7 +276,6 @@ const CalendarDayHomework: React.FC<{
     expirationDate: string;
     duration: number;
   };
-  freeTime: number;
   i: number;
 }> = (props) => {
   if (props.homework.plannedDates.length > 1) {
@@ -269,14 +294,18 @@ const CalendarDayHomework: React.FC<{
         })
       }
     >
-      <RegularText>{props.homework.name}</RegularText>
+      <CardView style={[styles.calendarDayHomework, globalStyles.smallShadow]}>
+        <RegularText>{props.homework.name}</RegularText>
+        <RegularText>
+          {minutesToHoursMinutesFun(props.homework.duration)}
+        </RegularText>
+      </CardView>
     </TouchableOpacity>
   );
 };
 
 const HeaderNavigation: React.FC<{
   date: Date;
-  onShowCalendar: () => void;
   onPageForward: () => void;
   onPageBackward: () => void;
   onToday: () => void;
@@ -358,8 +387,6 @@ const styles = StyleSheet.create({
   dateChangeFront: {},
   homeworkBodyContainer: {
     flex: 1,
-    paddingHorizontal: 10,
-    marginVertical: 10,
   },
   homeworkText: {
     fontSize: 15,
@@ -378,12 +405,15 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginVertical: 2,
   },
-  calendarDayHomework: {},
+  calendarDayHomework: {
+    margin: 9,
+    padding: 10,
+    borderRadius: 6,
+  },
   checkIcon: {
     marginRight: 6,
     marginTop: 0,
   },
-  checkIconContainer: {},
   timeBar: {
     width: 2,
     flex: 1,
@@ -397,7 +427,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   headerContainer: {
-    padding: 20,
+    padding: 10,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",

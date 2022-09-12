@@ -133,13 +133,11 @@ const SingleHomewrk: React.FC<{
       </View>
       <View style={[styles.row, { marginBottom: 0 }]}>
         <RegularText style={styles.rowText}>Completed:</RegularText>
-        <RegularText>
-          {props.singleHomework.completed ? (
-            <Ionicons name="checkmark" size={22} color="#32a854" />
-          ) : (
-            <Ionicons name="close-outline" size={22} color={errorColor} />
-          )}
-        </RegularText>
+        {props.singleHomework.completed ? (
+          <Ionicons name="checkmark" size={22} color="#32a854" />
+        ) : (
+          <Ionicons name="close-outline" size={22} color={errorColor} />
+        )}
       </View>
       <View style={styles.breakContainer}>
         <Break />
@@ -303,7 +301,7 @@ const styles = StyleSheet.create({
   planneDateContainer: {
     marginVertical: 15,
     marginHorizontal: 20,
-    borderRadius: 12,
+    borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 10,
   },

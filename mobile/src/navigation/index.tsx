@@ -20,9 +20,7 @@ import useInitialLoading from "../util/useInitialLoading";
 import { useIsWeekCreated, useValidToken } from "../util/react-query-hooks";
 import { MyDarkTheme, MyLightTheme } from "../constants/Colors";
 import CreateWeekScreen from "../screens/CreateWeekScreen";
-import HomeScreen, {
-  AddHomeworkIcon as AddHomeworkIcon,
-} from "../screens/HomeworkScreen";
+import HomeScreen, { AddHomeworkIcon } from "../screens/HomeScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import { Ionicons } from "@expo/vector-icons";
 import AddHomeworkModal from "../screens/AddHomeworkModal";
