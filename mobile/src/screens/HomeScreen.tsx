@@ -233,7 +233,7 @@ const HomeworkBody: React.FC<{
   }, [props.calendarDay?.user.homework]);
 
   const qc = useQueryClient();
-  const editDayMutation = useMutation(
+  const completeHomeworkMutation = useMutation(
     (data: { id: number }) => {
       return completePlannedDate(data.id, validToken, true);
     },
@@ -256,9 +256,9 @@ const HomeworkBody: React.FC<{
   }
 
   const completeHandler = (id: number) => {
-    editDayMutation.mutate({ id });
+    completeHomeworkMutation.mutate({ id });
   };
-  //loading circle while not response
+
   return (
     <View style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
@@ -269,6 +269,7 @@ const HomeworkBody: React.FC<{
               homework={item}
               i={index}
               onComplete={completeHandler}
+              isCompleteLoading={completeHomeworkMutation.isLoading}
             />
           )}
         />
@@ -282,6 +283,7 @@ const HomeworkBody: React.FC<{
 //<CalendarDayHomework homework={item} i={index} />
 //)}
 ///>
+
 const CalendarDayHomework: React.FC<{
   homework: {
     completed: boolean;
@@ -302,6 +304,7 @@ const CalendarDayHomework: React.FC<{
     duration: number;
   };
   i: number;
+  isCompleteLoading: boolean;
   onComplete: (i: number) => void;
 }> = (props) => {
   if (props.homework.plannedDates.length > 1) {
@@ -318,7 +321,10 @@ const CalendarDayHomework: React.FC<{
   return (
     <View>
       <View style={styles.calendarDayHomeworkContainer}>
-        <CompleteCircle onComplete={() => completeHandler()} />
+        <CompleteCircle
+          onComplete={() => completeHandler()}
+          isLoading={props.isCompleteLoading}
+        />
         <TouchableOpacity
           style={{ flex: 1 }}
           onPress={() =>
@@ -345,7 +351,10 @@ const CalendarDayHomework: React.FC<{
   );
 };
 
-const CompleteCircle: React.FC<{ onComplete: () => void }> = (props) => {
+const CompleteCircle: React.FC<{
+  onComplete: () => void;
+  isLoading: boolean;
+}> = (props) => {
   return (
     <TouchableOpacity
       onPress={props.onComplete}
@@ -357,8 +366,12 @@ const CompleteCircle: React.FC<{ onComplete: () => void }> = (props) => {
         borderRadius: 1000,
         borderColor: "#666",
         borderWidth: 1,
+        alignItems: "center",
+        justifyContent: "center",
       }}
-    ></TouchableOpacity>
+    >
+      {props.isLoading && <ActivityIndicator />}
+    </TouchableOpacity>
   );
 };
 const HeaderNavigation: React.FC<{
