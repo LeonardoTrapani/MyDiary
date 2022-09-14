@@ -245,11 +245,11 @@ const HomeworkBody: React.FC<{
     }
   );
 
-  const completedHomework = useMemo(() => {
-    return props.calendarDay?.user.homework.filter(
-      (hmk) => hmk.plannedDates[0].completed === true
-    );
-  }, [props.calendarDay?.user.homework]);
+  //const completedHomework = useMemo(() => {
+  //return props.calendarDay?.user.homework.filter(
+  //(hmk) => hmk.plannedDates[0].completed === true
+  //);
+  //}, [props.calendarDay?.user.homework]);
 
   if (!props.calendarDay) {
     return <></>;
@@ -367,6 +367,7 @@ const CompleteCircle: React.FC<{
         aspectRatio: 1,
         borderRadius: 1000,
         borderColor: props.color,
+        //borderColor: "#888",
         borderWidth: 1,
         alignItems: "center",
         justifyContent: "center",
