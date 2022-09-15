@@ -21,7 +21,7 @@ import { View } from "../components/Themed";
 import { useCalendarDay, useValidToken } from "../util/react-query-hooks";
 import ErrorComponent from "../components/ErrorComponent";
 import moment from "moment";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import MyDurationPicker from "../components/MyDurationPicker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -30,6 +30,7 @@ import { minutesToHoursMinutesFun } from "../util/generalUtils";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import Break from "../components/Break";
 import { completePlannedDate } from "../api/homework";
+import SegmentedControl from "@react-native-segmented-control/segmented-control";
 
 const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
   const initialDate = moment().startOf("day").toISOString();
@@ -153,6 +154,8 @@ const MyHomeworkHeader: React.FC<{
   }, [props.freeMinutes]);
 
   const [isCalendarOpened, setIsCalendarOpened] = useState(false);
+  const [segmentedControlSelectedIndex, setSegmentedControlSelectedIndex] =
+    useState(0);
 
   const onShowCalendar = () => {
     setIsCalendarOpened(true);
@@ -162,6 +165,11 @@ const MyHomeworkHeader: React.FC<{
 
   return (
     <>
+      <SegmentedControl
+        style={{ width: 200, alignSelf: "center", marginTop: 10 }}
+        values={["diary", "planned"]}
+        selectedIndex={segmentedControlSelectedIndex}
+      />
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={onShowCalendar}>
           <BoldText style={[styles.bigDate, { color: primary }]}>
@@ -431,10 +439,11 @@ export const AddHomeworkIcon: React.FC = () => {
         navigation.navigate("AddHomework");
       }}
     >
-      <Ionicons name="ios-add" size={28} color={primary} />
+      <Ionicons name="add" color={primary} size={28} />
     </TouchableOpacity>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -466,6 +475,7 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     padding: 10,
+    paddingTop: 0,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
