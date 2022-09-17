@@ -21,7 +21,7 @@ import { View } from "../components/Themed";
 import { useCalendarDay, useValidToken } from "../util/react-query-hooks";
 import ErrorComponent from "../components/ErrorComponent";
 import moment from "moment";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import MyDurationPicker from "../components/MyDurationPicker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -66,6 +66,9 @@ const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
 
   const calendarDayError = error as Error;
 
+  const [segmentedControlSelectedIndex, setSegmentedControlSelectedIndex] =
+    useState(0);
+
   return (
     <View style={styles.container}>
       <MyHomeworkHeader
@@ -87,6 +90,8 @@ const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
         currentCalendarDate={currentCalendarDate}
         freeMinutes={calendarDay?.freeMins}
         minutesToAssign={calendarDay?.minutesToAssign}
+        setSegmentedControlSelectedIndex={setSegmentedControlSelectedIndex}
+        segmentedControlSelectedIndex={segmentedControlSelectedIndex}
       />
       {isCalendarDayLoading ? (
         <ActivityIndicator />
@@ -117,6 +122,8 @@ const MyHomeworkHeader: React.FC<{
   onPageForward: () => void;
   onPageBackward: () => void;
   navigation: NativeStackNavigationProp<HomeStackParamList, "Root", undefined>;
+  segmentedControlSelectedIndex: number;
+  setSegmentedControlSelectedIndex: (i: number) => void;
   minutesToAssign: number | undefined;
   freeMinutes: number | undefined;
 }> = (props) => {
@@ -154,8 +161,6 @@ const MyHomeworkHeader: React.FC<{
   }, [props.freeMinutes]);
 
   const [isCalendarOpened, setIsCalendarOpened] = useState(false);
-  const [segmentedControlSelectedIndex, setSegmentedControlSelectedIndex] =
-    useState(0);
 
   const onShowCalendar = () => {
     setIsCalendarOpened(true);
@@ -168,7 +173,12 @@ const MyHomeworkHeader: React.FC<{
       <SegmentedControl
         style={{ width: 200, alignSelf: "center", marginTop: 10 }}
         values={["diary", "planned"]}
-        selectedIndex={segmentedControlSelectedIndex}
+        selectedIndex={props.segmentedControlSelectedIndex}
+        onChange={(e) => {
+          props.setSegmentedControlSelectedIndex(
+            e.nativeEvent.selectedSegmentIndex
+          );
+        }}
       />
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={onShowCalendar}>
