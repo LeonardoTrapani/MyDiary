@@ -505,7 +505,69 @@ export const InfoModal = () => {
   if (!activeInfoDay) {
     return <ErrorComponent text="an error has occurred: day does not exist" />;
   }
-  return <View></View>;
+  return (
+    <View
+      style={{
+        padding: 20,
+      }}
+    >
+      <BoldText
+        style={{
+          fontSize: 30,
+        }}
+      >
+        {new Date(activeInfoDay.date).toDateString()}
+      </BoldText>
+
+      <View style={{ marginVertical: 10 }}>
+        <InfoRow
+          left="Minutes to assign"
+          right={minutesToHoursMinutesFun(activeInfoDay.minutesToAssign)}
+        />
+        <InfoRow
+          left="Minutes to complete"
+          right={minutesToHoursMinutesFun(activeInfoDay.minutesToComplete)}
+        />
+        <InfoRow
+          left="Initial Free Time"
+          right={minutesToHoursMinutesFun(activeInfoDay.initialFreeTime)}
+          rightPressable={true}
+        />
+      </View>
+    </View>
+  );
+};
+
+const InfoRow: React.FC<{
+  left?: string;
+  right?: string;
+  rightPressable?: boolean;
+  onRightPressed?: () => void;
+}> = (props) => {
+  const { primary } = useTheme().colors;
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        paddingVertical: 5,
+        justifyContent: "space-between",
+      }}
+    >
+      <RegularText style={{ fontSize: 17 }}>{props.left}</RegularText>
+      {!props.rightPressable ? (
+        <RegularText style={{ fontSize: 17, color: primary }}>
+          {props.right}
+        </RegularText>
+      ) : (
+        <TouchableOpacity onPress={props.onRightPressed}>
+          <MediumText style={{ fontSize: 17, color: primary }}>
+            {props.right}
+          </MediumText>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
