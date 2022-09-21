@@ -31,6 +31,8 @@ import DateTimePicker from "react-native-modal-datetime-picker";
 import Break from "../components/Break";
 import { completePlannedDate } from "../api/homework";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
+import { useAtom } from "jotai";
+import { activeInfoDayAtom } from "../util/atoms";
 
 const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
   const initialDate = moment().startOf("day").toISOString();
@@ -50,6 +52,33 @@ const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
     isFetching: isCalendarDayFetching,
   } = useCalendarDay(moment(currentCalendarDate));
 
+  const [, setActiveInfoDay] = useAtom(activeInfoDayAtom);
+
+  const [minutesToComplete, setMinutesToComplete] = useState(0);
+  useEffect(() => {
+    if (!calendarDay) {
+      return;
+    }
+    const locMinsToComplete = calendarDay.user.homework.reduce((prev, curr) => {
+      if (curr.completed === false) {
+        return prev + 0;
+      }
+      return prev + curr.plannedDates[0].minutesAssigned;
+    }, 0);
+    setMinutesToComplete(locMinsToComplete);
+  }, [calendarDay]);
+
+  useEffect(() => {
+    if (!calendarDay) {
+      return;
+    }
+    setActiveInfoDay({
+      date: calendarDay.date,
+      initialFreeTime: calendarDay.freeMins,
+      minutesToAssign: calendarDay.minutesToAssign,
+      minutesToComplete: minutesToComplete,
+    });
+  }, [calendarDay, minutesToComplete, setActiveInfoDay]);
   useEffect(() => {
     if (!calendarDay || isCalendarDayFetching) {
       return;
@@ -61,6 +90,7 @@ const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
       current: moment(currentCalendarDate).toDate(),
       server: calendarDay.date,
     });
+    console.log("active");
     setCurrentCalendarDate(calendarDay.date);
   }, [calendarDay, currentCalendarDate, isCalendarDayFetching]);
 
@@ -245,9 +275,9 @@ const HomeworkBody: React.FC<{
   const { data: validToken } = useValidToken();
 
   const notCompletedHomework = useMemo(() => {
-    return props.calendarDay?.user.homework.filter(
-      (hmk) => hmk.plannedDates[0].completed === false
-    );
+    return props.calendarDay?.user.homework.filter((hmk) => {
+      return hmk.plannedDates[0].completed === false;
+    });
   }, [props.calendarDay?.user.homework]);
 
   const qc = useQueryClient();
@@ -439,6 +469,22 @@ const DateChangeFront: React.FC<{ onPress: () => void }> = (props) => {
   );
 };
 
+export const CalendarDayInfoIcon: React.FC = () => {
+  const { primary } = useTheme().colors;
+
+  const navigation = useNavigation<NavigationProp<HomeStackParamList>>();
+
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate("Info");
+      }}
+    >
+      <Ionicons name="information-circle-outline" color={primary} size={25} />
+    </TouchableOpacity>
+  );
+};
+
 export const AddHomeworkIcon: React.FC = () => {
   const { primary } = useTheme().colors;
 
@@ -452,6 +498,14 @@ export const AddHomeworkIcon: React.FC = () => {
       <Ionicons name="add" color={primary} size={28} />
     </TouchableOpacity>
   );
+};
+
+export const InfoModal = () => {
+  const [activeInfoDay] = useAtom(activeInfoDayAtom);
+  if (!activeInfoDay) {
+    return <ErrorComponent text="an error has occurred: day does not exist" />;
+  }
+  return <View></View>;
 };
 
 const styles = StyleSheet.create({

@@ -29,7 +29,7 @@ const SingleHomeworkScreen = ({
   navigation,
   route,
 }: HomeStackScreenProps<"SingleHomework">) => {
-  const { title, homeworkId } = route.params;
+  const { homeworkId } = route.params;
 
   const {
     data: singleHomework,
@@ -37,10 +37,6 @@ const SingleHomeworkScreen = ({
     error: singleHomeworkError,
     isLoading: isSingleHomeworkLoading,
   } = useSingleHomework(homeworkId);
-
-  useLayoutEffect(() => {
-    navigation.setOptions({ title });
-  }, [navigation, title]);
 
   useEffect(() => {
     if (singleHomework) {
