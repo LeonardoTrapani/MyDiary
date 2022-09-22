@@ -462,22 +462,40 @@ export const InfoModal = () => {
 
   const [activeInfoDay] = useAtom(activeInfoDayAtom);
 
-  const [durationPickerVisible, setDurationPickerVisible] = useState(false);
-  const minutesAssigned =
+  const [freeTimeDurationPickerVisible, setFreeTimeDurationPickerVisible] =
+    useState(false);
+
+  const [
+    minutesToAssignDurationPickerVisible,
+    setMinutesToAssignDurationPickerVisible,
+  ] = useState(false);
+
+  const assignedMinutes =
     typeof activeInfoDay !== "undefined"
       ? activeInfoDay.initialFreeTime - activeInfoDay.minutesToAssign
       : 0;
 
-  const [durationDate, setDurationDate] = useState(
+  const freeTimeMinimumTime = assignedMinutes;
+
+  const [freeTimeDurationDate, setFreeTimeDurationDate] = useState(
     moment().startOf("day").toDate()
   );
 
+  const [minutesToAssignDurationDate, setMinutesToAssignDurationDate] =
+    useState(moment().startOf("day").toDate());
+
   useEffect(() => {
     if (typeof activeInfoDay !== "undefined") {
-      setDurationDate(
+      setFreeTimeDurationDate(
         moment()
           .startOf("day")
           .add(activeInfoDay.initialFreeTime, "minutes")
+          .toDate()
+      );
+      setMinutesToAssignDurationDate(
+        moment()
+          .startOf("day")
+          .add(activeInfoDay.minutesToAssign, "minutes")
           .toDate()
       );
     }
@@ -486,6 +504,7 @@ export const InfoModal = () => {
   if (!activeInfoDay) {
     return <ErrorComponent text="an error has occurred: day does not exist" />;
   }
+  console.log(assignedMinutes);
 
   return (
     <View
@@ -503,35 +522,60 @@ export const InfoModal = () => {
 
       <View style={{ marginVertical: 10 }}>
         <InfoRow
-          left="Minutes to assign"
-          right={minutesToHoursMinutesFun(activeInfoDay.minutesToAssign)}
-        />
-        <InfoRow
           left="Minutes to complete"
           right={minutesToHoursMinutesFun(activeInfoDay.minutesToComplete)}
+        />
+        <InfoRow
+          left="Minutes to assign"
+          right={minutesToHoursMinutesFun(activeInfoDay.minutesToAssign)}
+          rightPressable={true}
+          onRightPressed={() => {
+            setMinutesToAssignDurationPickerVisible(true);
+          }}
         />
         <InfoRow
           left="Initial Free Time"
           right={minutesToHoursMinutesFun(activeInfoDay.initialFreeTime)}
           rightPressable={true}
           onRightPressed={() => {
-            setDurationPickerVisible(true);
+            setFreeTimeDurationPickerVisible(true);
           }}
         />
       </View>
 
       <MyDurationPicker
-        isVisible={durationPickerVisible}
-        date={durationDate}
-        minimumTime={minutesAssigned}
+        isVisible={freeTimeDurationPickerVisible}
+        date={freeTimeDurationDate}
+        minimumTime={freeTimeMinimumTime}
         onCancel={() => {
-          setDurationPickerVisible(false);
+          setFreeTimeDurationPickerVisible(false);
         }}
         onConfirm={(date) => {
           const mins =
             moment(date).get("minutes") + moment(date).get("hours") * 60;
-          setDurationDate(date);
-          setDurationPickerVisible(false);
+          setFreeTimeDurationDate(date);
+          setFreeTimeDurationPickerVisible(false);
+          editDayMutation.mutate({
+            freeMinutes: mins,
+            date: activeInfoDay.date,
+          });
+        }}
+      />
+
+      <MyDurationPicker
+        isVisible={minutesToAssignDurationPickerVisible}
+        date={minutesToAssignDurationDate}
+        maximumTime={1439 - assignedMinutes}
+        onCancel={() => {
+          setMinutesToAssignDurationPickerVisible(false);
+        }}
+        onConfirm={(date) => {
+          const mins =
+            moment(date).get("minutes") +
+            moment(date).get("hours") * 60 +
+            assignedMinutes;
+          setMinutesToAssignDurationDate(date);
+          setMinutesToAssignDurationPickerVisible(false);
           editDayMutation.mutate({
             freeMinutes: mins,
             date: activeInfoDay.date,
