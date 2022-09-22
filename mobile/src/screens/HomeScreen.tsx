@@ -157,39 +157,6 @@ const MyHomeworkHeader: React.FC<{
   minutesToAssign: number | undefined;
   freeMinutes: number | undefined;
 }> = (props) => {
-  const { data: validToken } = useValidToken();
-
-  const queryClient = useQueryClient();
-  const editDayMutation = useMutation(
-    (dayInfo: { date: string; freeMinutes: number }) => {
-      return editDay(dayInfo.date, dayInfo.freeMinutes, validToken);
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["calendarDay"]);
-      },
-    }
-  );
-
-  const [durationPickerVisible, setDurationPickerVisible] = useState(false);
-  const minutesAssigned =
-    typeof props.freeMinutes !== "undefined" &&
-    typeof props.minutesToAssign !== "undefined"
-      ? props.freeMinutes - props.minutesToAssign
-      : 0;
-
-  const [durationDate, setDurationDate] = useState(
-    moment().startOf("day").toDate()
-  );
-
-  useEffect(() => {
-    if (typeof props.freeMinutes !== "undefined") {
-      setDurationDate(
-        moment().startOf("day").add(props.freeMinutes, "minutes").toDate()
-      );
-    }
-  }, [props.freeMinutes]);
-
   const [isCalendarOpened, setIsCalendarOpened] = useState(false);
 
   const onShowCalendar = () => {
@@ -223,25 +190,6 @@ const MyHomeworkHeader: React.FC<{
             onPageBackward={props.onPageBackward}
             onToday={props.onToday}
           />
-          {/*for edit day*/}
-          <MyDurationPicker
-            isVisible={durationPickerVisible}
-            date={durationDate}
-            minimumTime={minutesAssigned}
-            onCancel={() => {
-              setDurationPickerVisible(false);
-            }}
-            onConfirm={(date) => {
-              const mins =
-                moment(date).get("minutes") + moment(date).get("hours") * 60;
-              setDurationDate(date);
-              setDurationPickerVisible(false);
-              editDayMutation.mutate({
-                freeMinutes: mins,
-                date: props.currentCalendarDate,
-              });
-            }}
-          />
 
           <DateTimePicker
             date={moment(props.currentCalendarDate).toDate()}
@@ -259,9 +207,6 @@ const MyHomeworkHeader: React.FC<{
           />
         </View>
       </View>
-      {editDayMutation.isError && (
-        <ErrorComponent text={editDayMutation.error as string} />
-      )}
     </>
   );
 };
@@ -501,10 +446,47 @@ export const AddHomeworkIcon: React.FC = () => {
 };
 
 export const InfoModal = () => {
+  const { data: validToken } = useValidToken();
+
+  const queryClient = useQueryClient();
+  const editDayMutation = useMutation(
+    (dayInfo: { date: string; freeMinutes: number }) => {
+      return editDay(dayInfo.date, dayInfo.freeMinutes, validToken);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["calendarDay"]);
+      },
+    }
+  );
+
   const [activeInfoDay] = useAtom(activeInfoDayAtom);
+
+  const [durationPickerVisible, setDurationPickerVisible] = useState(false);
+  const minutesAssigned =
+    typeof activeInfoDay !== "undefined"
+      ? activeInfoDay.initialFreeTime - activeInfoDay.minutesToAssign
+      : 0;
+
+  const [durationDate, setDurationDate] = useState(
+    moment().startOf("day").toDate()
+  );
+
+  useEffect(() => {
+    if (typeof activeInfoDay !== "undefined") {
+      setDurationDate(
+        moment()
+          .startOf("day")
+          .add(activeInfoDay.initialFreeTime, "minutes")
+          .toDate()
+      );
+    }
+  }, [activeInfoDay]);
+
   if (!activeInfoDay) {
     return <ErrorComponent text="an error has occurred: day does not exist" />;
   }
+
   return (
     <View
       style={{
@@ -532,8 +514,30 @@ export const InfoModal = () => {
           left="Initial Free Time"
           right={minutesToHoursMinutesFun(activeInfoDay.initialFreeTime)}
           rightPressable={true}
+          onRightPressed={() => {
+            setDurationPickerVisible(true);
+          }}
         />
       </View>
+
+      <MyDurationPicker
+        isVisible={durationPickerVisible}
+        date={durationDate}
+        minimumTime={minutesAssigned}
+        onCancel={() => {
+          setDurationPickerVisible(false);
+        }}
+        onConfirm={(date) => {
+          const mins =
+            moment(date).get("minutes") + moment(date).get("hours") * 60;
+          setDurationDate(date);
+          setDurationPickerVisible(false);
+          editDayMutation.mutate({
+            freeMinutes: mins,
+            date: activeInfoDay.date,
+          });
+        }}
+      />
     </View>
   );
 };
