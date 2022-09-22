@@ -55,12 +55,13 @@ const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
   const [, setActiveInfoDay] = useAtom(activeInfoDayAtom);
 
   const [minutesToComplete, setMinutesToComplete] = useState(0);
+
   useEffect(() => {
     if (!calendarDay) {
       return;
     }
     const locMinsToComplete = calendarDay.user.homework.reduce((prev, curr) => {
-      if (curr.completed === false) {
+      if (curr.plannedDates[0].completed === true) {
         return prev + 0;
       }
       return prev + curr.plannedDates[0].minutesAssigned;
@@ -504,7 +505,6 @@ export const InfoModal = () => {
   if (!activeInfoDay) {
     return <ErrorComponent text="an error has occurred: day does not exist" />;
   }
-  console.log(assignedMinutes);
 
   return (
     <View
