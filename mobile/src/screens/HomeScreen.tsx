@@ -6,7 +6,7 @@ import {
 import React, { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
-  FlatList,
+  SectionList,
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
@@ -17,7 +17,7 @@ import {
   RootStackParamList,
 } from "../../types";
 import { BoldText, MediumText, RegularText } from "../components/StyledText";
-import { View } from "../components/Themed";
+import { CardView, View } from "../components/Themed";
 import { useCalendarDay, useValidToken } from "../util/react-query-hooks";
 import ErrorComponent from "../components/ErrorComponent";
 import moment from "moment";
@@ -28,11 +28,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { editDay } from "../api/day";
 import { minutesToHoursMinutesFun } from "../util/generalUtils";
 import DateTimePicker from "react-native-modal-datetime-picker";
-import Break from "../components/Break";
 import { completePlannedDate } from "../api/homework";
-import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { useAtom } from "jotai";
 import { activeInfoDayAtom } from "../util/atoms";
+import globalStyles from "../constants/Syles";
+import Break from "../components/Break";
 
 const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
   const initialDate = moment().startOf("day").toISOString();
@@ -168,16 +168,6 @@ const MyHomeworkHeader: React.FC<{
 
   return (
     <>
-      <SegmentedControl
-        style={{ width: 200, alignSelf: "center", marginTop: 10 }}
-        values={["diary", "planned"]}
-        selectedIndex={props.segmentedControlSelectedIndex}
-        onChange={(e) => {
-          props.setSegmentedControlSelectedIndex(
-            e.nativeEvent.selectedSegmentIndex
-          );
-        }}
-      />
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={onShowCalendar}>
           <BoldText style={[styles.bigDate, { color: primary }]}>
@@ -239,11 +229,11 @@ const HomeworkBody: React.FC<{
     }
   );
 
-  //const completedHomework = useMemo(() => {
-  //return props.calendarDay?.user.homework.filter(
-  //(hmk) => hmk.plannedDates[0].completed === true
-  //);
-  //}, [props.calendarDay?.user.homework]);
+  const completedHomework = useMemo(() => {
+    return props.calendarDay?.user.homework.filter(
+      (hmk) => hmk.plannedDates[0].completed === true
+    );
+  }, [props.calendarDay?.user.homework]);
 
   if (!props.calendarDay) {
     return <></>;
@@ -256,8 +246,26 @@ const HomeworkBody: React.FC<{
   return (
     <View style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
-        <FlatList
-          data={notCompletedHomework}
+        <SectionList
+          ItemSeparatorComponent={() => (
+            <View style={{ marginBottom: 5, marginLeft: 40 }}>
+              <Break />
+            </View>
+          )}
+          sections={[
+            { title: "Not completed", data: notCompletedHomework || [] },
+            { title: "Completed", data: completedHomework || [] },
+          ]}
+          renderSectionHeader={({ section }) => {
+            if (!section.data.length) {
+              return <></>;
+            }
+            return (
+              <HomeworkListSectionHeader>
+                {section.title}
+              </HomeworkListSectionHeader>
+            );
+          }}
           renderItem={({ item, index }) => (
             <CalendarDayHomework
               homework={item}
@@ -271,12 +279,18 @@ const HomeworkBody: React.FC<{
     </View>
   );
 };
-//<FlatList
-//data={completedHomework}
-//renderItem={({ item, index }) => (
-//<CalendarDayHomework homework={item} i={index} />
-//)}
-///>
+
+const HomeworkListSectionHeader: React.FC<{ children: string }> = (props) => {
+  return (
+    <CardView
+      style={[styles.homeworkListSectionHeader, globalStyles.smallShadow]}
+    >
+      <MediumText style={styles.homeworkListSectionHeaderText}>
+        {props.children}
+      </MediumText>
+    </CardView>
+  );
+};
 
 const CalendarDayHomework: React.FC<{
   homework: {
@@ -338,9 +352,6 @@ const CalendarDayHomework: React.FC<{
             )}
           </RegularText>
         </TouchableOpacity>
-      </View>
-      <View style={{ marginBottom: 5, marginLeft: 40 }}>
-        <Break />
       </View>
     </View>
   );
@@ -648,8 +659,8 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   headerContainer: {
-    padding: 10,
-    paddingTop: 0,
+    padding: 20,
+    paddingVertical: 10,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -674,6 +685,13 @@ const styles = StyleSheet.create({
   calendarDayHomeworkContainer: {
     flexDirection: "row",
     paddingBottom: 5,
+  },
+  homeworkListSectionHeader: {
+    marginBottom: 6,
+    padding: 10,
+  },
+  homeworkListSectionHeaderText: {
+    fontSize: 15,
   },
 });
 
