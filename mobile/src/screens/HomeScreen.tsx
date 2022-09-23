@@ -97,9 +97,6 @@ const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
 
   const calendarDayError = error as Error;
 
-  const [segmentedControlSelectedIndex, setSegmentedControlSelectedIndex] =
-    useState(0);
-
   return (
     <View style={styles.container}>
       <MyHomeworkHeader
@@ -121,8 +118,6 @@ const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
         currentCalendarDate={currentCalendarDate}
         freeMinutes={calendarDay?.freeMins}
         minutesToAssign={calendarDay?.minutesToAssign}
-        setSegmentedControlSelectedIndex={setSegmentedControlSelectedIndex}
-        segmentedControlSelectedIndex={segmentedControlSelectedIndex}
       />
       {isCalendarDayLoading ? (
         <ActivityIndicator />
@@ -153,8 +148,6 @@ const MyHomeworkHeader: React.FC<{
   onPageForward: () => void;
   onPageBackward: () => void;
   navigation: NativeStackNavigationProp<HomeStackParamList, "Root", undefined>;
-  segmentedControlSelectedIndex: number;
-  setSegmentedControlSelectedIndex: (i: number) => void;
   minutesToAssign: number | undefined;
   freeMinutes: number | undefined;
 }> = (props) => {
@@ -281,14 +274,15 @@ const HomeworkBody: React.FC<{
 };
 
 const HomeworkListSectionHeader: React.FC<{ children: string }> = (props) => {
+  const { primary } = useTheme().colors;
   return (
-    <CardView
-      style={[styles.homeworkListSectionHeader, globalStyles.smallShadow]}
-    >
-      <MediumText style={styles.homeworkListSectionHeaderText}>
+    <View style={[styles.homeworkListSectionHeader]}>
+      <MediumText
+        style={[styles.homeworkListSectionHeaderText, { color: primary }]}
+      >
         {props.children}
       </MediumText>
-    </CardView>
+    </View>
   );
 };
 
@@ -691,7 +685,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   homeworkListSectionHeaderText: {
-    fontSize: 15,
+    fontSize: 17,
   },
 });
 
