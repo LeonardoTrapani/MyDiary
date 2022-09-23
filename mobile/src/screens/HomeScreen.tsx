@@ -17,7 +17,7 @@ import {
   RootStackParamList,
 } from "../../types";
 import { BoldText, MediumText, RegularText } from "../components/StyledText";
-import { CardView, View } from "../components/Themed";
+import { View } from "../components/Themed";
 import { useCalendarDay, useValidToken } from "../util/react-query-hooks";
 import ErrorComponent from "../components/ErrorComponent";
 import moment from "moment";
@@ -31,7 +31,6 @@ import DateTimePicker from "react-native-modal-datetime-picker";
 import { completePlannedDate } from "../api/homework";
 import { useAtom } from "jotai";
 import { activeInfoDayAtom } from "../util/atoms";
-import globalStyles from "../constants/Syles";
 import Break from "../components/Break";
 
 const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
@@ -253,6 +252,11 @@ const HomeworkBody: React.FC<{
             if (!section.data.length) {
               return <></>;
             }
+            const isNotCompletedSection =
+              section.data[0].plannedDates[0].completed === false;
+            if (isNotCompletedSection && !completedHomework?.length) {
+              return <></>;
+            }
             return (
               <HomeworkListSectionHeader>
                 {section.title}
@@ -264,7 +268,6 @@ const HomeworkBody: React.FC<{
               homework={item}
               i={index}
               onComplete={completeHandler}
-              isCompleteLoading={completeHomeworkMutation.isLoading}
             />
           )}
         />
@@ -306,7 +309,6 @@ const CalendarDayHomework: React.FC<{
     duration: number;
   };
   i: number;
-  isCompleteLoading: boolean;
   onComplete: (i: number) => void;
 }> = (props) => {
   if (props.homework.plannedDates.length > 1) {
@@ -317,15 +319,17 @@ const CalendarDayHomework: React.FC<{
   }
   const navigation = useNavigation<NavigationProp<HomeStackParamList>>();
   const completeHandler = () => {
+    setIsLoading(true);
     props.onComplete(props.homework.plannedDates[0].id);
   };
 
+  const [isLoading, setIsLoading] = useState(false);
   return (
     <View>
       <View style={styles.calendarDayHomeworkContainer}>
         <CompleteCircle
           onComplete={() => completeHandler()}
-          isLoading={props.isCompleteLoading}
+          isLoading={isLoading}
           color={props.homework.subject.color}
         />
         <TouchableOpacity
@@ -359,18 +363,20 @@ const CompleteCircle: React.FC<{
   return (
     <TouchableOpacity
       onPress={props.onComplete}
-      style={{
-        alignSelf: "center",
-        marginHorizontal: 10,
-        height: 22,
-        aspectRatio: 1,
-        borderRadius: 1000,
-        borderColor: props.color,
-        //borderColor: "#888",
-        borderWidth: 1,
-        alignItems: "center",
-        justifyContent: "center",
-      }}
+      style={[
+        {
+          alignSelf: "center",
+          marginHorizontal: 10,
+          height: 22,
+          aspectRatio: 1,
+          borderRadius: 1000,
+          borderColor: props.color,
+          //borderColor: "#888",
+          borderWidth: 1,
+          alignItems: "center",
+          justifyContent: "center",
+        },
+      ]}
     >
       {props.isLoading && <ActivityIndicator />}
     </TouchableOpacity>

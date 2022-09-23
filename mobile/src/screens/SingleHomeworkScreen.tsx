@@ -5,7 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   HomeStackParamList,
   HomeStackScreenProps,
