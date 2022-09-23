@@ -4,7 +4,6 @@ import {
   NavigatorScreenParams,
 } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Moment } from "moment";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -125,6 +124,7 @@ export type HomeStackScreenProps<Screen extends keyof HomeStackParamList> =
 export type HomeStackParamList = {
   SingleHomework: { homeworkId: number; title: string };
   Root: undefined | { date: string };
+  Info: undefined;
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> =

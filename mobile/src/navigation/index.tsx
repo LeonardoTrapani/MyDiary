@@ -21,8 +21,10 @@ import { useIsWeekCreated, useValidToken } from "../util/react-query-hooks";
 import { MyDarkTheme, MyLightTheme } from "../constants/Colors";
 import CreateWeekScreen from "../screens/CreateWeekScreen";
 import HomeScreen, {
-  AddHomeworkIcon as AddHomeworkIcon,
-} from "../screens/HomeworkScreen";
+  AddHomeworkIcon,
+  CalendarDayInfoIcon,
+  InfoModal,
+} from "../screens/HomeScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import { Ionicons } from "@expo/vector-icons";
 import AddHomeworkModal from "../screens/AddHomeworkModal";
@@ -255,6 +257,7 @@ const HomeStackNavigation = () => {
         options={{
           title: "LOGO",
           headerRight: AddHomeworkIcon,
+          headerLeft: CalendarDayInfoIcon,
         }}
       />
       <HomeStack.Screen
@@ -263,6 +266,14 @@ const HomeStackNavigation = () => {
         options={{
           title: "Homework",
           headerBackTitleVisible: false,
+        }}
+      />
+      <HomeStack.Screen
+        name="Info"
+        component={InfoModal}
+        options={{
+          presentation: "modal",
+          headerShown: false,
         }}
       />
     </HomeStack.Navigator>

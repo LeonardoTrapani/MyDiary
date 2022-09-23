@@ -48,6 +48,7 @@ export const completePlannedDate = async (req: Request, res: Response) => {
     },
   });
 
+  //if all the time is completed set it to 0
   await prisma.homework.updateMany({
     where: {
       plannedDates: {

@@ -5,7 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   HomeStackParamList,
   HomeStackScreenProps,
@@ -29,7 +29,7 @@ const SingleHomeworkScreen = ({
   navigation,
   route,
 }: HomeStackScreenProps<"SingleHomework">) => {
-  const { title, homeworkId } = route.params;
+  const { homeworkId } = route.params;
 
   const {
     data: singleHomework,
@@ -37,10 +37,6 @@ const SingleHomeworkScreen = ({
     error: singleHomeworkError,
     isLoading: isSingleHomeworkLoading,
   } = useSingleHomework(homeworkId);
-
-  useLayoutEffect(() => {
-    navigation.setOptions({ title });
-  }, [navigation, title]);
 
   useEffect(() => {
     if (singleHomework) {
@@ -133,13 +129,11 @@ const SingleHomewrk: React.FC<{
       </View>
       <View style={[styles.row, { marginBottom: 0 }]}>
         <RegularText style={styles.rowText}>Completed:</RegularText>
-        <RegularText>
-          {props.singleHomework.completed ? (
-            <Ionicons name="checkmark" size={22} color="#32a854" />
-          ) : (
-            <Ionicons name="close-outline" size={22} color={errorColor} />
-          )}
-        </RegularText>
+        {props.singleHomework.completed ? (
+          <Ionicons name="checkmark" size={22} color="#32a854" />
+        ) : (
+          <Ionicons name="close-outline" size={22} color={errorColor} />
+        )}
       </View>
       <View style={styles.breakContainer}>
         <Break />
@@ -216,22 +210,29 @@ export const PlannedDate: React.FC<{
   };
 
   return (
-    <TouchableOpacity onPress={pressHandler}>
-      <CardView style={[styles.planneDateContainer, globalStyles.smallShadow]}>
-        {completePlannedDateMutation.isError && (
-          <RegularText
-            style={[
-              styles.plannedDateError,
-              { borderColor: error, color: error },
-            ]}
-          >
-            {completePlannedDateMutation.error as string}
-          </RegularText>
-        )}
-        <CardView
-          style={[styles.row, { marginBottom: 0, marginHorizontal: 0 }]}
+    <CardView style={[styles.planneDateContainer, globalStyles.smallShadow]}>
+      {completePlannedDateMutation.isError && (
+        <RegularText
+          style={[
+            styles.plannedDateError,
+            { borderColor: error, color: error },
+          ]}
         >
-          <CardView>
+          {completePlannedDateMutation.error as string}
+        </RegularText>
+      )}
+
+      <CardView
+        style={[
+          styles.row,
+          {
+            marginBottom: 0,
+            marginHorizontal: 0,
+          },
+        ]}
+      >
+        <TouchableOpacity onPress={pressHandler} style={{ flex: 1 }}>
+          <CardView style={{ flex: 1 }}>
             <MediumText style={styles.plannedDateDate}>
               {new Date(props.plannedDate.date).toDateString()}
             </MediumText>
@@ -239,18 +240,18 @@ export const PlannedDate: React.FC<{
               {minutesToHoursMinutesFun(props.plannedDate.minutesAssigned)}
             </RegularText>
           </CardView>
-          {isCompleted ? (
-            <TouchableOpacity onPress={undoCompleteHandler}>
-              <CompletedIcon />
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity onPress={completeHandler}>
-              <UncompletedIcon />
-            </TouchableOpacity>
-          )}
-        </CardView>
+        </TouchableOpacity>
+        {isCompleted ? (
+          <TouchableOpacity onPress={undoCompleteHandler}>
+            <CompletedIcon />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={completeHandler}>
+            <UncompletedIcon />
+          </TouchableOpacity>
+        )}
       </CardView>
-    </TouchableOpacity>
+    </CardView>
   );
 };
 
@@ -296,7 +297,7 @@ const styles = StyleSheet.create({
   planneDateContainer: {
     marginVertical: 15,
     marginHorizontal: 20,
-    borderRadius: 12,
+    borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 10,
   },
