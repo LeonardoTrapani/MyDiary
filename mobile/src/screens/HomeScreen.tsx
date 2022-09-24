@@ -221,6 +221,17 @@ const HomeworkBody: React.FC<{
     }
   );
 
+  const uncompleteHomeworkMutation = useMutation(
+    (data: { id: number }) => {
+      return completePlannedDate(data.id, validToken, false);
+    },
+    {
+      onSuccess: () => {
+        qc.invalidateQueries(["calendarDay"]);
+        qc.invalidateQueries(["SingleHomework"]);
+      },
+    }
+  );
   const completedHomework = useMemo(() => {
     return props.calendarDay?.user.homework.filter(
       (hmk) => hmk.plannedDates[0].completed === true
@@ -233,6 +244,10 @@ const HomeworkBody: React.FC<{
 
   const completeHandler = (id: number) => {
     completeHomeworkMutation.mutate({ id });
+  };
+
+  const uncompleteHandler = (id: number) => {
+    uncompleteHomeworkMutation.mutate({ id });
   };
 
   return (
@@ -268,6 +283,7 @@ const HomeworkBody: React.FC<{
               homework={item}
               i={index}
               onComplete={completeHandler}
+              onUncomplete={uncompleteHandler}
             />
           )}
         />
@@ -302,6 +318,7 @@ const CalendarDayHomework: React.FC<{
     plannedDates: {
       date: string;
       id: number;
+      completed: boolean;
       minutesAssigned: number;
     }[];
     description: string;
@@ -309,7 +326,8 @@ const CalendarDayHomework: React.FC<{
     duration: number;
   };
   i: number;
-  onComplete: (i: number) => void;
+  onComplete: (id: number) => void;
+  onUncomplete: (id: number) => void;
 }> = (props) => {
   if (props.homework.plannedDates.length > 1) {
     console.warn(
@@ -323,15 +341,30 @@ const CalendarDayHomework: React.FC<{
     props.onComplete(props.homework.plannedDates[0].id);
   };
 
+  const uncompleteHandler = () => {
+    setIsLoading(true);
+    props.onUncomplete(props.homework.plannedDates[0].id);
+  };
+
+  const isCompleted = props.homework.plannedDates[0].completed;
+
   const [isLoading, setIsLoading] = useState(false);
   return (
     <View>
       <View style={styles.calendarDayHomeworkContainer}>
-        <CompleteCircle
-          onComplete={() => completeHandler()}
-          isLoading={isLoading}
-          color={props.homework.subject.color}
-        />
+        {isCompleted ? (
+          <UncompleteTick
+            color={props.homework.subject.color}
+            isLoading={isLoading}
+            onUncomplete={uncompleteHandler}
+          />
+        ) : (
+          <CompleteCircle
+            onComplete={completeHandler}
+            isLoading={isLoading}
+            color={props.homework.subject.color}
+          />
+        )}
         <TouchableOpacity
           style={{ flex: 1 }}
           onPress={() =>
@@ -352,6 +385,30 @@ const CalendarDayHomework: React.FC<{
         </TouchableOpacity>
       </View>
     </View>
+  );
+};
+
+const UncompleteTick: React.FC<{
+  onUncomplete: () => void;
+  color: string;
+  isLoading: boolean;
+}> = (props) => {
+  return (
+    <TouchableOpacity
+      onPress={props.onUncomplete}
+      style={[
+        {
+          alignSelf: "center",
+          marginHorizontal: 10,
+          height: 22,
+          aspectRatio: 1,
+          alignItems: "center",
+          justifyContent: "center",
+        },
+      ]}
+    >
+      <Ionicons name="checkmark-done" size={20} color={props.color} />
+    </TouchableOpacity>
   );
 };
 
