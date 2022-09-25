@@ -25,8 +25,10 @@ model User {
   homework       Homework[]
   days           Day[]
   week           Week?
+  grades         Grade[]
   subjects       Subject[]
   deleted        Boolean    @default(false)
+  averageGrade   Int?
 }
 
 model Homework {
@@ -57,6 +59,8 @@ model Subject {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   deleted   Boolean    @default(false)
+  grades    Grade[]
+  averageGrade Int?
 }
 
 model PlannedDate {
@@ -95,3 +99,15 @@ model Week {
   updatedAt            DateTime @updatedAt
   createdAt            DateTime @default(now())
 }
+
+model Grade {
+    id Int @id @default(autoincrement())
+    userId Int
+    subjectId Int 
+    user           User          @relation(fields: [userId], references: [id])
+    subject Subject @relation(fields: [subjectId], references: [id])
+    grade Int 
+    deleted Boolean @default(false)
+    updatedAt            DateTime @updatedAt
+    createdAt            DateTime @default(now())
+  }
