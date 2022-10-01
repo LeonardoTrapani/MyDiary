@@ -3,7 +3,8 @@ import { Request, Response } from "express";
 import { throwResponseError } from "../utilities";
 
 export const createGrade = async (req: Request, res: Response) => {
-  const { grade, subjectId } = req.body;
+  //const { grade, subjectId } = req.body;
+  const { subjectId } = req.body;
   const { userId } = req;
 
   const validSubjects = await prisma.subject.findMany({
@@ -19,7 +20,7 @@ export const createGrade = async (req: Request, res: Response) => {
   try {
     const gradeResult = await prisma.grade.create({
       data: {
-        grade: +grade,
+        //grade: +grade,
         subjectId: +subjectId,
       },
     });
@@ -48,10 +49,10 @@ export const getAllGrades = async (req: Request, res: Response) => {
             name: true,
             grades: {
               select: {
-                grade: true,
+                //grade: true,
               },
               where: {
-                deleted: false,
+                //deleted: false,
               },
             },
           },
