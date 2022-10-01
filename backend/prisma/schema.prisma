@@ -14,7 +14,6 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
-
 model User {
   id             Int        @id @default(autoincrement())
   email          String
@@ -25,7 +24,6 @@ model User {
   homework       Homework[]
   days           Day[]
   week           Week?
-  grades         Grade[]
   subjects       Subject[]
   deleted        Boolean    @default(false)
   averageGrade   Int?
@@ -102,9 +100,7 @@ model Week {
 
 model Grade {
     id Int @id @default(autoincrement())
-    userId Int
     subjectId Int 
-    user           User          @relation(fields: [userId], references: [id])
     subject Subject @relation(fields: [subjectId], references: [id])
     grade Int 
     deleted Boolean @default(false)
