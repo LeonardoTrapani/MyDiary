@@ -26,6 +26,7 @@ model User {
   week           Week?
   subjects       Subject[]
   deleted        Boolean    @default(false)
+  grades Grade[]
   averageGrade   Int?
 }
 
@@ -102,6 +103,11 @@ model Grade {
     id Int @id @default(autoincrement())
     subjectId Int
     subject Subject @relation(fields: [subjectId], references: [id])
+    userId Int
+    user User @relation(fields: [userId], references: [id])
     grade Int 
+    deleted Boolean @default(false)
+  updatedAt      DateTime   @updatedAt
+  createdAt      DateTime   @default(now())
 }
 

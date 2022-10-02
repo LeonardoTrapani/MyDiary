@@ -21,6 +21,7 @@ export const createGrade = async (req: Request, res: Response) => {
       data: {
         grade: +grade,
         subjectId: +subjectId,
+        userId: +userId!,
       },
     });
     res.json(gradeResult);
@@ -48,10 +49,10 @@ export const getAllGrades = async (req: Request, res: Response) => {
             name: true,
             grades: {
               select: {
-                //grade: true,
+                grade: true,
               },
               where: {
-                //deleted: false,
+                deleted: false,
               },
             },
           },
