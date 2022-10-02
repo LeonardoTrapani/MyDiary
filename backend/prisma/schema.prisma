@@ -102,5 +102,6 @@ model Grade {
     id Int @id @default(autoincrement())
     subjectId Int
     subject Subject @relation(fields: [subjectId], references: [id])
-  }
+    grade Int 
+}
 
