@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
 }
 
 generator erd {
@@ -27,7 +28,7 @@ model User {
   subjects       Subject[]
   deleted        Boolean    @default(false)
   grades Grade[]
-  averageGrade   Int?
+  averageGrade   Float?
 }
 
 model Homework {
@@ -59,7 +60,7 @@ model Subject {
   updatedAt DateTime   @updatedAt
   deleted   Boolean    @default(false)
   grades Grade[]
-  averageGrade Int?
+  averageGrade Float?
 }
 
 model PlannedDate {
