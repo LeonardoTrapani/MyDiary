@@ -106,7 +106,7 @@ model Grade {
     subject Subject @relation(fields: [subjectId], references: [id])
     userId Int
     user User @relation(fields: [userId], references: [id])
-    grade Int 
+    grade Float 
     deleted Boolean @default(false)
   updatedAt      DateTime   @updatedAt
   createdAt      DateTime   @default(now())
