@@ -38,6 +38,7 @@ import PlannedDatesScreen, {
   PlannedDatesInfoIcon,
 } from "../screens/PlannedDatesScreen";
 import SingleHomeworkScreen from "../screens/SingleHomeworkScreen";
+import GradeScreen from "../screens/GradeScreen";
 
 export default function Main({
   colorScheme,
@@ -222,14 +223,24 @@ const BottomTabNavigator = () => {
         })}
       />
       <BottomTab.Screen
+        name="Grades"
+        component={GradeScreen}
+        options={() => ({
+          title: "Grades",
+          tabBarIcon: ({ color, size }) => {
+            return (
+              <Ionicons name="stats-chart-sharp" size={size} color={color} />
+            );
+          },
+        })}
+      />
+      <BottomTab.Screen
         name="TabThree"
         component={TabOneScreen}
         options={{
           title: "TabThree",
           tabBarIcon: ({ color, size }) => {
-            return (
-              <Ionicons name="stats-chart-sharp" size={size} color={color} />
-            );
+            return <Ionicons name="beaker" size={size} color={color} />;
           },
         }}
       />

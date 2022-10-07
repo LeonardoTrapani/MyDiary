@@ -1,11 +1,11 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore } from "@reduxjs/toolkit";
 
-import authSlice from './auth-slice';
-import calendarSlice from './calendar-slice';
-import createHomeworkSlice from './create-homework-slice';
-import homeworkSlice from './homework-slice';
-import subjectsSlice from './subjects-slice';
-import uiSlice from './ui-slice';
+import authSlice from "./auth-slice";
+import calendarSlice from "./calendar-slice";
+import createHomeworkSlice from "./create-homework-slice";
+import homeworkSlice from "./homework-slice";
+import subjectsSlice from "./subjects-slice";
+import uiSlice from "./ui-slice";
 
 export const store = configureStore({
   reducer: {

@@ -1,6 +1,7 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Moment } from "moment";
 import {
+  AllGrades,
   CalendarDayType,
   FreeDaysResponse,
   HomeworkInfoType,
@@ -8,6 +9,7 @@ import {
 } from "../../types";
 import { getIsWeekCreatedWithToken, getWeek, validateToken } from "../api/auth";
 import { getDayCalendar } from "../api/calendar";
+import { getAllGrades } from "../api/grade";
 import { fetchFreeDays, getSingleHomework } from "../api/homework";
 import { getSubjects } from "../api/subject";
 
@@ -89,4 +91,11 @@ export const useSingleHomework = (homeworkId: number) => {
       enabled: isValidTokenFetched,
     }
   );
+};
+
+export const useAllGrades = () => {
+  const { data: validToken, isFetched: isValidTokenFetched } = useValidToken();
+  return useQuery<AllGrades>(["allGrades"], () => getAllGrades(validToken), {
+    enabled: isValidTokenFetched,
+  });
 };

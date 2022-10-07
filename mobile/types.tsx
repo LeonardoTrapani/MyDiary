@@ -33,6 +33,20 @@ export type SingleHomeworkType = {
   completed: boolean;
 };
 
+export type AllGrades = {
+  averageGrade: number | null;
+  id: number;
+  subjects: {
+    averageGrade: number | null;
+    id: number;
+    color: string;
+    name: string;
+    grades: {
+      grade: number;
+    }[];
+  }[];
+};
+
 export type CalendarDayType = {
   date: string;
   user: {
@@ -114,6 +128,7 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
 
 export type RootTabParamList = {
   Home: NativeStackScreenProps<HomeStackParamList>;
+  Grades: undefined;
   TabThree: undefined;
   Settings: undefined;
 };

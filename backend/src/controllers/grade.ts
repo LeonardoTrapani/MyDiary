@@ -113,7 +113,7 @@ export const getAllGrades = async (req: Request, res: Response) => {
     //grade: true,
     //},
     //});
-    res.json(result);
+    res.json(result[0]);
   } catch (err) {
     throwResponseError("an error has occurred finding the grades", 400, res);
   }
