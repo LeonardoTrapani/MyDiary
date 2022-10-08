@@ -7,7 +7,6 @@ export const getAllGrades = async (token: string | null | undefined) => {
   if (!token) {
     throw new Error("Not authenticated");
   }
-  console.log(token);
   try {
     const res = await axios.get<AllGrades>(BACKEND_URL + "/grade/all", {
       headers: { Authorization: token },

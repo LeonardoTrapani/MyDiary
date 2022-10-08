@@ -1,9 +1,16 @@
 import { View } from "../components/Themed";
 import React from "react";
 import { useAllGrades } from "../util/react-query-hooks";
-import { ActivityIndicator, FlatList } from "react-native";
+import { ActivityIndicator, FlatList, TouchableOpacity } from "react-native";
 import { RegularText } from "../components/StyledText";
 import ErrorComponent from "../components/ErrorComponent";
+import {
+  NavigationProp,
+  useNavigation,
+  useTheme,
+} from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
+import { GradeStackParamList } from "../../types";
 
 const GradeScreen: React.FC = () => {
   const {
@@ -11,7 +18,6 @@ const GradeScreen: React.FC = () => {
     isLoading: isAllGradesLoading,
     error: allGradesError,
   } = useAllGrades();
-  console.log(allGrades);
 
   if (isAllGradesLoading || !allGrades) {
     return <ActivityIndicator />;
@@ -46,6 +52,21 @@ const SingleSubjectGrade: React.FC<{ subject: SubjectGrade }> = (props) => {
       <RegularText>{props.subject.name}</RegularText>
       <RegularText>{props.subject.averageGrade || "N/A"}</RegularText>
     </View>
+  );
+};
+
+export const AddGradeIcon: React.FC = () => {
+  const { primary } = useTheme().colors;
+
+  const navigation = useNavigation<NavigationProp<GradeStackParamList>>();
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate("Add");
+      }}
+    >
+      <Ionicons name="add" color={primary} size={28} />
+    </TouchableOpacity>
   );
 };
 

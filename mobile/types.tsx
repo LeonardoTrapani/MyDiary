@@ -142,6 +142,14 @@ export type HomeStackParamList = {
   Info: undefined;
 };
 
+export type GradeStackScreenProps<Screen extends keyof GradeStackParamList> =
+  NativeStackScreenProps<GradeStackParamList, Screen>;
+
+export type GradeStackParamList = {
+  Root: undefined;
+  Add: undefined;
+};
+
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
   CompositeScreenProps<
     BottomTabScreenProps<RootTabParamList, Screen>,
