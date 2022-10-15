@@ -39,7 +39,10 @@ import PlannedDatesScreen, {
   PlannedDatesInfoIcon,
 } from "../screens/PlannedDatesScreen";
 import SingleHomeworkScreen from "../screens/SingleHomeworkScreen";
-import GradeScreen, { AddGradeIcon } from "../screens/GradeScreen";
+import GradeScreen, {
+  AddGradeIcon,
+  SubjectGrades,
+} from "../screens/GradeScreen";
 import AddGradeModal from "../screens/AddGradeModal";
 
 export default function Main({
@@ -277,10 +280,10 @@ const HomeStackNavigation = () => {
       <HomeStack.Screen
         name="SingleHomework"
         component={SingleHomeworkScreen}
-        options={{
-          title: "Homework",
+        options={({ route }) => ({
+          title: route.params.title,
           headerBackTitleVisible: false,
-        }}
+        })}
       />
       <HomeStack.Screen
         name="Info"
@@ -312,6 +315,14 @@ const GradeStackNavigation = () => {
           presentation: "modal",
         }}
         component={AddGradeModal}
+      ></GradeStack.Screen>
+      <GradeStack.Screen
+        name="SubjectGrades"
+        options={({ route }) => ({
+          title: route.params.name,
+          presentation: "card",
+        })}
+        component={SubjectGrades}
       ></GradeStack.Screen>
     </GradeStack.Navigator>
   );

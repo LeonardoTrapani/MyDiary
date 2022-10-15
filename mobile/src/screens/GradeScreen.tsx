@@ -7,7 +7,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { MediumText, RegularText } from "../components/StyledText";
+import { BoldText, MediumText, RegularText } from "../components/StyledText";
 import ErrorComponent from "../components/ErrorComponent";
 import {
   NavigationProp,
@@ -15,10 +15,10 @@ import {
   useTheme,
 } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import { GradeStackParamList } from "../../types";
+import { GradeStackParamList, GradeStackScreenProps } from "../../types";
 import Break from "../components/Break";
 
-const GradeScreen: React.FC = () => {
+const GradeScreen = ({ navigation }: GradeStackScreenProps<"Root">) => {
   const {
     data: allGrades,
     isLoading: isAllGradesLoading,
@@ -28,6 +28,18 @@ const GradeScreen: React.FC = () => {
   if (isAllGradesLoading || !allGrades) {
     return <ActivityIndicator />;
   }
+
+  const singleSubjectGradePressHandler = (i: number) => {
+    const { name, color, id, grades, averageGrade } = allGrades.subjects[i];
+    navigation.navigate("SubjectGrades", {
+      name,
+      color,
+      id,
+      grades,
+      averageGrade,
+    });
+  };
+
   return (
     <View>
       <>
@@ -35,7 +47,13 @@ const GradeScreen: React.FC = () => {
         <RegularText>Average Grade: {allGrades?.averageGrade}</RegularText>
         <FlatList
           data={allGrades?.subjects}
-          renderItem={({ item }) => <SingleSubjectGrade subject={item} />}
+          renderItem={({ item, index }) => (
+            <SingleSubjectGrade
+              subject={item}
+              i={index}
+              onPress={singleSubjectGradePressHandler}
+            />
+          )}
         />
       </>
     </View>
@@ -52,9 +70,17 @@ type SubjectGrade = {
   }[];
 };
 
-const SingleSubjectGrade: React.FC<{ subject: SubjectGrade }> = (props) => {
+const SingleSubjectGrade: React.FC<{
+  subject: SubjectGrade;
+  onPress: (i: number) => void;
+  i: number;
+}> = (props) => {
   return (
-    <>
+    <TouchableOpacity
+      onPress={() => {
+        props.onPress(props.i);
+      }}
+    >
       <CardView style={styles.subjectGradeContainer}>
         <CardView style={styles.innerSubjectGradeContainer}>
           <View
@@ -79,12 +105,12 @@ const SingleSubjectGrade: React.FC<{ subject: SubjectGrade }> = (props) => {
             </MediumText>
           </CardView>
         </CardView>
-        <RegularText>BLA BLA METTO STATO E FRECCIA QUI</RegularText>
+        <Ionicons name="ios-chevron-forward" size={25} />
       </CardView>
       <View style={{ marginLeft: 20 }}>
         <Break />
       </View>
-    </>
+    </TouchableOpacity>
   );
 };
 
@@ -100,6 +126,55 @@ export const AddGradeIcon: React.FC = () => {
     >
       <Ionicons name="add" color={primary} size={28} />
     </TouchableOpacity>
+  );
+};
+
+export const SubjectGrades = ({
+  route,
+}: GradeStackScreenProps<"SubjectGrades">) => {
+  const { primary } = useTheme().colors;
+  return (
+    <View style={{ padding: 20 }}>
+      <View
+        style={{
+          justifyContent: "space-between",
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <BoldText style={{ fontSize: 50 }}>{route.params.name}</BoldText>
+        <View
+          style={{
+            backgroundColor: route.params.color,
+            borderRadius: 200,
+            height: 50,
+            aspectRatio: 1,
+          }}
+        ></View>
+      </View>
+
+      <View
+        style={{
+          justifyContent: "space-between",
+          flexDirection: "row",
+          alignItems: "center",
+          paddingTop: 20,
+        }}
+      >
+        <MediumText style={{ fontSize: 18 }}>Average Grade:</MediumText>
+        <MediumText style={{ fontSize: 18, color: primary }}>
+          {route.params.averageGrade?.toFixed(1) || "N/A"}
+        </MediumText>
+      </View>
+      <FlatList
+        data={route.params.grades}
+        renderItem={({ item }) => (
+          <View>
+            <RegularText>{item.grade}</RegularText>
+          </View>
+        )}
+      />
+    </View>
   );
 };
 

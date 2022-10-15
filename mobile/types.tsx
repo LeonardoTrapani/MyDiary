@@ -148,6 +148,15 @@ export type GradeStackScreenProps<Screen extends keyof GradeStackParamList> =
 export type GradeStackParamList = {
   Root: undefined;
   Add: undefined;
+  SubjectGrades: {
+    averageGrade: number | null;
+    id: number;
+    color: string;
+    name: string;
+    grades: {
+      grade: number;
+    }[];
+  };
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
