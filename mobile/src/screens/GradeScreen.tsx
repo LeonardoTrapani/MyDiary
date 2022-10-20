@@ -134,12 +134,13 @@ export const SubjectGrades = ({
 }: GradeStackScreenProps<"SubjectGrades">) => {
   const { primary } = useTheme().colors;
   return (
-    <View style={{ padding: 20 }}>
+    <View style={{ paddingVertical: 20 }}>
       <View
         style={{
           justifyContent: "space-between",
           flexDirection: "row",
           alignItems: "center",
+          paddingHorizontal: 20,
         }}
       >
         <BoldText style={{ fontSize: 50 }}>{route.params.name}</BoldText>
@@ -158,7 +159,7 @@ export const SubjectGrades = ({
           justifyContent: "space-between",
           flexDirection: "row",
           alignItems: "center",
-          paddingTop: 20,
+          padding: 20,
         }}
       >
         <MediumText style={{ fontSize: 18 }}>Average Grade:</MediumText>
@@ -168,10 +169,23 @@ export const SubjectGrades = ({
       </View>
       <FlatList
         data={route.params.grades}
-        renderItem={({ item }) => (
-          <View>
-            <RegularText>{item.grade}</RegularText>
-          </View>
+        renderItem={({ item, index }) => (
+          <TouchableOpacity>
+            <CardView
+              style={{
+                padding: 18,
+                borderWidth: 0.8,
+                borderTopWidth: index === 0 ? 0.8 : 0,
+                borderColor: "#bbb",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <RegularText style={{ fontSize: 18 }}>{item.grade}</RegularText>
+              <Ionicons name="ios-chevron-forward" size={25} />
+            </CardView>
+          </TouchableOpacity>
         )}
       />
     </View>

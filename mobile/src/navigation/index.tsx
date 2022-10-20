@@ -320,6 +320,7 @@ const GradeStackNavigation = () => {
         name="SubjectGrades"
         options={({ route }) => ({
           title: route.params.name,
+          headerRight: AddGradeIcon,
           presentation: "card",
         })}
         component={SubjectGrades}
