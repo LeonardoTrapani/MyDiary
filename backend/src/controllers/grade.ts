@@ -92,6 +92,7 @@ export const getAllGrades = async (req: Request, res: Response) => {
             color: true,
             name: true,
             grades: {
+              orderBy: { createdAt: "desc" },
               select: {
                 grade: true,
               },

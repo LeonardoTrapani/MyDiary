@@ -147,7 +147,7 @@ export type GradeStackScreenProps<Screen extends keyof GradeStackParamList> =
 
 export type GradeStackParamList = {
   Root: undefined;
-  Add: undefined;
+  Add: { subjectId: number | undefined };
   SubjectGrades: {
     averageGrade: number | null;
     id: number;

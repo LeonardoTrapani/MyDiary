@@ -16,7 +16,7 @@ import {
 } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { GradeStackParamList, GradeStackScreenProps } from "../../types";
-import Break from "../components/Break";
+import ListCardComponent from "../components/ListCardComponent";
 
 const GradeScreen = ({ navigation }: GradeStackScreenProps<"Root">) => {
   const {
@@ -24,6 +24,7 @@ const GradeScreen = ({ navigation }: GradeStackScreenProps<"Root">) => {
     isLoading: isAllGradesLoading,
     error: allGradesError,
   } = useAllGrades();
+  const { primary } = useTheme().colors;
 
   if (isAllGradesLoading || !allGrades) {
     return <ActivityIndicator />;
@@ -41,18 +42,35 @@ const GradeScreen = ({ navigation }: GradeStackScreenProps<"Root">) => {
   };
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <>
         {allGradesError && <ErrorComponent text={allGradesError as string} />}
-        <RegularText>Average Grade: {allGrades?.averageGrade}</RegularText>
         <FlatList
           data={allGrades?.subjects}
+          ListHeaderComponent={
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: 10,
+                paddingVertical: 20,
+              }}
+            >
+              <RegularText style={{ fontSize: 20 }}>Average Grade:</RegularText>
+              <MediumText style={{ fontSize: 22, color: primary }}>
+                {allGrades?.averageGrade?.toFixed(1) || "N/A"}
+              </MediumText>
+            </View>
+          }
           renderItem={({ item, index }) => (
-            <SingleSubjectGrade
-              subject={item}
-              i={index}
+            <ListCardComponent
+              index={index}
+              rightArrow
               onPress={singleSubjectGradePressHandler}
-            />
+            >
+              <SingleSubjectGrade subject={item} i={index} />
+            </ListCardComponent>
           )}
         />
       </>
@@ -72,45 +90,29 @@ type SubjectGrade = {
 
 const SingleSubjectGrade: React.FC<{
   subject: SubjectGrade;
-  onPress: (i: number) => void;
   i: number;
 }> = (props) => {
   return (
-    <TouchableOpacity
-      onPress={() => {
-        props.onPress(props.i);
-      }}
-    >
-      <CardView style={styles.subjectGradeContainer}>
-        <CardView style={styles.innerSubjectGradeContainer}>
-          <View
-            style={[
-              styles.gradeCircle,
-              { backgroundColor: props.subject.color },
-            ]}
-          >
-            <CardView style={styles.innerGradeCircle}>
-              {props.subject.averageGrade ? (
-                <MediumText style={styles.gradeText}>
-                  {props.subject.averageGrade.toFixed(1)}
-                </MediumText>
-              ) : (
-                <MediumText style={styles.NAGradeText}>N/A</MediumText>
-              )}
-            </CardView>
-          </View>
-          <CardView>
-            <MediumText style={styles.subjectNameText}>
-              {props.subject.name}
+    <CardView style={styles.innerSubjectGradeContainer}>
+      <CardView
+        style={[styles.gradeCircle, { backgroundColor: props.subject.color }]}
+      >
+        <CardView style={styles.innerGradeCircle}>
+          {props.subject.averageGrade ? (
+            <MediumText style={styles.gradeText}>
+              {props.subject.averageGrade.toFixed(1)}
             </MediumText>
-          </CardView>
+          ) : (
+            <MediumText style={styles.NAGradeText}>N/A</MediumText>
+          )}
         </CardView>
-        <Ionicons name="ios-chevron-forward" size={25} />
       </CardView>
-      <View style={{ marginLeft: 20 }}>
-        <Break />
-      </View>
-    </TouchableOpacity>
+      <CardView>
+        <MediumText style={styles.subjectNameText}>
+          {props.subject.name}
+        </MediumText>
+      </CardView>
+    </CardView>
   );
 };
 
@@ -121,7 +123,7 @@ export const AddGradeIcon: React.FC = () => {
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate("Add");
+        navigation.navigate("Add", { subjectId: undefined });
       }}
     >
       <Ionicons name="add" color={primary} size={28} />
@@ -131,61 +133,75 @@ export const AddGradeIcon: React.FC = () => {
 
 export const SubjectGrades = ({
   route,
+  navigation,
 }: GradeStackScreenProps<"SubjectGrades">) => {
   const { primary } = useTheme().colors;
   return (
-    <View style={{ paddingVertical: 20 }}>
-      <View
-        style={{
-          justifyContent: "space-between",
-          flexDirection: "row",
-          alignItems: "center",
-          paddingHorizontal: 20,
-        }}
-      >
-        <BoldText style={{ fontSize: 50 }}>{route.params.name}</BoldText>
-        <View
-          style={{
-            backgroundColor: route.params.color,
-            borderRadius: 200,
-            height: 50,
-            aspectRatio: 1,
-          }}
-        ></View>
-      </View>
-
-      <View
-        style={{
-          justifyContent: "space-between",
-          flexDirection: "row",
-          alignItems: "center",
-          padding: 20,
-        }}
-      >
-        <MediumText style={{ fontSize: 18 }}>Average Grade:</MediumText>
-        <MediumText style={{ fontSize: 18, color: primary }}>
-          {route.params.averageGrade?.toFixed(1) || "N/A"}
-        </MediumText>
-      </View>
+    <View style={{ paddingVertical: 20, flex: 1 }}>
       <FlatList
-        data={route.params.grades}
-        renderItem={({ item, index }) => (
-          <TouchableOpacity>
-            <CardView
+        ListHeaderComponent={
+          <>
+            <View
               style={{
-                padding: 18,
-                borderWidth: 0.8,
-                borderTopWidth: index === 0 ? 0.8 : 0,
-                borderColor: "#bbb",
-                flexDirection: "row",
                 justifyContent: "space-between",
+                flexDirection: "row",
                 alignItems: "center",
+                paddingHorizontal: 20,
               }}
             >
-              <RegularText style={{ fontSize: 18 }}>{item.grade}</RegularText>
-              <Ionicons name="ios-chevron-forward" size={25} />
-            </CardView>
-          </TouchableOpacity>
+              <BoldText style={{ fontSize: 50 }}>{route.params.name}</BoldText>
+              <View
+                style={{
+                  justifyContent: "space-between",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <View
+                  style={{
+                    backgroundColor: route.params.color,
+                    marginRight: 15,
+                    borderRadius: 200,
+                    height: 50,
+                    aspectRatio: 1,
+                  }}
+                ></View>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate("Add", { subjectId: route.params.id });
+                  }}
+                >
+                  <Ionicons name="ios-add" size={50} color={primary} />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View
+              style={{
+                justifyContent: "space-between",
+                flexDirection: "row",
+                alignItems: "center",
+                padding: 20,
+              }}
+            >
+              <MediumText style={{ fontSize: 18 }}>Average Grade:</MediumText>
+              <MediumText style={{ fontSize: 18, color: primary }}>
+                {route.params.averageGrade?.toFixed(1) || "N/A"}
+              </MediumText>
+            </View>
+          </>
+        }
+        data={route.params.grades}
+        renderItem={({ item, index }) => (
+          <ListCardComponent
+            index={index}
+            rightArrow
+            onPress={() => {
+              navigation.navigate("Add", { subjectId: route.params.id });
+            }}
+          >
+            <RegularText style={{ fontSize: 18 }}>{item.grade}</RegularText>
+          </ListCardComponent>
         )}
       />
     </View>
@@ -194,13 +210,6 @@ export const SubjectGrades = ({
 
 const styles = StyleSheet.create({
   innerSubjectGradeContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  subjectGradeContainer: {
-    paddingVertical: 17,
-    paddingHorizontal: 10,
-    justifyContent: "space-between",
     flexDirection: "row",
     alignItems: "center",
   },
