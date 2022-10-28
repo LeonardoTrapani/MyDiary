@@ -4,6 +4,7 @@ import {
   NavigatorScreenParams,
 } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { SubjectType } from "./src/util/react-query-hooks";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -128,7 +129,7 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
 
 export type RootTabParamList = {
   Home: NativeStackScreenProps<HomeStackParamList>;
-  Grades: undefined;
+  Grades: NativeStackScreenProps<GradeStackParamList>;
   TabThree: undefined;
   Settings: undefined;
 };
@@ -147,7 +148,7 @@ export type GradeStackScreenProps<Screen extends keyof GradeStackParamList> =
 
 export type GradeStackParamList = {
   Root: undefined;
-  Add: { subjectId: number | undefined };
+  Add: { Subject: SubjectType } | undefined;
   SubjectGrades: {
     averageGrade: number | null;
     id: number;
@@ -157,6 +158,7 @@ export type GradeStackParamList = {
       grade: number;
     }[];
   };
+  ChooseSubject: undefined;
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> =

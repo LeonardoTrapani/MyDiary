@@ -11,12 +11,13 @@ import {
 import {
   AddHomeworkStackParamList,
   AddHomeworkStackScreenProps,
+  GradeStackScreenProps,
 } from "../../types";
 import { MediumText } from "../components/StyledText";
 import { View } from "../components/Themed";
 import { useGetDataFromAxiosError } from "../util/axiosUtils";
 import {
-  Subject as SubjectType,
+  SubjectType as SubjectType,
   useSubjects,
   useValidToken,
 } from "../util/react-query-hooks";
@@ -40,7 +41,9 @@ import ErrorComponent from "../components/ErrorComponent";
 
 const ChooseSubjectScreen = ({
   navigation,
-}: AddHomeworkStackScreenProps<"ChooseSubject">) => {
+}:
+  | AddHomeworkStackScreenProps<"ChooseSubject">
+  | GradeStackScreenProps<"NewGradeSubject">) => {
   const { data: subjects, error: subjectsError, isLoading } = useSubjects();
   const getDataFromAxiosError = useGetDataFromAxiosError(
     subjectsError as AxiosError,

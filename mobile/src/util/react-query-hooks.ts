@@ -42,7 +42,7 @@ export const useWeek = () => {
   return useQuery<Week | null>(["week"], getWeek, {});
 };
 
-export type Subject = {
+export type SubjectType = {
   id: number;
   color: string;
   name: string;
@@ -50,7 +50,7 @@ export type Subject = {
 
 export const useSubjects = () => {
   const { data: validToken, isFetched: isValidTokenFetched } = useValidToken();
-  return useQuery<Subject[]>(["subject", validToken], getSubjects, {
+  return useQuery<SubjectType[]>(["subject", validToken], getSubjects, {
     enabled: isValidTokenFetched,
   });
 };

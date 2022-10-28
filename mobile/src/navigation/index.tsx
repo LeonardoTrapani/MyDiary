@@ -324,6 +324,13 @@ const GradeStackNavigation = () => {
         })}
         component={SubjectGrades}
       ></GradeStack.Screen>
+      <GradeStack.Screen
+        name="ChooseSubject"
+        options={{
+          presentation: "card",
+        }}
+        component={ChooseSubjectScreen}
+      ></GradeStack.Screen>
     </GradeStack.Navigator>
   );
 };

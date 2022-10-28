@@ -123,7 +123,7 @@ export const AddGradeIcon: React.FC = () => {
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate("Add", { subjectId: undefined });
+        navigation.navigate("Add", undefined);
       }}
     >
       <Ionicons name="add" color={primary} size={28} />
@@ -168,7 +168,13 @@ export const SubjectGrades = ({
                 ></View>
                 <TouchableOpacity
                   onPress={() => {
-                    navigation.navigate("Add", { subjectId: route.params.id });
+                    navigation.navigate("Add", {
+                      Subject: {
+                        id: route.params.id,
+                        color: route.params.color,
+                        name: route.params.name,
+                      },
+                    });
                   }}
                 >
                   <Ionicons name="ios-add" size={50} color={primary} />
@@ -197,7 +203,13 @@ export const SubjectGrades = ({
             index={index}
             rightArrow
             onPress={() => {
-              navigation.navigate("Add", { subjectId: route.params.id });
+              navigation.navigate("Add", {
+                Subject: {
+                  id: route.params.id,
+                  color: route.params.color,
+                  name: route.params.name,
+                },
+              });
             }}
           >
             <RegularText style={{ fontSize: 18 }}>{item.grade}</RegularText>
