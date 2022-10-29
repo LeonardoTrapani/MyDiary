@@ -148,7 +148,7 @@ export type GradeStackScreenProps<Screen extends keyof GradeStackParamList> =
 
 export type GradeStackParamList = {
   Root: undefined;
-  Add: { Subject: SubjectType } | undefined;
+  Add: NativeStackScreenProps<AddGradeStackParamList>;
   SubjectGrades: {
     averageGrade: number | null;
     id: number;
@@ -158,14 +158,21 @@ export type GradeStackParamList = {
       grade: number;
     }[];
   };
-  ChooseSubject: undefined;
 };
-
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
   CompositeScreenProps<
     BottomTabScreenProps<RootTabParamList, Screen>,
     NativeStackScreenProps<RootStackParamList>
   >;
+
+export type AddGradeStackParamList = {
+  Root: { Subject: SubjectType } | undefined;
+  ChooseSubject: undefined;
+};
+
+export type AddGradeStackScreenProps<
+  Screen extends keyof AddGradeStackParamList
+> = NativeStackScreenProps<AddGradeStackParamList, Screen>;
 
 export type AutoComplete =
   | "birthdate-day"

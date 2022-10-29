@@ -9,6 +9,7 @@ import {
   ViewStyle,
 } from "react-native";
 import {
+  AddGradeStackScreenProps,
   AddHomeworkStackParamList,
   AddHomeworkStackScreenProps,
   GradeStackScreenProps,
@@ -43,7 +44,7 @@ const ChooseSubjectScreen = ({
   navigation,
 }:
   | AddHomeworkStackScreenProps<"ChooseSubject">
-  | GradeStackScreenProps<"NewGradeSubject">) => {
+  | AddGradeStackScreenProps<"ChooseSubject">) => {
   const { data: subjects, error: subjectsError, isLoading } = useSubjects();
   const getDataFromAxiosError = useGetDataFromAxiosError(
     subjectsError as AxiosError,
