@@ -25,8 +25,6 @@ const MyInput: React.FC<CustomInputProps> = (props) => {
           styles.input,
           {
             backgroundColor: colors.card,
-            height: 47,
-            fontSize: 18,
           },
           props.hasError
             ? {
@@ -56,6 +54,8 @@ const styles = StyleSheet.create({
   input: {
     paddingHorizontal: 14,
     borderWidth: 0,
+    height: 47,
+    fontSize: 18,
     borderRadius: 8,
   },
   label: {

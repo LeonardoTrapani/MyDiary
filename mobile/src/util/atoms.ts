@@ -1,7 +1,7 @@
 import { atom } from "jotai";
-import { Subject } from "./react-query-hooks";
+import { SubjectType } from "./react-query-hooks";
 
-export const activeSubjectAtom = atom<Subject | null>(null);
+export const activeSubjectAtom = atom<SubjectType | null>(null);
 export const activeInfoDayAtom = atom<
   | undefined
   | {

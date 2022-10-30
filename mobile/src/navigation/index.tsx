@@ -299,6 +299,8 @@ const HomeStackNavigation = () => {
 };
 
 const GradeStackNavigation = () => {
+  const setActiveSubject = useAtom(activeSubjectAtom)[1];
+
   return (
     <GradeStack.Navigator initialRouteName="Root">
       <GradeStack.Screen
@@ -316,15 +318,25 @@ const GradeStackNavigation = () => {
           headerShown: false,
           presentation: "modal",
         }}
+        listeners={{
+          beforeRemove: () => {
+            setActiveSubject(null);
+          },
+        }}
         component={AddGradeStackNavigation}
       ></GradeStack.Screen>
       <GradeStack.Screen
         name="SubjectGrades"
-        options={() => ({
+        options={({ route }) => ({
           presentation: "card",
-          title: "New Grade",
+          title: route.params.name,
           headerShown: true,
         })}
+        listeners={{
+          beforeRemove: () => {
+            setActiveSubject(null);
+          },
+        }}
         component={SubjectGrades}
       ></GradeStack.Screen>
     </GradeStack.Navigator>

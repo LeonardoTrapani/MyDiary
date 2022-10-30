@@ -1,5 +1,5 @@
 import { CardView, View } from "../components/Themed";
-import React from "react";
+import React, { useEffect } from "react";
 import { useAllGrades } from "../util/react-query-hooks";
 import {
   ActivityIndicator,
@@ -17,6 +17,8 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { GradeStackParamList, GradeStackScreenProps } from "../../types";
 import ListCardComponent from "../components/ListCardComponent";
+import { useAtom } from "jotai";
+import { activeSubjectAtom } from "../util/atoms";
 
 const GradeScreen = ({ navigation }: GradeStackScreenProps<"Root">) => {
   const {
@@ -25,6 +27,12 @@ const GradeScreen = ({ navigation }: GradeStackScreenProps<"Root">) => {
     error: allGradesError,
   } = useAllGrades();
   const { primary } = useTheme().colors;
+
+  const setActiveSubject = useAtom(activeSubjectAtom)[1];
+
+  useEffect(() => {
+    setActiveSubject(null);
+  }, [setActiveSubject]);
 
   if (isAllGradesLoading || !allGrades) {
     return <ActivityIndicator />;
@@ -123,7 +131,7 @@ export const AddGradeIcon: React.FC = () => {
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate("Add", undefined);
+        navigation.navigate("Add");
       }}
     >
       <Ionicons name="add" color={primary} size={28} />
@@ -136,6 +144,13 @@ export const SubjectGrades = ({
   navigation,
 }: GradeStackScreenProps<"SubjectGrades">) => {
   const { primary } = useTheme().colors;
+
+  const setActiveSubject = useAtom(activeSubjectAtom)[1];
+
+  useEffect(() => {
+    setActiveSubject(route.params);
+  }, [route.params, setActiveSubject]);
+
   return (
     <View style={{ paddingVertical: 20, flex: 1 }}>
       <FlatList
@@ -168,13 +183,7 @@ export const SubjectGrades = ({
                 ></View>
                 <TouchableOpacity
                   onPress={() => {
-                    navigation.navigate("Add", {
-                      Subject: {
-                        id: route.params.id,
-                        color: route.params.color,
-                        name: route.params.name,
-                      },
-                    });
+                    navigation.navigate("Add");
                   }}
                 >
                   <Ionicons name="ios-add" size={50} color={primary} />
@@ -203,13 +212,7 @@ export const SubjectGrades = ({
             index={index}
             rightArrow
             onPress={() => {
-              navigation.navigate("Add", {
-                Subject: {
-                  id: route.params.id,
-                  color: route.params.color,
-                  name: route.params.name,
-                },
-              });
+              console.warn("TODO: cambio minuti");
             }}
           >
             <RegularText style={{ fontSize: 18 }}>{item.grade}</RegularText>

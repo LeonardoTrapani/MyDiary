@@ -166,7 +166,7 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
   >;
 
 export type AddGradeStackParamList = {
-  Root: { Subject: SubjectType } | undefined;
+  Root: undefined;
   ChooseSubject: undefined;
 };
 

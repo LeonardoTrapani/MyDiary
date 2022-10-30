@@ -8,7 +8,7 @@ import { AddGradeStackScreenProps } from "../../types";
 import KeyboardWrapper from "../components/KeyboardWrapper";
 import MyInput from "../components/MyInput";
 import { RegularText } from "../components/StyledText";
-import { View } from "../components/Themed";
+import { CardView, View } from "../components/Themed";
 import { activeSubjectAtom } from "../util/atoms";
 import useColorScheme from "../util/useColorScheme";
 import useInput from "../util/useInput";
@@ -31,14 +31,6 @@ const AddHomeworkModal = ({
   const colorScheme = useColorScheme();
   const { errorColor } = Colors[colorScheme];
 
-  useEffect(() => {
-    if (route.params?.Subject) {
-      const { name, id, color } = route.params.Subject;
-      setActiveSubject({ id, name, color });
-    }
-  }, [route.params, setActiveSubject]);
-  console.log(activeSubject);
-
   const chooseSubjectHandler = () => {
     navigation.push("ChooseSubject");
   };
@@ -52,9 +44,12 @@ const AddHomeworkModal = ({
           hasError={hasError}
           errorMessage={errorMessage}
         />
-        <TouchableOpacity onPress={chooseSubjectHandler} style={[styles.main]}>
+        <TouchableOpacity
+          onPress={chooseSubjectHandler}
+          style={[styles.main, { backgroundColor: card }]}
+        >
           {activeSubject ? (
-            <View
+            <CardView
               style={[styles.activeSubjectContainer, { backgroundColor: card }]}
             >
               <RegularText style={styles.activeSubject}>
@@ -66,7 +61,7 @@ const AddHomeworkModal = ({
                   { backgroundColor: activeSubject.color },
                 ]}
               ></View>
-            </View>
+            </CardView>
           ) : (
             <RegularText
               style={[
@@ -93,9 +88,6 @@ const styles = StyleSheet.create({
   inputContainer: {
     flex: 1,
   },
-  input: {
-    marginBottom: 20,
-  },
   activeSubjectContainer: {
     justifyContent: "space-between",
     flex: 1,
@@ -109,15 +101,19 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: "#888",
   },
+  label: {
+    fontSize: 20,
+  },
   main: {
-    height: 55,
-    borderBottomWidth: 1,
-    borderColor: "#0000001e",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 0,
+    paddingHorizontal: 14,
+    height: 47,
+    fontSize: 18,
+    borderWidth: 0,
+    marginTop: 20,
+    borderRadius: 8,
     flexDirection: "row",
-    fontSize: 17,
   },
   coloredCircle: {
     height: 25,
