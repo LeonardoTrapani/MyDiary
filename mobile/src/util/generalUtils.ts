@@ -1,5 +1,8 @@
 import moment, { Moment } from "moment";
 
+export const isNumeric = (s: string) => {
+  return !isNaN(Number(s));
+};
 export const generateUUID = () => {
   let dt = new Date().getTime();
   const uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(

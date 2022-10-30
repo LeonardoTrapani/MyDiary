@@ -1,5 +1,5 @@
 import { CardView, View } from "../components/Themed";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useAllGrades } from "../util/react-query-hooks";
 import {
   ActivityIndicator,
@@ -139,18 +139,36 @@ export const AddGradeIcon: React.FC = () => {
   );
 };
 
-export const SubjectGrades = ({
+export const SingleSubjectGradeScreen = ({
   route,
   navigation,
 }: GradeStackScreenProps<"SubjectGrades">) => {
+  const { data: allGrades } = useAllGrades();
   const { primary } = useTheme().colors;
 
   const setActiveSubject = useAtom(activeSubjectAtom)[1];
 
   useEffect(() => {
-    setActiveSubject(route.params);
+    setActiveSubject({
+      id: route.params.id,
+      color: route.params.color,
+      name: route.params.name,
+    });
   }, [route.params, setActiveSubject]);
 
+  const currentSubjectGrade = useMemo(() => {
+    let localSubjectGrade = allGrades?.subjects.find((subjectGrade) => {
+      return subjectGrade.id === route.params.id;
+    });
+
+    if (!localSubjectGrade) {
+      console.warn(
+        "current subject grade undefined: not finding the same subject id "
+      );
+      localSubjectGrade = route.params;
+    }
+    return localSubjectGrade;
+  }, [allGrades?.subjects, route.params]);
   return (
     <View style={{ paddingVertical: 20, flex: 1 }}>
       <FlatList
@@ -164,7 +182,9 @@ export const SubjectGrades = ({
                 paddingHorizontal: 20,
               }}
             >
-              <BoldText style={{ fontSize: 50 }}>{route.params.name}</BoldText>
+              <BoldText style={{ fontSize: 50 }}>
+                {currentSubjectGrade.name}
+              </BoldText>
               <View
                 style={{
                   justifyContent: "space-between",
@@ -174,7 +194,7 @@ export const SubjectGrades = ({
               >
                 <View
                   style={{
-                    backgroundColor: route.params.color,
+                    backgroundColor: currentSubjectGrade.color,
                     marginRight: 15,
                     borderRadius: 200,
                     height: 50,
@@ -201,12 +221,12 @@ export const SubjectGrades = ({
             >
               <MediumText style={{ fontSize: 18 }}>Average Grade:</MediumText>
               <MediumText style={{ fontSize: 18, color: primary }}>
-                {route.params.averageGrade?.toFixed(1) || "N/A"}
+                {currentSubjectGrade.averageGrade?.toFixed(1) || "N/A"}
               </MediumText>
             </View>
           </>
         }
-        data={route.params.grades}
+        data={currentSubjectGrade.grades}
         renderItem={({ item, index }) => (
           <ListCardComponent
             index={index}

@@ -1,30 +1,54 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAtom } from "jotai";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import { AddGradeStackScreenProps } from "../../types";
+import { addGrade } from "../api/grade";
 import KeyboardWrapper from "../components/KeyboardWrapper";
 import MyInput from "../components/MyInput";
+import SolidButton from "../components/SolidButton";
 import { RegularText } from "../components/StyledText";
 import { CardView, View } from "../components/Themed";
 import { activeSubjectAtom } from "../util/atoms";
+import { isNumeric } from "../util/generalUtils";
+import { useValidToken } from "../util/react-query-hooks";
 import useColorScheme from "../util/useColorScheme";
 import useInput from "../util/useInput";
 
-const AddHomeworkModal = ({
-  route,
-  navigation,
-}: AddGradeStackScreenProps<"Root">) => {
-  //when I exit reset the atom
+const AddHomeworkModal = ({ navigation }: AddGradeStackScreenProps<"Root">) => {
   const [activeSubjectHasError, setActiveSubjectHasError] = useState(false);
-  const [activeSubject, setActiveSubject] = useAtom(activeSubjectAtom);
+  const [activeSubject] = useAtom(activeSubjectAtom);
   const { card } = useTheme().colors;
-  const { value, errorMessage, hasError, onChangeText } = useInput([
+
+  const { data: validToken } = useValidToken();
+  const addGradeMutation = useMutation(
+    (gradeInfo: { grade: number; subjectId: number }) => {
+      return addGrade(gradeInfo.grade, gradeInfo.subjectId, validToken);
+    },
+    {
+      onSuccess: async () => {
+        queryClient.invalidateQueries(["allGrades"]);
+        navigation.pop();
+      },
+    }
+  );
+
+  const queryClient = useQueryClient();
+  const {
+    value: gradeValue,
+    errorMessage: gradeErrorMessage,
+    hasError: gradeHasError,
+    onChangeText: onChangeGradeText,
+    validate: validateGrade,
+  } = useInput([
     {
       errorMessage: "only numbers accepted",
-      check: (value) => typeof value === "number",
+      check: (value) => {
+        return isNumeric(value);
+      },
     },
   ]);
 
@@ -35,45 +59,76 @@ const AddHomeworkModal = ({
     navigation.push("ChooseSubject");
   };
 
+  const onAddGrade = () => {
+    validateGrade();
+
+    if (!activeSubject) {
+      setActiveSubjectHasError(true);
+    } else {
+      setActiveSubjectHasError(false);
+    }
+
+    if (!activeSubject || gradeHasError) {
+      return;
+    }
+
+    addGradeMutation.mutate({
+      grade: +gradeValue,
+      subjectId: activeSubject.id,
+    });
+  };
+
   return (
     <KeyboardWrapper>
       <View style={{ flex: 1, padding: 20 }}>
-        <MyInput
-          keyboardType="numeric"
-          name="Grade"
-          hasError={hasError}
-          errorMessage={errorMessage}
-        />
-        <TouchableOpacity
-          onPress={chooseSubjectHandler}
-          style={[styles.main, { backgroundColor: card }]}
-        >
-          {activeSubject ? (
-            <CardView
-              style={[styles.activeSubjectContainer, { backgroundColor: card }]}
-            >
-              <RegularText style={styles.activeSubject}>
-                {activeSubject.name}
-              </RegularText>
-              <View
+        <View style={{ flex: 1 }}>
+          <MyInput
+            keyboardType="numeric"
+            name="Grade"
+            onBlur={validateGrade}
+            hasError={gradeHasError}
+            onChangeText={onChangeGradeText}
+            errorMessage={gradeErrorMessage}
+          />
+          <TouchableOpacity
+            onPress={chooseSubjectHandler}
+            style={[styles.main, { backgroundColor: card }]}
+          >
+            {activeSubject ? (
+              <CardView
                 style={[
-                  styles.coloredCircle,
-                  { backgroundColor: activeSubject.color },
+                  styles.activeSubjectContainer,
+                  { backgroundColor: card },
                 ]}
-              ></View>
-            </CardView>
-          ) : (
-            <RegularText
-              style={[
-                styles.undefinedText,
-                activeSubjectHasError ? { color: errorColor } : {},
-              ]}
-            >
-              Subject
-            </RegularText>
-          )}
-          <Ionicons name="chevron-forward" size={24} color="#aaa" />
-        </TouchableOpacity>
+              >
+                <RegularText style={styles.activeSubject}>
+                  {activeSubject.name}
+                </RegularText>
+                <View
+                  style={[
+                    styles.coloredCircle,
+                    { backgroundColor: activeSubject.color },
+                  ]}
+                ></View>
+              </CardView>
+            ) : (
+              <RegularText
+                style={[
+                  styles.undefinedText,
+                  activeSubjectHasError ? { color: errorColor } : {},
+                ]}
+              >
+                Subject
+              </RegularText>
+            )}
+            <Ionicons name="chevron-forward" size={24} color="#aaa" />
+          </TouchableOpacity>
+        </View>
+        <SolidButton
+          title="Add Grade"
+          isLoading={addGradeMutation.isLoading}
+          onPress={onAddGrade}
+        />
       </View>
     </KeyboardWrapper>
   );

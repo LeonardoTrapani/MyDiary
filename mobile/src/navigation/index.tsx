@@ -42,7 +42,7 @@ import PlannedDatesScreen, {
 import SingleHomeworkScreen from "../screens/SingleHomeworkScreen";
 import GradeScreen, {
   AddGradeIcon,
-  SubjectGrades,
+  SingleSubjectGradeScreen,
 } from "../screens/GradeScreen";
 import AddGradeModal from "../screens/AddGradeModal";
 
@@ -337,7 +337,7 @@ const GradeStackNavigation = () => {
             setActiveSubject(null);
           },
         }}
-        component={SubjectGrades}
+        component={SingleSubjectGradeScreen}
       ></GradeStack.Screen>
     </GradeStack.Navigator>
   );

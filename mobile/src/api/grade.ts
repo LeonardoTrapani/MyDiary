@@ -17,3 +17,25 @@ export const getAllGrades = async (token: string | null | undefined) => {
     throw new Error(errMessage);
   }
 };
+
+export const addGrade = async (
+  grade: number,
+  subjectId: number,
+  token: string | null | undefined
+) => {
+  if (!token) {
+    throw "not authenticated";
+  }
+  try {
+    return await axios.post(
+      BACKEND_URL + "/grade/create",
+      { grade, subjectId },
+      {
+        headers: { Authorization: token },
+      }
+    );
+  } catch (err) {
+    const errMessage = getDataFromAxiosError(err, "an error has occurred");
+    throw errMessage;
+  }
+};
