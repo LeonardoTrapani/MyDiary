@@ -232,7 +232,7 @@ export const SingleSubjectGradeScreen = ({
             index={index}
             rightArrow
             onPress={() => {
-              console.warn("TODO: cambio minuti");
+              console.warn("TODO: cambio voto");
             }}
           >
             <RegularText style={{ fontSize: 18 }}>{item.grade}</RegularText>

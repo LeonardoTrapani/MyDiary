@@ -28,12 +28,15 @@ const MyInput: React.FC<CustomInputProps> = (props) => {
           },
           props.hasError
             ? {
-                borderWidth: 0.5,
-                borderColor: Colors[colorScheme].errorColor,
+                //borderWidth: 0.5,
+                //borderColor: Colors[colorScheme].errorColor,
               }
             : {},
         ]}
         placeholder={props.name}
+        placeholderTextColor={
+          props.hasError ? Colors[colorScheme].errorColor : undefined
+        }
       />
       {props.hasError && (
         <RegularText

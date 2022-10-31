@@ -4,7 +4,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import React, { useState } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
-import { Colors } from "react-native/Libraries/NewAppScreen";
 import { AddGradeStackScreenProps } from "../../types";
 import { addGrade } from "../api/grade";
 import KeyboardWrapper from "../components/KeyboardWrapper";
@@ -12,6 +11,7 @@ import MyInput from "../components/MyInput";
 import SolidButton from "../components/SolidButton";
 import { RegularText } from "../components/StyledText";
 import { CardView, View } from "../components/Themed";
+import Colors from "../constants/Colors";
 import { activeSubjectAtom } from "../util/atoms";
 import { isNumeric } from "../util/generalUtils";
 import { useValidToken } from "../util/react-query-hooks";
@@ -47,10 +47,12 @@ const AddHomeworkModal = ({ navigation }: AddGradeStackScreenProps<"Root">) => {
     {
       errorMessage: "only numbers accepted",
       check: (value) => {
-        return isNumeric(value);
+        return isNumeric(value) && value.length > 0;
       },
     },
   ]);
+
+  //console.log(gradeHasError);
 
   const colorScheme = useColorScheme();
   const { errorColor } = Colors[colorScheme];
@@ -121,7 +123,11 @@ const AddHomeworkModal = ({ navigation }: AddGradeStackScreenProps<"Root">) => {
                 Subject
               </RegularText>
             )}
-            <Ionicons name="chevron-forward" size={24} color="#aaa" />
+            <Ionicons
+              name="chevron-forward"
+              size={24}
+              color={activeSubjectHasError ? errorColor : "#aaa"}
+            />
           </TouchableOpacity>
         </View>
         <SolidButton

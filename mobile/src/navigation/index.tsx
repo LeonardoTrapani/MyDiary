@@ -347,6 +347,7 @@ const AddGradeStackNavigation = () => {
   return (
     <AddGradeStack.Navigator
       screenOptions={{ headerShown: true, headerTitle: "New Grade" }}
+      initialRouteName="Root"
     >
       <AddGradeStack.Screen name="Root" component={AddGradeModal} />
       <AddGradeStack.Screen

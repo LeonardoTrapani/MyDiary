@@ -90,7 +90,6 @@ const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
       current: moment(currentCalendarDate).toDate(),
       server: calendarDay.date,
     });
-    console.log("active");
     setCurrentCalendarDate(calendarDay.date);
   }, [calendarDay, currentCalendarDate, isCalendarDayFetching]);
 

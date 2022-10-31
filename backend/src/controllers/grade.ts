@@ -44,7 +44,6 @@ export const createGrade = async (req: Request, res: Response) => {
           averageGrade: newSubjectAvg._avg.grade,
         },
       });
-      console.log(newSubjectAvg._avg.grade);
       //recalculate total avg
       const newTotalAvg = await trx.subject.aggregate({
         where: {
@@ -57,7 +56,6 @@ export const createGrade = async (req: Request, res: Response) => {
           averageGrade: true,
         },
       });
-      console.log(newTotalAvg);
       //updatre new total average
       await trx.user.update({
         where: {
