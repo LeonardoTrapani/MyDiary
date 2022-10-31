@@ -38,12 +38,6 @@ const SingleHomeworkScreen = ({
     isLoading: isSingleHomeworkLoading,
   } = useSingleHomework(homeworkId);
 
-  useEffect(() => {
-    if (singleHomework) {
-      navigation.setOptions({ title: singleHomework.name });
-    }
-  }, [navigation, singleHomework]);
-
   return (
     <View style={{ flex: 1 }}>
       {isSingleHomeworkLoading ? (

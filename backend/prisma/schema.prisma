@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
 }
 
 generator erd {
@@ -14,7 +15,6 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
-
 model User {
   id             Int        @id @default(autoincrement())
   email          String
@@ -27,6 +27,8 @@ model User {
   week           Week?
   subjects       Subject[]
   deleted        Boolean    @default(false)
+  grades Grade[]
+  averageGrade   Float?
 }
 
 model Homework {
@@ -57,6 +59,8 @@ model Subject {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   deleted   Boolean    @default(false)
+  grades Grade[]
+  averageGrade Float?
 }
 
 model PlannedDate {
@@ -95,3 +99,16 @@ model Week {
   updatedAt            DateTime @updatedAt
   createdAt            DateTime @default(now())
 }
+
+model Grade {
+    id Int @id @default(autoincrement())
+    subjectId Int
+    subject Subject @relation(fields: [subjectId], references: [id])
+    userId Int
+    user User @relation(fields: [userId], references: [id])
+    grade Float 
+    deleted Boolean @default(false)
+  updatedAt      DateTime   @updatedAt
+  createdAt      DateTime   @default(now())
+}
+

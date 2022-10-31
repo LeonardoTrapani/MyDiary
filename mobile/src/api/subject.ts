@@ -1,6 +1,6 @@
 import axios from "axios";
 import { BACKEND_URL } from "../constants/constants";
-import { Subject } from "../util/react-query-hooks";
+import { SubjectType } from "../util/react-query-hooks";
 
 export const getSubjects = async ({
   queryKey,
@@ -10,7 +10,7 @@ any) => {
   if (!token) {
     throw new Error("Not authenticated");
   }
-  const res = await axios.get<Subject[]>(BACKEND_URL + "/subject/all", {
+  const res = await axios.get<SubjectType[]>(BACKEND_URL + "/subject/all", {
     headers: {
       Authorization: token,
     },

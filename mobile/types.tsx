@@ -4,6 +4,7 @@ import {
   NavigatorScreenParams,
 } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { SubjectType } from "./src/util/react-query-hooks";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -31,6 +32,20 @@ export type SingleHomeworkType = {
   };
   duration: number;
   completed: boolean;
+};
+
+export type AllGrades = {
+  averageGrade: number | null;
+  id: number;
+  subjects: {
+    averageGrade: number | null;
+    id: number;
+    color: string;
+    name: string;
+    grades: {
+      grade: number;
+    }[];
+  }[];
 };
 
 export type CalendarDayType = {
@@ -114,6 +129,7 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
 
 export type RootTabParamList = {
   Home: NativeStackScreenProps<HomeStackParamList>;
+  Grades: NativeStackScreenProps<GradeStackParamList>;
   TabThree: undefined;
   Settings: undefined;
 };
@@ -127,11 +143,36 @@ export type HomeStackParamList = {
   Info: undefined;
 };
 
+export type GradeStackScreenProps<Screen extends keyof GradeStackParamList> =
+  NativeStackScreenProps<GradeStackParamList, Screen>;
+
+export type GradeStackParamList = {
+  Root: undefined;
+  Add: NativeStackScreenProps<AddGradeStackParamList>;
+  SubjectGrades: {
+    averageGrade: number | null;
+    id: number;
+    color: string;
+    name: string;
+    grades: {
+      grade: number;
+    }[];
+  };
+};
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
   CompositeScreenProps<
     BottomTabScreenProps<RootTabParamList, Screen>,
     NativeStackScreenProps<RootStackParamList>
   >;
+
+export type AddGradeStackParamList = {
+  Root: undefined;
+  ChooseSubject: undefined;
+};
+
+export type AddGradeStackScreenProps<
+  Screen extends keyof AddGradeStackParamList
+> = NativeStackScreenProps<AddGradeStackParamList, Screen>;
 
 export type AutoComplete =
   | "birthdate-day"

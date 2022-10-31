@@ -9,6 +9,7 @@ import dayRoutes from "./routes/day";
 import calendarRoutes from "./routes/calendar";
 import subjectRoutes from "./routes/subject";
 import plannedDateRoutes from "./routes/plannedDate";
+import gradeRoutes from "./routes/grade";
 
 import { ErrorResponse } from "./models";
 
@@ -34,6 +35,7 @@ app.use("/week", weekRoutes);
 app.use("/calendar", calendarRoutes);
 app.use("/subject", subjectRoutes);
 app.use("/plannedDate", plannedDateRoutes);
+app.use("/grade", gradeRoutes);
 
 app.use((_req: Request, res: Response) => {
   const response: ErrorResponse = {

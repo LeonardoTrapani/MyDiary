@@ -7,7 +7,9 @@ import { Text } from "react-native";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import TabOneScreen from "../screens/TabOneScreen";
 import {
+  AddGradeStackParamList,
   AddHomeworkStackParamList,
+  GradeStackParamList,
   HomeStackParamList,
   RootStackParamList,
   RootTabParamList,
@@ -38,6 +40,11 @@ import PlannedDatesScreen, {
   PlannedDatesInfoIcon,
 } from "../screens/PlannedDatesScreen";
 import SingleHomeworkScreen from "../screens/SingleHomeworkScreen";
+import GradeScreen, {
+  AddGradeIcon,
+  SingleSubjectGradeScreen,
+} from "../screens/GradeScreen";
+import AddGradeModal from "../screens/AddGradeModal";
 
 export default function Main({
   colorScheme,
@@ -222,14 +229,25 @@ const BottomTabNavigator = () => {
         })}
       />
       <BottomTab.Screen
+        name="Grades"
+        component={GradeStackNavigation}
+        options={() => ({
+          title: "Grades",
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => {
+            return (
+              <Ionicons name="stats-chart-sharp" size={size} color={color} />
+            );
+          },
+        })}
+      />
+      <BottomTab.Screen
         name="TabThree"
         component={TabOneScreen}
         options={{
           title: "TabThree",
           tabBarIcon: ({ color, size }) => {
-            return (
-              <Ionicons name="stats-chart-sharp" size={size} color={color} />
-            );
+            return <Ionicons name="beaker" size={size} color={color} />;
           },
         }}
       />
@@ -263,10 +281,10 @@ const HomeStackNavigation = () => {
       <HomeStack.Screen
         name="SingleHomework"
         component={SingleHomeworkScreen}
-        options={{
-          title: "Homework",
+        options={({ route }) => ({
+          title: route.params.title,
           headerBackTitleVisible: false,
-        }}
+        })}
       />
       <HomeStack.Screen
         name="Info"
@@ -280,4 +298,80 @@ const HomeStackNavigation = () => {
   );
 };
 
+const GradeStackNavigation = () => {
+  const setActiveSubject = useAtom(activeSubjectAtom)[1];
+
+  return (
+    <GradeStack.Navigator initialRouteName="Root">
+      <GradeStack.Screen
+        name="Root"
+        options={{
+          title: "Grades",
+          headerRight: AddGradeIcon,
+        }}
+        component={GradeScreen}
+      ></GradeStack.Screen>
+      <GradeStack.Screen
+        name="Add"
+        options={{
+          title: "New Grade",
+          headerShown: false,
+          presentation: "modal",
+        }}
+        listeners={{
+          beforeRemove: () => {
+            setActiveSubject(null);
+          },
+        }}
+        component={AddGradeStackNavigation}
+      ></GradeStack.Screen>
+      <GradeStack.Screen
+        name="SubjectGrades"
+        options={({ route }) => ({
+          presentation: "card",
+          title: route.params.name,
+          headerShown: true,
+        })}
+        listeners={{
+          beforeRemove: () => {
+            setActiveSubject(null);
+          },
+        }}
+        component={SingleSubjectGradeScreen}
+      ></GradeStack.Screen>
+    </GradeStack.Navigator>
+  );
+};
+
+const AddGradeStackNavigation = () => {
+  return (
+    <AddGradeStack.Navigator
+      screenOptions={{ headerShown: true, headerTitle: "New Grade" }}
+      initialRouteName="Root"
+    >
+      <AddGradeStack.Screen name="Root" component={AddGradeModal} />
+      <AddGradeStack.Screen
+        name="ChooseSubject"
+        options={{
+          presentation: "card",
+          headerTitle: "New Grade",
+          headerRight: ChooseSubjectAddIcon,
+        }}
+        component={ChooseSubjectScreen}
+      />
+      <AddHomeworkStack.Screen
+        name="AddSubject"
+        component={AddSubjectScreen}
+        options={{
+          title: "New Subject",
+          presentation: "card",
+          headerBackTitle: "Subject",
+        }}
+      />
+    </AddGradeStack.Navigator>
+  );
+};
+
+const GradeStack = createNativeStackNavigator<GradeStackParamList>();
+const AddGradeStack = createNativeStackNavigator<AddGradeStackParamList>();
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();

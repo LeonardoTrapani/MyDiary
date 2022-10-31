@@ -1,18 +1,18 @@
-import { RootStackScreenProps } from '../../types';
-import AuthForm, { AuthInputType } from '../components/AuthForm';
-import React from 'react';
+import { RootStackScreenProps } from "../../types";
+import AuthForm, { AuthInputType } from "../components/AuthForm";
+import React from "react";
 import useInput, {
   emailValidCheck,
   passwordInputChecks,
-} from '../util/useInput';
-import SignupSvg from '../components/svgs/SignupSvg';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { signup } from '../api/auth';
-import { AxiosError } from 'axios';
+} from "../util/useInput";
+import SignupSvg from "../components/svgs/SignupSvg";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { signup } from "../api/auth";
+import { AxiosError } from "axios";
 
 export const SignupScreen = ({
   navigation,
-}: RootStackScreenProps<'Signup'>) => {
+}: RootStackScreenProps<"Signup">) => {
   const queryClient = useQueryClient();
   const signupMutation = useMutation(
     (signupInfo: { email: string; password: string; username: string }) => {
@@ -20,7 +20,7 @@ export const SignupScreen = ({
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(['validToken']);
+        queryClient.invalidateQueries(["validToken"]);
       },
     }
   );
@@ -35,11 +35,11 @@ export const SignupScreen = ({
   } = useInput([
     {
       check: (value) => !!value,
-      errorMessage: 'please enter a username',
+      errorMessage: "please enter a username",
     },
     {
       check: (value) => value.length >= 5,
-      errorMessage: 'at least 5 characters',
+      errorMessage: "at least 5 characters",
     },
   ]);
   const {
@@ -52,11 +52,11 @@ export const SignupScreen = ({
   } = useInput([
     {
       check: (value) => !!value,
-      errorMessage: 'please enter an email',
+      errorMessage: "please enter an email",
     },
     {
       check: emailValidCheck,
-      errorMessage: 'please enter a valid email',
+      errorMessage: "please enter a valid email",
     },
   ]);
 
@@ -107,54 +107,54 @@ export const SignupScreen = ({
     if (navigation.canGoBack()) {
       navigation.goBack();
     } else {
-      navigation.push('Login');
+      navigation.push("Login");
     }
   };
 
   const inputs: AuthInputType[] = [
     {
-      name: 'username',
+      name: "username",
       errorMessage: usernameErrorMessage,
       hasError: usernameHasError,
-      keyboardType: 'default',
+      keyboardType: "default",
       value: usernameValue,
       onChangeText: usernameOnChangeText,
-      autoComplete: 'username',
+      autoComplete: "username",
       validate: usernameValidate,
-      autoCapitalize: 'none',
+      autoCapitalize: "none",
       secureTextEntry: false,
     },
     {
-      name: 'email',
+      name: "email",
       errorMessage: emailErrorMessage,
       hasError: emailHasError,
-      keyboardType: 'email-address',
-      autoCapitalize: 'none',
-      autoComplete: 'email',
+      keyboardType: "email-address",
+      autoCapitalize: "none",
+      autoComplete: "email",
       onChangeText: emailOnChangeText,
       validate: emailValidate,
       value: emailValue,
       secureTextEntry: false,
     },
     {
-      name: 'password',
+      name: "password",
       errorMessage: passwordErrorMessage,
       hasError: passwordHasError,
-      autoCapitalize: 'none',
-      autoComplete: 'password',
-      keyboardType: 'default',
+      autoCapitalize: "none",
+      autoComplete: "password",
+      keyboardType: "default",
       onChangeText: passwordOnChangeText,
       secureTextEntry: true,
       validate: passwordValidate,
       value: passwordValue,
     },
     {
-      name: 'confirm password',
+      name: "confirm password",
       errorMessage: confirmPasswordErrorMessage,
       hasError: confirmPasswordHasError,
-      autoCapitalize: 'none',
-      autoComplete: 'password',
-      keyboardType: 'default',
+      autoCapitalize: "none",
+      autoComplete: "password",
+      keyboardType: "default",
       onChangeText: confirmPasswordOnChangeText,
       secureTextEntry: true,
       validate: confirmPasswordValidate,
@@ -164,8 +164,8 @@ export const SignupScreen = ({
   return (
     <AuthForm
       insteadHandler={loginInsteadHandler}
-      insteadTitle='login instead'
-      title='Signup'
+      insteadTitle="login instead"
+      title="Signup"
       inputs={inputs}
       submitHandler={submitSignupHandler}
       svg={<SignupSvg />}
