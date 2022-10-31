@@ -45,6 +45,12 @@ const AddHomeworkModal = ({ navigation }: AddGradeStackScreenProps<"Root">) => {
     validate: validateGrade,
   } = useInput([
     {
+      check: (value) => {
+        return !!value;
+      },
+      errorMessage: "please enter a grade",
+    },
+    {
       errorMessage: "only numbers accepted",
       check: (value) => {
         return isNumeric(value) && value.length > 0;
@@ -70,7 +76,7 @@ const AddHomeworkModal = ({ navigation }: AddGradeStackScreenProps<"Root">) => {
       setActiveSubjectHasError(false);
     }
 
-    if (!activeSubject || gradeHasError) {
+    if (!activeSubject || gradeHasError || gradeValue.length < 1) {
       return;
     }
 
