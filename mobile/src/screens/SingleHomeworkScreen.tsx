@@ -92,6 +92,17 @@ const SingleHomewrk: React.FC<{
       <View style={styles.breakContainer}>
         <Break />
       </View>
+      <View style={[styles.row]}>
+        <MediumText style={styles.rowText}>
+          {props.singleHomework.subject.name}
+        </MediumText>
+        <View
+          style={[
+            styles.subjectCircle,
+            { backgroundColor: props.singleHomework.subject.color },
+          ]}
+        />
+      </View>
       <View style={styles.row}>
         <RegularText style={styles.rowText}>Delivery Date:</RegularText>
         <RegularText style={styles.rowText}>
@@ -109,17 +120,6 @@ const SingleHomewrk: React.FC<{
         <RegularText style={styles.rowText}>
           {minutesToHoursMinutesFun(props.singleHomework.timeToComplete)}
         </RegularText>
-      </View>
-      <View style={[styles.row]}>
-        <RegularText style={styles.rowText}>
-          {props.singleHomework.subject.name}
-        </RegularText>
-        <View
-          style={[
-            styles.subjectCircle,
-            { backgroundColor: props.singleHomework.subject.color },
-          ]}
-        />
       </View>
       <View style={[styles.row, { marginBottom: 0 }]}>
         <RegularText style={styles.rowText}>Completed:</RegularText>

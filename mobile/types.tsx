@@ -4,7 +4,6 @@ import {
   NavigatorScreenParams,
 } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { SubjectType } from "./src/util/react-query-hooks";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -128,8 +127,8 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
   NativeStackScreenProps<RootStackParamList, Screen>;
 
 export type RootTabParamList = {
-  Home: NativeStackScreenProps<HomeStackParamList>;
-  Grades: NativeStackScreenProps<GradeStackParamList>;
+  Home: NativeStackScreenProps<HomeStackParamList> | undefined;
+  Grades: NativeStackScreenProps<GradeStackParamList> | undefined;
   TabThree: undefined;
   Settings: undefined;
 };

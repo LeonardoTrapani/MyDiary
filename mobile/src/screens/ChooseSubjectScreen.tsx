@@ -12,7 +12,6 @@ import {
   AddGradeStackScreenProps,
   AddHomeworkStackParamList,
   AddHomeworkStackScreenProps,
-  GradeStackScreenProps,
 } from "../../types";
 import { MediumText } from "../components/StyledText";
 import { View } from "../components/Themed";
@@ -178,6 +177,7 @@ export const AddSubjectScreen = ({
     {
       onSuccess: async () => {
         await queryClient.invalidateQueries(["subject"]);
+        await queryClient.invalidateQueries(["allGrades"]);
         navigation.pop();
       },
     }
