@@ -1,9 +1,16 @@
 import React, { useMemo, useState } from "react";
-import { Alert, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  Alert,
+  ScrollView,
+  StyleProp,
+  StyleSheet,
+  TouchableOpacity,
+  ViewStyle,
+} from "react-native";
 import useColorScheme from "../util/useColorScheme";
 import KeyboardWrapper from "../components/KeyboardWrapper";
-import { View } from "../components/Themed";
-import AddHomeworkInput from "../components/AddHomeworkInput";
+import { CardView, View } from "../components/Themed";
+import DescriptionInput from "../components/AddHomeworkInput";
 import SolidButton from "../components/SolidButton";
 import NonModalDurationPicker from "../components/NonModalDurationPicker";
 import Accordion from "../components/Accordion";
@@ -17,6 +24,8 @@ import DateTimePicker from "react-native-modal-datetime-picker";
 import { addDaysFromToday } from "../util/generalUtils";
 import useInput from "../util/useInput";
 import Colors from "../constants/Colors";
+import MyInput from "../components/MyInput";
+import { SubjectType } from "../util/react-query-hooks";
 
 const AddHomeworkmodal = ({
   navigation,
@@ -37,9 +46,7 @@ const AddHomeworkmodal = ({
     navigation.push("ChooseSubject");
   };
 
-  const { card } = useTheme().colors;
-
-  const accordionTitle = "Duration (h : m)";
+  const accordionTitle = "duration (h : m)";
 
   const duration = useMemo(() => {
     const dur = durationDate.getMinutes() + durationDate.getHours() * 60;
@@ -56,6 +63,7 @@ const AddHomeworkmodal = ({
   const {
     value: titleValue,
     onChangeText: onChangeTitle,
+    errorMessage: titleErrorMessage,
     validate: validateTitle,
     hasError: titleHasError,
   } = useInput([
@@ -70,6 +78,7 @@ const AddHomeworkmodal = ({
     onChangeText: onChangeDescription,
     validate: validateDescription,
     hasError: descriptionHasError,
+    errorMessage: descriptionErrorMessage,
   } = useInput([
     {
       check: (value) => {
@@ -88,7 +97,7 @@ const AddHomeworkmodal = ({
   };
 
   const colorScheme = useColorScheme();
-  const { errorColor } = Colors[colorScheme];
+  const { errorColor, placeHolderColor } = Colors[colorScheme];
 
   const nextStepHandler = () => {
     validateTitle();
@@ -135,76 +144,43 @@ const AddHomeworkmodal = ({
 
   return (
     <KeyboardWrapper>
-      <View
-        style={[
-          styles.container,
-          {
-            backgroundColor: card,
-          },
-        ]}
-      >
+      <View style={[styles.container]}>
         <ScrollView>
-          <View
-            style={[
-              styles.inputContainer,
-              {
-                backgroundColor: card,
-              },
-            ]}
-          >
-            <AddHomeworkInput
-              title="Title"
+          <View style={[styles.inputContainer]}>
+            <MyInput
+              name="title"
               onChangeText={onChangeTitle}
+              errorMessage={titleErrorMessage}
+              onBlur={validateTitle}
               value={titleValue}
               hasError={titleHasError}
+              style={{ marginBottom: 15 }}
             />
-            <AddHomeworkInput
-              title="Description"
-              isTextArea
+            <DescriptionInput
+              title="description"
               maxLength={400}
+              onBlur={validateDescription}
               onChangeText={onChangeDescription}
+              errorMessage={descriptionErrorMessage}
               value={descriptionValue}
               hasError={descriptionHasError}
+              style={{ marginBottom: 15 }}
             />
 
-            <TouchableOpacity
-              onPress={chooseSubjectHandler}
-              style={[styles.main]}
-            >
-              {activeSubject ? (
-                <View
-                  style={[
-                    styles.activeSubjectContainer,
-                    { backgroundColor: card },
-                  ]}
-                >
-                  <RegularText style={styles.activeSubject}>
-                    {activeSubject.name}
-                  </RegularText>
-                  <View
-                    style={[
-                      styles.coloredCircle,
-                      { backgroundColor: activeSubject.color },
-                    ]}
-                  ></View>
-                </View>
-              ) : (
-                <RegularText
-                  style={[
-                    styles.undefinedText,
-                    activeSubjectHasError ? { color: errorColor } : {},
-                  ]}
-                >
-                  Subject
-                </RegularText>
-              )}
-              <Ionicons name="chevron-forward" size={24} color="#aaa" />
-            </TouchableOpacity>
+            <SubjectPicker
+              errorColor={errorColor}
+              activeSubject={activeSubject}
+              chooseSubjectHandler={chooseSubjectHandler}
+              placeHolderColor={placeHolderColor}
+              activeSubjectHasError={activeSubjectHasError}
+              style={{ marginBottom: 15 }}
+            />
             <Accordion
               title={accordionTitle}
               choosedValue={`${durationDate.getHours()}h ${durationDate.getMinutes()}m`}
               hasError={durationHasError}
               isValueChoosed={duration !== 0}
+              style={{ marginBottom: 15 }}
             >
               <NonModalDurationPicker
                 onChangeDuration={durationChangeHandler}
@@ -245,7 +221,7 @@ const ExpirationDatePicker: React.FC<{
 }> = (props) => {
   const { card, text } = useTheme().colors;
   const cs = useColorScheme();
-  const { errorColor } = Colors[cs];
+  const { errorColor, placeHolderColor } = Colors[cs];
   return (
     <TouchableOpacity
       onPress={props.onOpen}
@@ -254,15 +230,72 @@ const ExpirationDatePicker: React.FC<{
       <RegularText
         style={[
           styles.undefinedText,
+          props.hasError ? { color: errorColor } : { color: placeHolderColor },
           props.expDate ? { color: text } : {},
-          props.hasError ? { color: errorColor } : {},
         ]}
       >
-        {props.expDate ? props.expDate.toLocaleDateString() : "Expiration Date"}
+        {props.expDate ? props.expDate.toLocaleDateString() : "due date"}
       </RegularText>
       <TouchableOpacity onPress={props.onOpen}>
-        <Ionicons name="ios-calendar-outline" size={24} color="#888" />
+        <Ionicons
+          name="ios-calendar-outline"
+          size={24}
+          color={placeHolderColor}
+        />
       </TouchableOpacity>
+    </TouchableOpacity>
+  );
+};
+
+export const SubjectPicker: React.FC<{
+  chooseSubjectHandler: () => void;
+  activeSubject: SubjectType | null;
+  activeSubjectHasError: boolean;
+  errorColor: string;
+  placeHolderColor: string;
+  style?: StyleProp<ViewStyle>;
+}> = (props) => {
+  const { card } = useTheme().colors;
+  return (
+    <TouchableOpacity
+      onPress={props.chooseSubjectHandler}
+      style={[styles.main, { backgroundColor: card }, props.style]}
+    >
+      {props.activeSubject ? (
+        <CardView
+          style={[styles.activeSubjectContainer, { backgroundColor: card }]}
+        >
+          <RegularText style={styles.activeSubject}>
+            {props.activeSubject.name}
+          </RegularText>
+          <View
+            style={[
+              styles.coloredCircle,
+              { backgroundColor: props.activeSubject.color },
+            ]}
+          ></View>
+        </CardView>
+      ) : (
+        <RegularText
+          style={[
+            styles.undefinedText,
+            props.activeSubjectHasError
+              ? { color: props.errorColor }
+              : { color: props.placeHolderColor },
+          ]}
+        >
+          Subject
+        </RegularText>
+      )}
+      <Ionicons
+        name="chevron-forward"
+        size={24}
+        color={
+          props.activeSubjectHasError
+            ? props.errorColor
+            : props.placeHolderColor
+        }
+      />
     </TouchableOpacity>
   );
 };
@@ -270,7 +303,7 @@ const ExpirationDatePicker: React.FC<{
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 20,
+    padding: 20,
     justifyContent: "space-between",
   },
   inputContainer: {
@@ -290,17 +323,15 @@ const styles = StyleSheet.create({
   },
   undefinedText: {
     fontSize: 17,
-    color: "#888",
   },
   main: {
-    height: 55,
-    borderBottomWidth: 1,
-    borderColor: "#0000001e",
+    height: 47,
+    borderRadius: 8,
+    fontSize: 18,
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 0,
+    paddingHorizontal: 14,
     flexDirection: "row",
-    fontSize: 17,
   },
   coloredCircle: {
     height: 25,

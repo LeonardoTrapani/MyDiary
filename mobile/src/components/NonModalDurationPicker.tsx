@@ -1,17 +1,20 @@
-import React from 'react';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import React from "react";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 interface NonModalDurationPicerProps {
   onChangeDuration: (date: Date) => void;
   value: Date;
 }
 
-const NonModalDurationPicker: React.FC<NonModalDurationPicerProps> = (props) => {
+const NonModalDurationPicker: React.FC<NonModalDurationPicerProps> = (
+  props
+) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const changeHandler = (_: any, date?: Date) => {
     if (date) {
-      props.onChangeDuration(date)
+      props.onChangeDuration(date);
     }
-  }
+  };
 
   return (
     <DateTimePicker
@@ -20,7 +23,7 @@ const NonModalDurationPicker: React.FC<NonModalDurationPicerProps> = (props) => 
       is24Hour={true}
       display="spinner"
       style={{
-        height: 150
+        height: 150,
       }}
       value={props.value}
       onChange={changeHandler}

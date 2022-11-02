@@ -8,40 +8,52 @@ import { View } from "./Themed";
 
 interface AddHomeworkInputProps extends TextInputProps {
   title: string;
-  isTextArea?: boolean;
   value: string;
+  errorMessage: string;
   hasError: boolean;
 }
 
-const AddHomeworkInput: React.FC<AddHomeworkInputProps> = (props) => {
+const DescriptionInput: React.FC<AddHomeworkInputProps> = (props) => {
   const colorScheme = useColorScheme();
   const { card } = useTheme().colors;
   const { placeHolderColor, errorColor } = Colors[colorScheme];
   return (
-    <View style={[styles.container, { backgroundColor: card }]}>
-      <TextInput
-        {...props}
-        style={[
-          styles.input,
-          props.isTextArea ? styles.textArea : {},
-          props.hasError ? { color: errorColor } : {},
-        ]}
-        value={props.value}
-        placeholder={props.title}
-        placeholderTextColor={props.hasError ? errorColor : placeHolderColor}
-        {...(props.isTextArea ? { multiline: true } : { multiline: false })}
-      />
-      {props.isTextArea && props.maxLength ? (
-        <RegularText
+    <View style={props.style}>
+      <View style={[styles.container, { backgroundColor: card }]}>
+        <TextInput
+          {...props}
           style={[
-            styles.limitText,
-            props.value.length >= props.maxLength || props.hasError
-              ? {
-                  color: errorColor,
-                }
-              : {},
+            styles.input,
+            styles.textArea,
+            props.hasError ? { color: errorColor } : {},
           ]}
-        >{`${props.value.length} / ${props.maxLength}`}</RegularText>
+          value={props.value}
+          placeholder={props.title}
+          onBlur={props.onBlur}
+          placeholderTextColor={props.hasError ? errorColor : placeHolderColor}
+          multiline={true}
+        />
+        {props.maxLength ? (
+          <RegularText
+            style={[
+              styles.limitText,
+              props.value.length >= props.maxLength || props.hasError
+                ? {
+                    color: errorColor,
+                  }
+                : { color: placeHolderColor },
+            ]}
+          >{`${props.value.length} / ${props.maxLength}`}</RegularText>
+        ) : (
+          <></>
+        )}
+      </View>
+      {props.hasError ? (
+        <RegularText
+          style={{ color: errorColor, paddingLeft: 14, paddingTop: 3 }}
+        >
+          {props.errorMessage}
+        </RegularText>
       ) : (
         <></>
       )}
@@ -51,24 +63,23 @@ const AddHomeworkInput: React.FC<AddHomeworkInputProps> = (props) => {
 
 const styles = StyleSheet.create({
   input: {
-    height: 54,
-    paddingHorizontal: 0,
+    paddingHorizontal: 14,
+    height: 47,
     fontSize: 17,
   },
   textArea: {
     height: 150,
-    paddingTop: 20,
+    paddingTop: 14,
     textAlignVertical: "top",
   },
   container: {
-    borderBottomWidth: 1,
+    borderRadius: 8,
     borderColor: "#0000001e",
   },
   limitText: {
     fontSize: 15,
-    color: "#888",
     textAlign: "right",
     padding: 10,
   },
 });
-export default AddHomeworkInput;
+export default DescriptionInput;

@@ -253,6 +253,7 @@ const HomeworkBody: React.FC<{
     <View style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
         <SectionList
+          style={{ paddingHorizontal: 10 }}
           ItemSeparatorComponent={() => (
             <View style={{ marginBottom: 5, marginLeft: 40 }}>
               <Break />
@@ -272,7 +273,9 @@ const HomeworkBody: React.FC<{
               return <></>;
             }
             return (
-              <HomeworkListSectionHeader>
+              <HomeworkListSectionHeader
+                isTextComp={section.title === "Completed"}
+              >
                 {section.title}
               </HomeworkListSectionHeader>
             );
@@ -291,10 +294,18 @@ const HomeworkBody: React.FC<{
   );
 };
 
-const HomeworkListSectionHeader: React.FC<{ children: string }> = (props) => {
+const HomeworkListSectionHeader: React.FC<{
+  children: string;
+  isTextComp: boolean;
+}> = (props) => {
   const { primary } = useTheme().colors;
   return (
-    <View style={[styles.homeworkListSectionHeader]}>
+    <View
+      style={[
+        styles.homeworkListSectionHeader,
+        props.isTextComp ? { marginTop: 20 } : {},
+      ]}
+    >
       <MediumText
         style={[styles.homeworkListSectionHeaderText, { color: primary }]}
       >
@@ -749,8 +760,10 @@ const styles = StyleSheet.create({
   },
   homeworkListSectionHeader: {
     marginBottom: 6,
-    padding: 10,
+    paddingHorizontal: 10,
+    paddingBottom: 3,
   },
+
   homeworkListSectionHeaderText: {
     fontSize: 17,
   },

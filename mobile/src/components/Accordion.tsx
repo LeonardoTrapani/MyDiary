@@ -26,7 +26,7 @@ const Accordion: React.FC<{
     setIsOpened((prev) => !prev);
   };
   const cs = useColorScheme();
-  const { errorColor } = Colors[cs];
+  const { errorColor, placeHolderColor } = Colors[cs];
   const { card, text } = useTheme().colors;
 
   return (
@@ -39,23 +39,14 @@ const Accordion: React.FC<{
         },
       ]}
     >
-      <TouchableOpacity
-        onPress={pressHandler}
-        style={[
-          styles.main,
-          isOpened
-            ? {}
-            : {
-                borderBottomWidth: 1,
-                borderColor: "#0000001e",
-              },
-        ]}
-      >
+      <TouchableOpacity onPress={pressHandler} style={[styles.main]}>
         <RegularText
           style={[
             styles.text,
+            props.hasError
+              ? { color: errorColor }
+              : { color: placeHolderColor },
             !isOpened && props.isValueChoosed ? { color: text } : {},
-            props.hasError ? { color: errorColor } : {},
           ]}
         >
           {!isOpened && props.isValueChoosed ? props.choosedValue : props.title}
@@ -63,7 +54,7 @@ const Accordion: React.FC<{
         <Ionicons
           name="chevron-down"
           size={24}
-          color="#aaa"
+          color={placeHolderColor}
           style={{
             transform: [{ rotate: !isOpened ? "180deg" : "0deg" }],
           }}
@@ -72,9 +63,10 @@ const Accordion: React.FC<{
       {isOpened && (
         <View
           style={[
-            styles.children,
             {
               backgroundColor: card,
+              borderBottomRightRadius: 8,
+              borderBottomLeftRadius: 8,
             },
           ]}
         >
@@ -87,25 +79,20 @@ const Accordion: React.FC<{
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 0,
     justifyContent: "center",
+    borderRadius: 8,
     fontSize: 17,
   },
   main: {
-    height: 55,
+    height: 47,
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 0,
+    paddingHorizontal: 14,
     flexDirection: "row",
     fontSize: 17,
   },
   text: {
     fontSize: 17,
-    color: "#888",
-  },
-  children: {
-    borderBottomWidth: 1,
-    borderColor: "#0000001e",
   },
 });
 

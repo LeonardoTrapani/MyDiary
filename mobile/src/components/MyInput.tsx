@@ -16,6 +16,7 @@ interface CustomInputProps extends TextInputProps {
 const MyInput: React.FC<CustomInputProps> = (props) => {
   const { colors } = useTheme();
   const colorScheme = useColorScheme();
+  const { placeHolderColor, errorColor } = Colors[colorScheme];
 
   return (
     <View style={[props.style, props.hasError ? {} : {}]}>
@@ -26,24 +27,16 @@ const MyInput: React.FC<CustomInputProps> = (props) => {
           {
             backgroundColor: colors.card,
           },
-          props.hasError
-            ? {
-                //borderWidth: 0.5,
-                //borderColor: Colors[colorScheme].errorColor,
-              }
-            : {},
         ]}
         placeholder={props.name}
-        placeholderTextColor={
-          props.hasError ? Colors[colorScheme].errorColor : undefined
-        }
+        placeholderTextColor={props.hasError ? errorColor : placeHolderColor}
       />
       {props.hasError && (
         <RegularText
           style={{
             marginTop: 2,
             marginLeft: 10,
-            color: Colors[colorScheme].errorColor,
+            color: errorColor,
           }}
         >
           {props.errorMessage}
