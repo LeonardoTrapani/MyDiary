@@ -376,11 +376,15 @@ const CalendarDayHomework: React.FC<{
           <MediumText style={styles.homeworkText}>
             {props.homework.name}
           </MediumText>
-          <RegularText>
-            {minutesToHoursMinutesFun(
-              props.homework.plannedDates[0].minutesAssigned
-            )}
-          </RegularText>
+          {!isCompleted ? (
+            <RegularText>
+              {minutesToHoursMinutesFun(
+                props.homework.plannedDates[0].minutesAssigned
+              )}
+            </RegularText>
+          ) : (
+            <></>
+          )}
         </TouchableOpacity>
       </View>
     </View>
@@ -401,13 +405,14 @@ const UncompleteTick: React.FC<{
           marginHorizontal: 10,
           height: 22,
           aspectRatio: 1,
+          borderRadius: 1000,
+          backgroundColor: "#888",
+          borderColor: "#888",
           alignItems: "center",
           justifyContent: "center",
         },
       ]}
-    >
-      <Ionicons name="checkmark-done" size={20} color={props.color} />
-    </TouchableOpacity>
+    ></TouchableOpacity>
   );
 };
 
@@ -426,9 +431,9 @@ const CompleteCircle: React.FC<{
           height: 22,
           aspectRatio: 1,
           borderRadius: 1000,
-          borderColor: props.color,
-          //borderColor: "#888",
-          borderWidth: 1,
+          //borderColor: props.color,
+          borderColor: "#888",
+          borderWidth: 1.4,
           alignItems: "center",
           justifyContent: "center",
         },
