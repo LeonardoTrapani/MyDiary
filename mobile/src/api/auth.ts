@@ -3,6 +3,15 @@ import axios, { AxiosError } from "axios";
 import { BACKEND_URL } from "../constants/constants";
 import { Week } from "../util/react-query-hooks";
 
+export const validConnection = async () => {
+  try {
+    await axios.get(BACKEND_URL + "/");
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 export const validateToken = async () => {
   const token = await getToken();
   if (token) {

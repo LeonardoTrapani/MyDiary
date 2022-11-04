@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@react-native-community/netinfo": "^9.3.6",
     "concurrently": "^7.3.0"
   },
   "scripts": {

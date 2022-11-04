@@ -1,6 +1,6 @@
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
-import { useIsWeekCreated } from "./react-query-hooks";
+import { useIsWeekCreated, useValidConnection } from "./react-query-hooks";
 import {
   Roboto_400Regular,
   Roboto_500Medium,
@@ -8,11 +8,16 @@ import {
   Roboto_400Regular_Italic,
   useFonts,
 } from "@expo-google-fonts/roboto";
+
 export default function useInitialLoading() {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
+  const { data: isValidConnection } = useValidConnection();
 
-  const { isFetched: isWeekCreatedFetched, data: weekCreated } =
-    useIsWeekCreated();
+  const {
+    isFetched: isWeekCreatedFetched,
+    data: weekCreated,
+    isError: isWeekCreatedError,
+  } = useIsWeekCreated();
 
   const [fontsLoaded] = useFonts({
     regular: Roboto_400Regular,
@@ -36,11 +41,22 @@ export default function useInitialLoading() {
     if (isLoadingComplete) {
       return;
     }
+    if (fontsLoaded && isValidConnection !== undefined) {
+      loadResourcesAndDataAsync();
+      return;
+    }
     if (!isWeekCreatedFetched || !fontsLoaded) {
       return;
     }
     loadResourcesAndDataAsync();
-  }, [fontsLoaded, isLoadingComplete, isWeekCreatedFetched, weekCreated]);
+  }, [
+    fontsLoaded,
+    isLoadingComplete,
+    isValidConnection,
+    isWeekCreatedError,
+    isWeekCreatedFetched,
+    weekCreated,
+  ]);
 
   return isLoadingComplete;
 }

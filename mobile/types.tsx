@@ -78,6 +78,7 @@ export type CalendarDayType = {
 export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
   NotFound: undefined;
+  NoConnection: undefined;
   Login: undefined;
   CreateWeek: undefined;
   Signup: undefined;

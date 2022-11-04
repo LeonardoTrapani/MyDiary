@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as React from "react";
 import { ColorSchemeName } from "react-native";
 import { Text } from "react-native";
-import NotFoundScreen from "../screens/NotFoundScreen";
+import NotFoundScreen, { NoConnectionScreen } from "../screens/NotFoundScreen";
 import TabOneScreen from "../screens/TabOneScreen";
 import {
   AddGradeStackParamList,
@@ -19,7 +19,11 @@ import { LoginScreen } from "../screens/LoginScreen";
 import { SignupScreen } from "../screens/SignupScreen";
 
 import useInitialLoading from "../util/useInitialLoading";
-import { useIsWeekCreated, useValidToken } from "../util/react-query-hooks";
+import {
+  useIsWeekCreated,
+  useValidConnection,
+  useValidToken,
+} from "../util/react-query-hooks";
 import { MyDarkTheme, MyLightTheme } from "../constants/Colors";
 import CreateWeekScreen from "../screens/CreateWeekScreen";
 import HomeScreen, {
@@ -80,6 +84,19 @@ const NavigatorBody: React.FC = () => {
   const { data: validToken } = useValidToken();
   const { data: isWeekCreated, isLoading: isWeekLoading } = useIsWeekCreated();
   const setActiveSubject = useAtom(activeSubjectAtom)[1];
+  const { data: isValidConnection } = useValidConnection();
+
+  if (isValidConnection === false) {
+    return (
+      <Stack.Navigator>
+        <Stack.Screen
+          name="NoConnection"
+          component={NoConnectionScreen}
+          options={{ title: "Oops!" }}
+        />
+      </Stack.Navigator>
+    );
+  }
 
   if (!validToken || (isWeekLoading && !isWeekCreated)) {
     return (

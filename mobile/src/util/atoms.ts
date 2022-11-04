@@ -11,3 +11,4 @@ export const activeInfoDayAtom = atom<
       initialFreeTime: number;
     }
 >(undefined);
+export const globalActiveConnectionAtom = atom<boolean | undefined>(undefined);

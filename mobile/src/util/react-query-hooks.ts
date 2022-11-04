@@ -7,11 +7,20 @@ import {
   HomeworkInfoType,
   SingleHomeworkType,
 } from "../../types";
-import { getIsWeekCreatedWithToken, getWeek, validateToken } from "../api/auth";
+import {
+  getIsWeekCreatedWithToken,
+  getWeek,
+  validateToken,
+  validConnection,
+} from "../api/auth";
 import { getDayCalendar } from "../api/calendar";
 import { getAllGrades } from "../api/grade";
 import { fetchFreeDays, getSingleHomework } from "../api/homework";
 import { getSubjects } from "../api/subject";
+
+export const useValidConnection = () => {
+  return useQuery<boolean | undefined>(["validConnection"], validConnection);
+};
 
 export const useValidToken = () => {
   return useQuery<string | null>(["validToken"], validateToken);

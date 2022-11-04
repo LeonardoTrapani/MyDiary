@@ -37,6 +37,10 @@ app.use("/subject", subjectRoutes);
 app.use("/plannedDate", plannedDateRoutes);
 app.use("/grade", gradeRoutes);
 
+app.get("/", (_req, res, _next) => {
+  res.json();
+});
+
 app.use((_req: Request, res: Response) => {
   const response: ErrorResponse = {
     message: "Page not found",
