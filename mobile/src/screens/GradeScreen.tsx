@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
   gradeCircle: {
     aspectRatio: 1,
     marginRight: 25,
-    height: 55,
+    height: 50,
     borderRadius: 1000,
   },
   innerGradeCircle: {

@@ -20,7 +20,7 @@ const ListCardComponent: React.FC<{
     >
       <CardView
         style={{
-          padding: 18,
+          padding: 9,
           borderWidth: 0.8,
           borderTopWidth: props.index === 0 ? 0.8 : 0,
           borderColor: "#bbb",

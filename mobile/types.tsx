@@ -90,6 +90,7 @@ export type AddHomeworkStackParamList = {
   ChooseSubject: undefined;
   AddSubject: undefined;
   PlannedDates: HomeworkInfoType;
+  info: undefined;
 };
 
 export type SelectedDay = {
@@ -97,16 +98,16 @@ export type SelectedDay = {
   minutes: number;
 };
 
-export type FreeDays = FreeDay[];
+export type FreeDaysType = FreeDayType[];
 
 export type FreeDaysResponse = {
   nextCursor: number | undefined;
   page: {
-    freeDays: FreeDays;
+    freeDays: FreeDaysType;
   };
 };
 
-export interface FreeDay {
+export interface FreeDayType {
   date: string;
   freeMins: number;
   minutesToAssign: number;
@@ -168,6 +169,7 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
 export type AddGradeStackParamList = {
   Root: undefined;
   ChooseSubject: undefined;
+  AddSubject: undefined;
 };
 
 export type AddGradeStackScreenProps<

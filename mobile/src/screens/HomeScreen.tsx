@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import {
+  AddHomeworkStackScreenProps,
   CalendarDayType,
   HomeStackParamList,
   HomeStackScreenProps,
@@ -529,7 +530,9 @@ export const AddHomeworkIcon: React.FC = () => {
   );
 };
 
-export const InfoModal = () => {
+export const DayInfoModal = ({
+  navigation,
+}: AddHomeworkStackScreenProps<"info"> | HomeStackScreenProps<"Info">) => {
   const { data: validToken } = useValidToken();
 
   const queryClient = useQueryClient();
@@ -540,6 +543,8 @@ export const InfoModal = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries(["calendarDay"]);
+        queryClient.invalidateQueries(["freeDays"]);
+        navigation.pop();
       },
     }
   );

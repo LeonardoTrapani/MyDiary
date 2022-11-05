@@ -9,8 +9,8 @@ import {
 } from "react-native";
 import {
   AddHomeworkStackScreenProps,
-  FreeDay,
-  FreeDays,
+  FreeDayType,
+  FreeDaysType,
   SelectedDay,
 } from "../../types";
 import { BoldText, MediumText, RegularText } from "../components/StyledText";
@@ -27,6 +27,8 @@ import { createHomework } from "../api/homework";
 import { useGetDataFromAxiosError } from "../util/axiosUtils";
 import { AxiosError } from "axios";
 import ErrorComponent from "../components/ErrorComponent";
+import { useAtom } from "jotai";
+import { activeInfoDayAtom } from "../util/atoms";
 
 const PlannedDatesScreen = ({
   route,
@@ -115,6 +117,9 @@ const PlannedDatesScreen = ({
   );
 
   const { text } = useTheme().colors;
+
+  const [, setActiveInfoDay] = useAtom(activeInfoDayAtom);
+
   return (
     <>
       <PlannedDatesSecondaryHeader
@@ -137,6 +142,15 @@ const PlannedDatesScreen = ({
                 loadMore={loadMore}
                 onChange={assignedMinutesChangeHandler}
                 totalDuration={route.params.duration}
+                onInfo={(i) => {
+                  if (!freeDays) return;
+                  setActiveInfoDay({
+                    date: freeDays[i].date,
+                    minutesToAssign: freeDays[i].minutesToAssign,
+                    initialFreeTime: freeDays[i].freeMins,
+                  });
+                  navigation.navigate("info");
+                }}
               />
             ) : (
               <RegularText style={{ fontSize: 17 }}>
@@ -151,12 +165,13 @@ const PlannedDatesScreen = ({
 };
 
 const FreeDayList: React.FC<{
-  freeDays: FreeDays | undefined;
+  freeDays: FreeDaysType | undefined;
   onChange: (minutes: number, i: number) => void;
   loadMore: () => void;
   isFetchingNextPage: boolean;
   totalTimeToAssign: number;
   totalDuration: number;
+  onInfo: (i: number) => void;
 }> = ({
   freeDays,
   onChange,
@@ -164,6 +179,7 @@ const FreeDayList: React.FC<{
   totalDuration,
   isFetchingNextPage,
   totalTimeToAssign,
+  onInfo,
 }) => {
   const { bottom } = useSafeAreaInsets();
   const { text } = useTheme().colors;
@@ -189,6 +205,9 @@ const FreeDayList: React.FC<{
                 totalDuration={totalDuration}
                 i={index}
                 totalTimeToAssign={totalTimeToAssign}
+                onInfo={(i) => {
+                  onInfo(i);
+                }}
               />
               {showLoading && <ActivityIndicator color={text} />}
               {freeDays && index === freeDays?.length - 1 && (
@@ -205,11 +224,12 @@ const FreeDayList: React.FC<{
 };
 
 const FreeDayComponent: React.FC<{
-  freeDay: FreeDay;
+  freeDay: FreeDayType;
   i: number;
   totalTimeToAssign: number;
   totalDuration: number;
   onChange: (minutes: number, i: number) => void;
+  onInfo: (i: number) => void;
 }> = (props) => {
   const formattedDate = new Date(props.freeDay.date).toDateString();
   const [assignedMinutes, setAssignedMinutes] = useState(0);
@@ -217,6 +237,9 @@ const FreeDayComponent: React.FC<{
   const { card } = useTheme().colors;
   return (
     <View style={styles.freeDayContainer}>
+      <TouchableOpacity onPress={() => props.onInfo(props.i)}>
+        <Ionicons name="information-circle-outline" size={25} />
+      </TouchableOpacity>
       <PercentageAssignedTime
         totalDuration={props.totalDuration}
         assignedTime={assignedMinutes}

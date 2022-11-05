@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import Form from '../../components/BurgerMenu/Form';
-import styles from './Homework.module.css';
-import Input from '../../components/UI/Input';
+import React, { useEffect, useMemo, useState } from "react";
+import Form from "../../components/BurgerMenu/Form";
+import styles from "./Homework.module.css";
+import Input from "../../components/UI/Input";
 
 import {
   useAppDispatch,
@@ -9,24 +9,24 @@ import {
   useDropdown,
   useFetchAuthorized,
   useInput,
-} from '../../utilities/hooks';
+} from "../../utilities/hooks";
 
 import {
   createHomeworkActions,
   freeDay,
   searchFreeDays,
-} from '../../store/create-homework-slice';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
-import FreeDays, { FreeDaysInformations } from './FreeDays';
-import { addDaysFromToday, isHexColor } from '../../utilities/utilities';
-import Dropdown from '../../components/UI/Dropdown';
+} from "../../store/create-homework-slice";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
+import FreeDays, { FreeDaysInformations } from "./FreeDays";
+import { addDaysFromToday, isHexColor } from "../../utilities/utilities";
+import Dropdown from "../../components/UI/Dropdown";
 import {
   createSubject,
   fetchSubjects,
   subjectsActions,
-} from '../../store/subjects-slice';
-import { Modal } from '../../components/UI/Overlays';
-import LoadingSpinner from '../../components/UI/LoadingSpinner';
+} from "../../store/subjects-slice";
+import { Modal } from "../../components/UI/Overlays";
+import LoadingSpinner from "../../components/UI/LoadingSpinner";
 
 export const AddHomeworkPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -47,11 +47,11 @@ export const AddHomeworkPage: React.FC = () => {
   } = useInput([
     {
       check: (value) => !!value,
-      errorMessage: 'please insert a name',
+      errorMessage: "please insert a name",
     },
     {
       check: (value) => value.length >= 3,
-      errorMessage: 'insert at least 3 characters',
+      errorMessage: "insert at least 3 characters",
     },
   ]);
   const {
@@ -64,15 +64,15 @@ export const AddHomeworkPage: React.FC = () => {
   } = useInput([
     {
       check: (value) => !!value,
-      errorMessage: 'please insert a description',
+      errorMessage: "please insert a description",
     },
     {
       check: (value) => value.length >= 5,
-      errorMessage: 'insert at least 5 characters',
+      errorMessage: "insert at least 5 characters",
     },
     {
       check: (value) => value.length <= 400,
-      errorMessage: 'insert maximum 400 character',
+      errorMessage: "insert maximum 400 character",
     },
   ]);
 
@@ -87,7 +87,7 @@ export const AddHomeworkPage: React.FC = () => {
   } = useDropdown([
     {
       check: (value) => !!value,
-      errorMessage: 'please choose a subject',
+      errorMessage: "please choose a subject",
     },
   ]);
 
@@ -101,11 +101,11 @@ export const AddHomeworkPage: React.FC = () => {
   } = useInput([
     {
       check: (value) => !!value,
-      errorMessage: 'insert a duration',
+      errorMessage: "insert a duration",
     },
     {
       check: (value) => +value >= 5,
-      errorMessage: 'minimum 5 minutes',
+      errorMessage: "minimum 5 minutes",
     },
     {
       check: (value) => {
@@ -116,7 +116,7 @@ export const AddHomeworkPage: React.FC = () => {
         }
         return true;
       },
-      errorMessage: 'insert a number',
+      errorMessage: "insert a number",
     },
   ]);
   const {
@@ -129,7 +129,7 @@ export const AddHomeworkPage: React.FC = () => {
   } = useInput([
     {
       check: (value) => !!value,
-      errorMessage: 'insert an expiration date',
+      errorMessage: "insert an expiration date",
     },
   ]);
 
@@ -156,7 +156,7 @@ export const AddHomeworkPage: React.FC = () => {
         subjectId: subjects[+subjectIndex].id,
       })
     );
-    navigate('/create-homework/free-days/' + defaultPage);
+    navigate("/create-homework/free-days/" + defaultPage);
   };
 
   const validateInputs = () => {
@@ -189,11 +189,11 @@ export const AddHomeworkPage: React.FC = () => {
   return (
     <>
       <CreateSubjectModal />
-      <div className={styles['add-homework-form--container']}>
+      <div className={styles["add-homework-form--container"]}>
         <Form
-          className=''
+          className=""
           onSubmit={addHomeworkSubmitHandler}
-          buttonName='Add Homework'
+          buttonName="Add Homework"
           validateInputs={validateInputs}
           isFormValid={isFormValid}
           isFormLoading={false}
@@ -201,18 +201,18 @@ export const AddHomeworkPage: React.FC = () => {
           <Input
             errorMessage={nameErrorMessage}
             hasError={nameHasError}
-            name='Name'
+            name="Name"
             onBlur={validateName}
             onChange={onNameChange}
-            type='text'
+            type="text"
             value={nameValue}
-            className={styles['name-input']}
+            className={styles["name-input"]}
           />
           <Dropdown
-            parentClassName={styles['subject-input']}
+            parentClassName={styles["subject-input"]}
             errorMessage={subjectErrorMesssage}
             hasError={subjectHasError}
-            name='Subject'
+            name="Subject"
             options={subjectOptions}
             colors={subjectColors}
             onBlur={validateSubject}
@@ -222,36 +222,36 @@ export const AddHomeworkPage: React.FC = () => {
           <Input
             errorMessage={descriptionErrorMessage}
             hasError={descriptionHasError}
-            name='Description'
+            name="Description"
             onBlur={validateDescription}
             onChangeTextArea={onDescriptionChange}
-            type='textarea'
+            type="textarea"
             value={descriptionValue}
-            className={styles['description-input']}
+            className={styles["description-input"]}
           />
           <Input
             errorMessage={durationErrorMessage}
             hasError={durationHasError}
-            name='Duration (minutes)'
+            name="Duration (minutes)"
             onBlur={validateDuration}
             onChange={onChangeDuration}
-            type='number'
+            type="number"
             value={durationValue}
-            className={styles['duration-input']}
+            className={styles["duration-input"]}
           />
           <Input
             errorMessage={expirationDateErrorMessage}
             hasError={expirationDateHasError}
-            name='Expiration Date'
+            name="Expiration Date"
             onBlur={validateExpirationDate}
             onChange={onChangeExpirationDate}
-            type='date'
+            type="date"
             value={expirationDateValue}
             other={{
-              min: new Date().toISOString().split('T')[0],
-              max: new Date(addDaysFromToday(365)).toISOString().split('T')[0],
+              min: new Date().toISOString().split("T")[0],
+              max: new Date(addDaysFromToday(365)).toISOString().split("T")[0],
             }}
-            className={styles['expiration-input']}
+            className={styles["expiration-input"]}
           />
         </Form>
       </div>
@@ -263,9 +263,9 @@ export const SelectFreeDays: React.FC<{
   freeDays: freeDay[];
 }> = ({ freeDays }) => {
   return (
-    <div className={styles['select-free-days']}>
+    <div className={styles["select-free-days"]}>
       <FreeDaysInformations />
-      <div className={styles['free-days--container']}>
+      <div className={styles["free-days--container"]}>
         <FreeDays freeDays={freeDays} />
       </div>
     </div>
@@ -277,7 +277,7 @@ export const AddedHomeworkWrapper: React.FC = () => {
   const navigate = useNavigate();
   const page = useMemo(() => pageParam, [pageParam]);
   if (!page) {
-    navigate('create-homework/free-days/1');
+    navigate("create-homework/free-days/1");
   }
   const dispatch = useAppDispatch();
   const fetchAuthorized = useFetchAuthorized();
@@ -310,7 +310,7 @@ export const AddedHomeworkWrapper: React.FC = () => {
   if (isChoosingFreeDay) {
     return <SelectFreeDays freeDays={freeDays} />;
   }
-  return <Navigate to='/' />;
+  return <Navigate to="/" />;
 };
 
 export const EditHomeworkPage: React.FC = () => {
@@ -342,7 +342,7 @@ export const CreateSubjectModal: React.FC = () => {
   } = useInput([
     {
       check: (value) => !!value,
-      errorMessage: 'please enter a subject name',
+      errorMessage: "please enter a subject name",
     },
   ]);
   const {
@@ -356,13 +356,13 @@ export const CreateSubjectModal: React.FC = () => {
   } = useInput([
     {
       check: (value) => !!value,
-      errorMessage: 'please insert a color',
+      errorMessage: "please insert a color",
     },
     {
       check: (value) => {
         return isHexColor(value);
       },
-      errorMessage: 'insert a valid hex color',
+      errorMessage: "insert a valid hex color",
     },
   ]);
   useEffect(() => {
@@ -382,7 +382,7 @@ export const CreateSubjectModal: React.FC = () => {
     dispatch(createSubject(fetchAuthorized, subjectNameValue, colorValue));
   };
   const isFormValid = isSubjectNameValid && IsColorValid;
-  const [color, setColor] = useState('#1f2937');
+  const [color, setColor] = useState("#1f2937");
   useEffect(() => {
     if (IsColorValid) {
       setColor(colorValue);
@@ -393,7 +393,7 @@ export const CreateSubjectModal: React.FC = () => {
 
   return (
     <Modal isOpen={creatingSubject} onClose={modalCloseHandler}>
-      <h2 className={styles['modal-title']}>Create Subject</h2>
+      <h2 className={styles["modal-title"]}>Create Subject</h2>
       {isLoading ? (
         <LoadingSpinner />
       ) : hasError ? (
@@ -403,40 +403,40 @@ export const CreateSubjectModal: React.FC = () => {
       ) : (
         <Form
           isFormValid={isFormValid}
-          buttonName='Create subject'
+          buttonName="Create subject"
           isFormLoading={false}
           onSubmit={modalFormSubmitHandler}
           validateInputs={() => {
             validateSubjectName();
             validateColor();
           }}
-          className={styles['modal-form']}
+          className={styles["modal-form"]}
         >
           <Input
             style={{
               color,
             }}
-            name='Subject Name'
+            name="Subject Name"
             errorMessage={subjectNameErrorMessage}
             hasError={subjectNameHasError}
             onBlur={validateSubjectName}
-            type='text'
+            type="text"
             value={subjectNameValue}
             onChange={onChangeSubjectName}
-            className={styles['modal-input-name']}
+            className={styles["modal-input-name"]}
           />
           <Input
             style={{
               color,
             }}
-            name='Color'
+            name="Color"
             errorMessage={colorErrorMessage}
             hasError={colorHasError}
             onBlur={validateColor}
             value={colorValue}
-            type='text'
+            type="text"
             onChange={onColorChangeValue}
-            className={styles['modal-input-color']}
+            className={styles["modal-input-color"]}
           />
         </Form>
       )}

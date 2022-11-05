@@ -29,7 +29,7 @@ import CreateWeekScreen from "../screens/CreateWeekScreen";
 import HomeScreen, {
   AddHomeworkIcon,
   CalendarDayInfoIcon,
-  InfoModal,
+  DayInfoModal,
 } from "../screens/HomeScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import { Ionicons } from "@expo/vector-icons";
@@ -224,6 +224,14 @@ const AddHomeworkModalNavigation = () => {
           headerBackTitle: "homework",
         }}
       />
+      <AddHomeworkStack.Screen
+        name="info"
+        component={DayInfoModal}
+        options={{
+          presentation: "modal",
+          headerShown: false,
+        }}
+      />
     </AddHomeworkStack.Navigator>
   );
 };
@@ -305,7 +313,7 @@ const HomeStackNavigation = () => {
       />
       <HomeStack.Screen
         name="Info"
-        component={InfoModal}
+        component={DayInfoModal}
         options={{
           presentation: "modal",
           headerShown: false,
@@ -376,7 +384,7 @@ const AddGradeStackNavigation = () => {
         }}
         component={ChooseSubjectScreen}
       />
-      <AddHomeworkStack.Screen
+      <AddGradeStack.Screen
         name="AddSubject"
         component={AddSubjectScreen}
         options={{
