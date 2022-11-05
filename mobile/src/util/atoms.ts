@@ -5,7 +5,7 @@ export const activeSubjectAtom = atom<SubjectType | null>(null);
 export const activeInfoDayAtom = atom<
   | undefined
   | {
-      minutesToComplete: number;
+      minutesToComplete?: number;
       minutesToAssign: number;
       date: string;
       initialFreeTime: number;

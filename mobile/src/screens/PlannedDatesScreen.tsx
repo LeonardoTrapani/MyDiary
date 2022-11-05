@@ -234,22 +234,14 @@ const FreeDayComponent: React.FC<{
   const formattedDate = new Date(props.freeDay.date).toDateString();
   const [assignedMinutes, setAssignedMinutes] = useState(0);
   //navigation.setOptions({ title: 'Updated!' })
-  const { card } = useTheme().colors;
   return (
     <View style={styles.freeDayContainer}>
-      <TouchableOpacity onPress={() => props.onInfo(props.i)}>
-        <Ionicons name="information-circle-outline" size={25} />
-      </TouchableOpacity>
       <PercentageAssignedTime
         totalDuration={props.totalDuration}
         assignedTime={assignedMinutes}
       />
-      <View
-        style={[
-          styles.freeDayInternalContainer,
-          globalStyles.smallShadow,
-          { backgroundColor: card },
-        ]}
+      <CardView
+        style={[styles.freeDayInternalContainer, globalStyles.smallShadow]}
       >
         <CardView
           style={{
@@ -258,6 +250,9 @@ const FreeDayComponent: React.FC<{
             alignItems: "flex-end",
           }}
         >
+          <TouchableOpacity onPress={() => props.onInfo(props.i)}>
+            <Ionicons name="information-circle-outline" size={25} />
+          </TouchableOpacity>
           <MediumText style={styles.freeDayDate}>{formattedDate}</MediumText>
           <RegularText style={{ fontSize: 17 }}>
             max: {minutesToHoursMinutesFun(props.freeDay.minutesToAssign)}
@@ -272,7 +267,7 @@ const FreeDayComponent: React.FC<{
           }}
           assignedMinutes={assignedMinutes}
         />
-      </View>
+      </CardView>
     </View>
   );
 };
@@ -362,11 +357,18 @@ const SelectFreeMinsBtn: React.FC<{
   onPress: () => void;
 }> = (props) => {
   return (
-    <TouchableOpacity
-      style={[styles.selectFreeMinsBorder, styles.selectFreeMinsBtn]}
-      onPress={props.onPress}
-    >
-      <RegularText style={styles.selectFreeMinsText}>{props.title}</RegularText>
+    <TouchableOpacity onPress={props.onPress}>
+      <CardView
+        style={[
+          styles.selectFreeMinsBorder,
+          styles.selectFreeMinsBtn,
+          globalStyles.smallShadow,
+        ]}
+      >
+        <RegularText style={styles.selectFreeMinsText}>
+          {props.title}
+        </RegularText>
+      </CardView>
     </TouchableOpacity>
   );
 };
@@ -428,9 +430,7 @@ const PercentageAssignedTime: React.FC<{
           { backgroundColor: primary, width: `${percentage}%` },
         ]}
       ></View>
-      <View
-        style={[styles.percentage, { flexGrow: 1, backgroundColor: "#ddd" }]}
-      ></View>
+      <View style={[styles.percentage, { flexGrow: 1 }]}></View>
     </CardView>
   );
 };
@@ -505,11 +505,11 @@ const styles = StyleSheet.create({
   },
   freeDayContainer: {
     justifyContent: "space-between",
-    marginVertical: 10,
-    marginHorizontal: 20,
+    marginVertical: 5,
+    marginHorizontal: 10,
   },
   freeDayInternalContainer: {
-    padding: 20,
+    padding: 10,
   },
   freeMinutes: {
     fontSize: 24,
@@ -562,14 +562,13 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   selectFreeMinsBorder: {
-    borderWidth: 1,
-    borderColor: "#888",
+    borderRadius: 10,
   },
   selectFreeMinsText: {
     fontSize: 16,
   },
   percentage: {
-    height: 3,
+    height: 2,
   },
   percentagesContainer: {
     flexDirection: "row",

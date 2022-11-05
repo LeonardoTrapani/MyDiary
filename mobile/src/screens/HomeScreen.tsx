@@ -609,10 +609,14 @@ export const DayInfoModal = ({
       </BoldText>
 
       <View style={{ marginVertical: 10 }}>
-        <InfoRow
-          left="Minutes to complete"
-          right={minutesToHoursMinutesFun(activeInfoDay.minutesToComplete)}
-        />
+        {activeInfoDay.minutesToComplete ? (
+          <InfoRow
+            left="Minutes to complete"
+            right={minutesToHoursMinutesFun(activeInfoDay.minutesToComplete)}
+          />
+        ) : (
+          <></>
+        )}
         <InfoRow
           left="Minutes to assign"
           right={minutesToHoursMinutesFun(activeInfoDay.minutesToAssign)}
