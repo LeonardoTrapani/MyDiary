@@ -233,6 +233,7 @@ const FreeDayComponent: React.FC<{
 }> = (props) => {
   const formattedDate = new Date(props.freeDay.date).toDateString();
   const [assignedMinutes, setAssignedMinutes] = useState(0);
+  const { primary } = useTheme().colors;
   //navigation.setOptions({ title: 'Updated!' })
   return (
     <View style={styles.freeDayContainer}>
@@ -240,9 +241,7 @@ const FreeDayComponent: React.FC<{
         totalDuration={props.totalDuration}
         assignedTime={assignedMinutes}
       />
-      <CardView
-        style={[styles.freeDayInternalContainer, globalStyles.smallShadow]}
-      >
+      <CardView style={[styles.freeDayInternalContainer]}>
         <CardView
           style={{
             flexDirection: "row",
@@ -250,13 +249,16 @@ const FreeDayComponent: React.FC<{
             alignItems: "flex-end",
           }}
         >
-          <TouchableOpacity onPress={() => props.onInfo(props.i)}>
-            <Ionicons name="information-circle-outline" size={25} />
-          </TouchableOpacity>
           <MediumText style={styles.freeDayDate}>{formattedDate}</MediumText>
           <RegularText style={{ fontSize: 17 }}>
             max: {minutesToHoursMinutesFun(props.freeDay.minutesToAssign)}
           </RegularText>
+          <TouchableOpacity
+            onPress={() => props.onInfo(props.i)}
+            style={{ alignSelf: "flex-start" }}
+          >
+            <Ionicons name="calendar-sharp" size={18} color={primary} />
+          </TouchableOpacity>
         </CardView>
         <SelectFreeMinsComponent
           timeToAssign={props.totalTimeToAssign}
@@ -403,14 +405,22 @@ const SelectFreeMinsTimePicker: React.FC<{
         }}
       />
       <TouchableOpacity
+        style={[{ flexDirection: "row", flex: 1 }]}
         onPress={() => {
           setIsOpened(true);
         }}
-        style={[styles.selectFreeMinsBorder, styles.selectFreeMinsTimePicker]}
       >
-        <BoldText style={[{ color: primary }, styles.selectFreeMinsText]}>
-          {minutesToHoursMinutesFun(props.assignedMinutes)}
-        </BoldText>
+        <CardView
+          style={[
+            globalStyles.smallShadow,
+            styles.selectFreeMinsTimePicker,
+            styles.selectFreeMinsBorder,
+          ]}
+        >
+          <BoldText style={[{ color: primary }, styles.selectFreeMinsText]}>
+            {minutesToHoursMinutesFun(props.assignedMinutes)}
+          </BoldText>
+        </CardView>
       </TouchableOpacity>
     </>
   );
@@ -510,6 +520,8 @@ const styles = StyleSheet.create({
   },
   freeDayInternalContainer: {
     padding: 10,
+    borderWidth: 0.3,
+    borderColor: "#bbb",
   },
   freeMinutes: {
     fontSize: 24,
