@@ -62,7 +62,7 @@ const GradeScreen = ({ navigation }: GradeStackScreenProps<"Root">) => {
                 justifyContent: "space-between",
                 alignItems: "center",
                 padding: 10,
-                paddingVertical: 20,
+                paddingVertical: 15,
               }}
             >
               <RegularText style={{ fontSize: 20 }}>Average Grade:</RegularText>
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
   gradeCircle: {
     aspectRatio: 1,
     marginRight: 25,
-    height: 50,
+    height: 52,
     borderRadius: 1000,
   },
   innerGradeCircle: {

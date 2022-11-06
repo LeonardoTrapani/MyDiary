@@ -276,9 +276,7 @@ const HomeworkBody: React.FC<{
             return (
               <HomeworkListSectionHeader
                 isTextComp={section.title === "Completed"}
-              >
-                {section.title}
-              </HomeworkListSectionHeader>
+              />
             );
           }}
           renderItem={({ item, index }) => (
@@ -296,7 +294,6 @@ const HomeworkBody: React.FC<{
 };
 
 const HomeworkListSectionHeader: React.FC<{
-  children: string;
   isTextComp: boolean;
 }> = (props) => {
   const { primary } = useTheme().colors;
@@ -304,13 +301,13 @@ const HomeworkListSectionHeader: React.FC<{
     <View
       style={[
         styles.homeworkListSectionHeader,
-        props.isTextComp ? { marginTop: 20 } : {},
+        props.isTextComp ? { paddingTop: 20 } : {},
       ]}
     >
       <MediumText
         style={[styles.homeworkListSectionHeaderText, { color: primary }]}
       >
-        {props.children}
+        {props.isTextComp ? "Completed" : "Not Completed"}
       </MediumText>
     </View>
   );
