@@ -20,7 +20,6 @@ export const createProfessor = async (req: Request, res: Response) => {
 
 export const getProfessor = async (req: Request, res: Response) => {
   const { professorId } = req.params;
-  console.log(professorId);
   try {
     const professor = await prisma.professor.findFirst({
       where: {
@@ -30,7 +29,7 @@ export const getProfessor = async (req: Request, res: Response) => {
       select: {
         id: true,
         name: true,
-        //subject: true,
+        subject: true,
       },
     });
     res.json(professor);
