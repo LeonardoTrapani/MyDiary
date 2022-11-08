@@ -1,7 +1,11 @@
 import { Router } from "express";
 import { body, param } from "express-validator";
 import { isAuthenticated, validateExpressValidation } from "../middlewares";
-import { createProfessor, getProfessor } from "../controllers/professor";
+import {
+  createProfessor,
+  getProfessor,
+  mergeProfessorAndSubject,
+} from "../controllers/professor";
 
 const router = Router();
 
@@ -24,4 +28,16 @@ router.get(
   validateExpressValidation,
   getProfessor
 );
+
+router.post(
+  "/merge",
+  isAuthenticated,
+  [
+    body("professorId", "please enter a valid professor Id").isNumeric(),
+    body("subjectId", "please enter a valid subject Id").isNumeric(),
+  ],
+  validateExpressValidation,
+  mergeProfessorAndSubject
+);
+
 export default router;
