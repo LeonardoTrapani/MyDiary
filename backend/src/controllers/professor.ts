@@ -13,13 +13,14 @@ export const createProfessor = async (req: Request, res: Response) => {
     });
     res.json(professor);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     throwResponseError("An error has occurred creating a professor", 400, res);
   }
 };
 
 export const getProfessor = async (req: Request, res: Response) => {
   const { professorId } = req.params;
+  console.log(professorId);
   try {
     const professor = await prisma.professor.findFirst({
       where: {
@@ -29,13 +30,12 @@ export const getProfessor = async (req: Request, res: Response) => {
       select: {
         id: true,
         name: true,
-        subject: true,
+        //subject: true,
       },
     });
-    console.log(professor);
     res.json(professor);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     throwResponseError("An error has occurred finding the professor", 400, res);
   }
 };

@@ -62,7 +62,7 @@ model Subject {
   deleted   Boolean    @default(false)
   grades Grade[]
   professorId Int?
-  professor Professor? @relation(fields: [professorId], references: [id])
+  //professor Professor? @relation(fields: [professorId], references: [id])
   averageGrade Float?
 }
 
@@ -117,8 +117,8 @@ model Grade {
 
 model Professor {
     id Int @id @default(autoincrement())
-    userId Int 
     user User @relation(fields: [userId], references: [id])
+    userId Int 
     name String 
-    subject Subject[]
+    //subject Subject[]
   }
