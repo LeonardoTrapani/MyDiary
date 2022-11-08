@@ -28,6 +28,7 @@ model User {
   subjects       Subject[]
   deleted        Boolean    @default(false)
   grades Grade[]
+  professors Professor[] 
   averageGrade   Float?
 }
 
@@ -60,6 +61,8 @@ model Subject {
   updatedAt DateTime   @updatedAt
   deleted   Boolean    @default(false)
   grades Grade[]
+  professorId Int?
+  professor Professor? @relation(fields: [professorId], references: [id])
   averageGrade Float?
 }
 
@@ -87,7 +90,7 @@ model Day {
 
 model Week {
   id                   Int      @id @default(autoincrement())
-  userId               Int      @unique
+  userId               Int      @unique @default(1)
   user                 User     @relation(fields: [userId], references: [id])
   mondayFreeMinutes    Int      @default(0) @db.SmallInt
   tuesdayFreeMinutes   Int      @default(0) @db.SmallInt
@@ -112,3 +115,10 @@ model Grade {
   createdAt      DateTime   @default(now())
 }
 
+model Professor {
+    id Int @id @default(autoincrement())
+    userId Int 
+    user User @relation(fields: [userId], references: [id])
+    name String 
+    subject Subject[]
+  }

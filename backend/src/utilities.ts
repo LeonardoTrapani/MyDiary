@@ -1,5 +1,5 @@
-import { ErrorResponse } from './models';
-import { Response } from 'express';
+import { ErrorResponse } from "./models";
+import { Response } from "express";
 
 export const throwResponseError = (
   message: string,

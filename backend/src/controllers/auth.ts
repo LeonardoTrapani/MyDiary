@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
@@ -13,8 +13,7 @@ export const signup = async (
     password: string;
     username: string;
   }>,
-  res: Response,
-  next: NextFunction
+  res: Response
 ) => {
   try {
     const email = req.body.email;
@@ -100,11 +99,7 @@ export const login = async (
   }
 };
 
-export const getUserInfo = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const getUserInfo = async (req: Request, res: Response) => {
   try {
     const user = await prisma.user.findFirst({
       where: {
