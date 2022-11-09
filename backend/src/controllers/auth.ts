@@ -1,11 +1,11 @@
-import { Request, Response, NextFunction } from 'express';
-import jwt, { JwtPayload } from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import { Request, Response } from "express";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
-import { prisma } from '../app';
-import { CustomRequest } from '../models';
-import { throwResponseError } from '../utilities';
-import { fetchWeek } from './week';
+import { prisma } from "../app";
+import { CustomRequest } from "../models";
+import { throwResponseError } from "../utilities";
+import { fetchWeek } from "./week";
 
 export const signup = async (
   req: CustomRequest<{
@@ -13,8 +13,7 @@ export const signup = async (
     password: string;
     username: string;
   }>,
-  res: Response,
-  next: NextFunction
+  res: Response
 ) => {
   try {
     const email = req.body.email;
@@ -23,7 +22,7 @@ export const signup = async (
 
     const hashedPassword = await bcrypt.hash(password, 12);
     if (await mailAlreadyExists(email)) {
-      throwResponseError('This email is already in use', 400, res);
+      throwResponseError("This email is already in use", 400, res);
       return;
     }
     const user = await prisma.user.create({
@@ -45,7 +44,7 @@ export const signup = async (
       username,
     });
   } catch (err) {
-    throwResponseError('Unable to signup', 400, res);
+    throwResponseError("Unable to signup", 400, res);
   }
 };
 
@@ -79,12 +78,12 @@ export const login = async (
     });
 
     if (!user) {
-      return throwResponseError('email or password are wrong', 400, res);
+      return throwResponseError("email or password are wrong", 400, res);
     }
     const passwordIsValid = await bcrypt.compare(password, user.hashedPassword);
 
     if (!passwordIsValid) {
-      return throwResponseError('email or password are wrong', 400, res);
+      return throwResponseError("email or password are wrong", 400, res);
     }
     const token = jwt.sign(
       { email: user.email, userId: user.id },
@@ -96,15 +95,11 @@ export const login = async (
       weekCreated: !!week,
     });
   } catch (err) {
-    return throwResponseError('unable to login', 400, res);
+    return throwResponseError("unable to login", 400, res);
   }
 };
 
-export const getUserInfo = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const getUserInfo = async (req: Request, res: Response) => {
   try {
     const user = await prisma.user.findFirst({
       where: {
@@ -119,28 +114,29 @@ export const getUserInfo = async (
     });
     res.json(user);
   } catch (err) {
-    throwResponseError('unable to find the user', 400, res);
+    throwResponseError("unable to find the user", 400, res);
   }
 };
 
-export const validateToken = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const validateToken = async (req: Request, res: Response) => {
   try {
-    const token = req.get('Authorization')?.split(' ')[1];
+    const token = req.get("Authorization")?.split(" ")[1];
 
     if (!token) {
       throw new Error();
     }
-    token.split(' ')[1];
+    token.split(" ")[1];
     const decodedToken = jwt.verify(
       token,
       process.env.JWT_SECRET!
     ) as JwtPayload;
     if (decodedToken) {
-      res.json(true);
+      const user = await prisma.user.findFirst({
+        where: {
+          id: decodedToken.userId,
+        },
+      });
+      res.json(!!user);
     } else {
       res.json(false);
     }

@@ -1,12 +1,8 @@
-import { NextFunction, Request, Response } from 'express';
-import { throwResponseError } from '../utilities';
-import { prisma } from '../app';
+import { Request, Response } from "express";
+import { throwResponseError } from "../utilities";
+import { prisma } from "../app";
 
-export const getAllSubjects = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const getAllSubjects = async (req: Request, res: Response) => {
   const { userId } = req;
   try {
     const subjects = await prisma.subject.findMany({
@@ -21,15 +17,11 @@ export const getAllSubjects = async (
     });
     res.json(subjects);
   } catch {
-    throwResponseError('unable to fetch subjects', 400, res);
+    throwResponseError("unable to fetch subjects", 400, res);
   }
 };
 
-export const createSubject = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const createSubject = async (req: Request, res: Response) => {
   const { userId } = req;
   const { name, color } = req.body;
   try {

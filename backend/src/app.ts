@@ -10,6 +10,7 @@ import calendarRoutes from "./routes/calendar";
 import subjectRoutes from "./routes/subject";
 import plannedDateRoutes from "./routes/plannedDate";
 import gradeRoutes from "./routes/grade";
+import professorRoutes from "./routes/professor";
 
 import { ErrorResponse } from "./models";
 
@@ -36,6 +37,7 @@ app.use("/calendar", calendarRoutes);
 app.use("/subject", subjectRoutes);
 app.use("/plannedDate", plannedDateRoutes);
 app.use("/grade", gradeRoutes);
+app.use("/professor", professorRoutes);
 
 app.get("/", (_req, res, _next) => {
   res.json();

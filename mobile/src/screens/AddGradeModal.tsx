@@ -54,8 +54,6 @@ const AddHomeworkModal = ({ navigation }: AddGradeStackScreenProps<"Root">) => {
     },
   ]);
 
-  //console.log(gradeHasError);
-
   const colorScheme = useColorScheme();
   const { errorColor, placeHolderColor } = Colors[colorScheme];
 
