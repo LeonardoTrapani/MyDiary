@@ -1,6 +1,10 @@
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
-import { useIsWeekCreated, useValidConnection } from "./react-query-hooks";
+import {
+  useCalendarDay,
+  useIsWeekCreated,
+  useValidConnection,
+} from "./react-query-hooks";
 import {
   Roboto_400Regular,
   Roboto_500Medium,
@@ -8,10 +12,13 @@ import {
   Roboto_400Regular_Italic,
   useFonts,
 } from "@expo-google-fonts/roboto";
+import moment from "moment";
 
 export default function useInitialLoading() {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
   const { data: isValidConnection } = useValidConnection();
+
+  useCalendarDay(moment());
 
   const {
     isFetched: isWeekCreatedFetched,
@@ -41,14 +48,21 @@ export default function useInitialLoading() {
     if (isLoadingComplete) {
       return;
     }
-    if (fontsLoaded && isValidConnection !== undefined) {
+
+    //if the connection is invalid
+    if (
+      isValidConnection === false &&
+      typeof isValidConnection === "boolean" &&
+      fontsLoaded
+    ) {
       loadResourcesAndDataAsync();
       return;
     }
-    if (!isWeekCreatedFetched || !fontsLoaded) {
-      return;
+
+    //if the week is valid
+    if (fontsLoaded && isWeekCreatedFetched) {
+      loadResourcesAndDataAsync();
     }
-    loadResourcesAndDataAsync();
   }, [
     fontsLoaded,
     isLoadingComplete,
