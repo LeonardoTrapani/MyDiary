@@ -1,9 +1,20 @@
 import { DefaultTheme, Theme, DarkTheme } from "@react-navigation/native";
 
-const tintColorLight = "#3F68E0";
-const opaqueColorLight = "#1841ba";
-const tintColorDark = "#3F68E0";
-const opaqueColorDark = "#1841ba";
+const testColorTint = "#7b2cbf";
+const testColorOpaque = "#240046";
+
+//const testColorTint = "#2d6a4f";
+//const testColorOpaque = "#1b4332";
+
+const tintColorLight = testColorTint;
+const opaqueColorLight = testColorOpaque;
+const tintColorDark = testColorTint;
+const opaqueColorDark = testColorOpaque;
+
+//const tintColorLight = "#3F68E0";
+//const opaqueColorLight = "#1841ba";
+//const tintColorDark = "#3F68E0";
+//const opaqueColorDark = "#1841ba";
 
 export default {
   light: {

@@ -62,7 +62,7 @@ const GradeScreen = ({ navigation }: GradeStackScreenProps<"Root">) => {
                 justifyContent: "space-between",
                 alignItems: "center",
                 padding: 10,
-                paddingVertical: 15,
+                paddingVertical: 12,
               }}
             >
               <RegularText style={{ fontSize: 20 }}>Average Grade:</RegularText>

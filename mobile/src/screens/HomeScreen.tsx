@@ -6,7 +6,7 @@ import {
 import React, { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
-  SectionList,
+  FlatList,
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
@@ -202,12 +202,6 @@ const HomeworkBody: React.FC<{
 }> = (props) => {
   const { data: validToken } = useValidToken();
 
-  const notCompletedHomework = useMemo(() => {
-    return props.calendarDay?.user.homework.filter((hmk) => {
-      return hmk.plannedDates[0].completed === false;
-    });
-  }, [props.calendarDay?.user.homework]);
-
   const qc = useQueryClient();
   const completeHomeworkMutation = useMutation(
     (data: { id: number }) => {
@@ -232,10 +226,16 @@ const HomeworkBody: React.FC<{
       },
     }
   );
-  const completedHomework = useMemo(() => {
-    return props.calendarDay?.user.homework.filter(
+  const sortedHomeworkList = useMemo(() => {
+    const completedHomework = props.calendarDay?.user.homework.filter(
       (hmk) => hmk.plannedDates[0].completed === true
     );
+    const notCompletedHomework = props.calendarDay?.user.homework.filter(
+      (hmk) => {
+        return hmk.plannedDates[0].completed === false;
+      }
+    );
+    return [...(notCompletedHomework || []), ...(completedHomework || [])];
   }, [props.calendarDay?.user.homework]);
 
   if (!props.calendarDay) {
@@ -253,33 +253,13 @@ const HomeworkBody: React.FC<{
   return (
     <View style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
-        <SectionList
-          style={{ paddingHorizontal: 10 }}
+        <FlatList
+          data={sortedHomeworkList}
           ItemSeparatorComponent={() => (
             <View style={{ marginBottom: 5, marginLeft: 40 }}>
               <Break />
             </View>
           )}
-          sections={[
-            { title: "Not completed", data: notCompletedHomework || [] },
-            { title: "Completed", data: completedHomework || [] },
-          ]}
-          renderSectionHeader={({ section }) => {
-            if (!section.data.length) {
-              return <></>;
-            }
-            const isNotCompletedSection =
-              section.data[0].plannedDates[0].completed === false;
-            if (isNotCompletedSection && !completedHomework?.length) {
-              return <></>;
-            }
-            return (
-              <HomeworkListSectionHeader
-                isTextComp={section.title === "Completed"}
-                notCompletedLength={notCompletedHomework?.length || 0}
-              />
-            );
-          }}
           renderItem={({ item, index }) => (
             <CalendarDayHomework
               homework={item}
@@ -290,29 +270,6 @@ const HomeworkBody: React.FC<{
           )}
         />
       </View>
-    </View>
-  );
-};
-
-const HomeworkListSectionHeader: React.FC<{
-  notCompletedLength: number;
-  isTextComp: boolean;
-}> = (props) => {
-  const { primary } = useTheme().colors;
-  return (
-    <View
-      style={[
-        styles.homeworkListSectionHeader,
-        props.isTextComp && props.notCompletedLength >= 1
-          ? { paddingTop: 20 }
-          : {},
-      ]}
-    >
-      <MediumText
-        style={[styles.homeworkListSectionHeaderText, { color: primary }]}
-      >
-        {props.isTextComp ? "Completed" : "Not Completed"}
-      </MediumText>
     </View>
   );
 };
@@ -451,9 +408,7 @@ const CompleteCircle: React.FC<{
           justifyContent: "center",
         },
       ]}
-    >
-      {props.isLoading && <ActivityIndicator />}
-    </TouchableOpacity>
+    ></TouchableOpacity>
   );
 };
 const HeaderNavigation: React.FC<{
@@ -476,7 +431,7 @@ const DateToToday: React.FC<{
 }> = (props) => {
   const { primary } = useTheme().colors;
   return (
-    <TouchableOpacity style={styles.dateChangeBack} onPress={props.onPress}>
+    <TouchableOpacity onPress={props.onPress}>
       <Ionicons name="pin-sharp" size={24} color={primary} />
     </TouchableOpacity>
   );
@@ -486,7 +441,7 @@ const DateChangeBack: React.FC<{
   onPress: () => void;
 }> = (props) => {
   return (
-    <TouchableOpacity style={styles.dateChangeBack} onPress={props.onPress}>
+    <TouchableOpacity onPress={props.onPress}>
       <Ionicons name="ios-chevron-back" size={34} />
     </TouchableOpacity>
   );
@@ -494,7 +449,7 @@ const DateChangeBack: React.FC<{
 
 const DateChangeFront: React.FC<{ onPress: () => void }> = (props) => {
   return (
-    <TouchableOpacity style={styles.dateChangeFront} onPress={props.onPress}>
+    <TouchableOpacity onPress={props.onPress}>
       <Ionicons name="ios-chevron-forward" size={34} />
     </TouchableOpacity>
   );
@@ -732,8 +687,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
   },
-  dateChangeBack: {},
-  dateChangeFront: {},
   homeworkBodyContainer: {
     flex: 1,
   },
@@ -741,8 +694,8 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   headerContainer: {
-    padding: 20,
-    paddingVertical: 10,
+    padding: 10,
+    paddingTop: 0,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -769,13 +722,14 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
   },
   homeworkListSectionHeader: {
-    marginBottom: 6,
+    marginBottom: 5,
     paddingHorizontal: 10,
     paddingBottom: 3,
   },
 
   homeworkListSectionHeaderText: {
     fontSize: 17,
+    opacity: 0.8,
   },
 });
 

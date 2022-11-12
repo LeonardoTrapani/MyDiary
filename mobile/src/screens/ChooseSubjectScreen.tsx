@@ -176,8 +176,8 @@ export const AddSubjectScreen = ({
     },
     {
       onSuccess: async () => {
-        await queryClient.invalidateQueries(["subject"]);
-        await queryClient.invalidateQueries(["allGrades"]);
+        queryClient.invalidateQueries(["subject"]);
+        queryClient.invalidateQueries(["allGrades"]);
         navigation.pop();
       },
     }
