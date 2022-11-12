@@ -1,15 +1,15 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
-import React, { useEffect, useState } from 'react';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import React, { useEffect, useState } from "react";
 
-import { RootStackScreenProps } from '../../types';
-import { login } from '../api/auth';
-import AuthForm, { AuthInputType } from '../components/AuthForm';
-import LoginSvg from '../components/svgs/LoginSvg';
+import { RootStackScreenProps } from "../../types";
+import { login } from "../api/auth";
+import AuthForm, { AuthInputType } from "../components/AuthForm";
+import LoginSvg from "../components/svgs/LoginSvg";
 
-import useInput, { emailValidCheck } from '../util/useInput';
+import useInput, { emailValidCheck } from "../util/useInput";
 
-export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
+export const LoginScreen = ({ navigation }: RootStackScreenProps<"Login">) => {
   const queryClient = useQueryClient();
   const loginMutation = useMutation(
     (loginInfo: { email: string; password: string }) => {
@@ -17,7 +17,7 @@ export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
     },
     {
       onSuccess: async () => {
-        queryClient.invalidateQueries(['validToken']);
+        queryClient.invalidateQueries(["validToken"]);
       },
       onError: () => {
         setLoginHasLoaded(false);
@@ -31,6 +31,7 @@ export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
       setLoginHasLoaded(true);
     }
   }, [loginMutation.isLoading]);
+
   const {
     errorMessage: emailErrorMessage,
     hasError: emailHasError,
@@ -39,10 +40,10 @@ export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
     validate: emailValidate,
     value: emailValue,
   } = useInput([
-    { check: (value) => !!value, errorMessage: 'please enter an email' },
+    { check: (value) => !!value, errorMessage: "please enter an email" },
     {
       check: emailValidCheck,
-      errorMessage: 'please enter a valid email',
+      errorMessage: "please enter a valid email",
     },
   ]);
 
@@ -56,7 +57,7 @@ export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
   } = useInput([
     {
       check: (value) => !!value,
-      errorMessage: 'please enter a password',
+      errorMessage: "please enter a password",
     },
   ]);
   // } = useInput(passwordInputChecks);
@@ -77,29 +78,29 @@ export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
     if (navigation.canGoBack()) {
       navigation.goBack();
     } else {
-      navigation.push('Signup');
+      navigation.push("Signup");
     }
   };
   const inputs: AuthInputType[] = [
     {
-      name: 'email',
+      name: "email",
       errorMessage: emailErrorMessage,
       hasError: emailHasError,
-      keyboardType: 'email-address',
-      autoCapitalize: 'none',
-      autoComplete: 'email',
+      keyboardType: "email-address",
+      autoCapitalize: "none",
+      autoComplete: "email",
       onChangeText: emailOnChangeText,
       validate: emailValidate,
       value: emailValue,
       secureTextEntry: false,
     },
     {
-      name: 'password',
+      name: "password",
       errorMessage: passwordErrorMessage,
       hasError: passwordHasError,
-      autoCapitalize: 'none',
-      autoComplete: 'password',
-      keyboardType: 'default',
+      autoCapitalize: "none",
+      autoComplete: "password",
+      keyboardType: "default",
       onChangeText: passwordOnChangeText,
       secureTextEntry: true,
       validate: passwordValidate,
@@ -110,8 +111,8 @@ export const LoginScreen = ({ navigation }: RootStackScreenProps<'Login'>) => {
   return (
     <AuthForm
       insteadHandler={signupInsteadHandler}
-      insteadTitle='signup instead'
-      title='Login'
+      insteadTitle="signup instead"
+      title="Login"
       inputs={inputs}
       submitHandler={submitLoginHandler}
       svg={<LoginSvg />}
