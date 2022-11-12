@@ -276,6 +276,7 @@ const HomeworkBody: React.FC<{
             return (
               <HomeworkListSectionHeader
                 isTextComp={section.title === "Completed"}
+                notCompletedLength={notCompletedHomework?.length || 0}
               />
             );
           }}
@@ -294,6 +295,7 @@ const HomeworkBody: React.FC<{
 };
 
 const HomeworkListSectionHeader: React.FC<{
+  notCompletedLength: number;
   isTextComp: boolean;
 }> = (props) => {
   const { primary } = useTheme().colors;
@@ -301,7 +303,9 @@ const HomeworkListSectionHeader: React.FC<{
     <View
       style={[
         styles.homeworkListSectionHeader,
-        props.isTextComp ? { paddingTop: 20 } : {},
+        props.isTextComp && props.notCompletedLength >= 1
+          ? { paddingTop: 20 }
+          : {},
       ]}
     >
       <MediumText
