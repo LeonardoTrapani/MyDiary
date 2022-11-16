@@ -182,7 +182,11 @@ export const SingleSubjectGradeScreen = ({
                 paddingHorizontal: 20,
               }}
             >
-              <BoldText style={{ fontSize: 50 }}>
+              <BoldText
+                style={{ fontSize: 50, maxWidth: "60%" }}
+                adjustsFontSizeToFit
+                numberOfLines={1}
+              >
                 {currentSubjectGrade.name}
               </BoldText>
               <View

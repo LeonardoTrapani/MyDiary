@@ -1,12 +1,12 @@
-import { useTheme } from '@react-navigation/native';
-import React from 'react';
+import { useTheme } from "@react-navigation/native";
+import React from "react";
 import {
   StyleProp,
   TextStyle,
   TouchableOpacity,
   TouchableOpacityProps,
-} from 'react-native';
-import { RegularText } from './StyledText';
+} from "react-native";
+import { RegularText } from "./StyledText";
 
 interface CustomTouchableOpacityProps extends TouchableOpacityProps {
   title: string;

@@ -26,6 +26,8 @@ import useInput from "../util/useInput";
 import Colors from "../constants/Colors";
 import MyInput from "../components/MyInput";
 import { SubjectType } from "../util/react-query-hooks";
+import TextButton from "../components/TextButton";
+import TextWithDividers from "../components/TextWithDividers";
 
 const AddHomeworkmodal = ({
   navigation,
@@ -99,7 +101,7 @@ const AddHomeworkmodal = ({
   const colorScheme = useColorScheme();
   const { errorColor, placeHolderColor } = Colors[colorScheme];
 
-  const nextStepHandler = () => {
+  const PlanDatesHandler = () => {
     validateTitle();
     validateDescription();
 
@@ -142,6 +144,10 @@ const AddHomeworkmodal = ({
     });
   };
 
+  const createHomeworkHandler = () => {
+    console.warn("TODO: create homework without plannded dates");
+  };
+
   return (
     <KeyboardWrapper>
       <View style={[styles.container]}>
@@ -166,7 +172,12 @@ const AddHomeworkmodal = ({
               hasError={descriptionHasError}
               style={{ marginBottom: 15 }}
             />
-
+            <ExpirationDatePicker
+              expDate={expDate}
+              hasError={expDateHasError}
+              onOpen={expirationDateOpenHandler}
+              style={{ marginBottom: 15 }}
+            />
             <SubjectPicker
               errorColor={errorColor}
               activeSubject={activeSubject}
@@ -180,21 +191,35 @@ const AddHomeworkmodal = ({
               choosedValue={`${durationDate.getHours()}h ${durationDate.getMinutes()}m`}
               hasError={durationHasError}
               isValueChoosed={duration !== 0}
-              style={{ marginBottom: 15 }}
             >
               <NonModalDurationPicker
                 onChangeDuration={durationChangeHandler}
                 value={durationDate}
               />
             </Accordion>
-            <ExpirationDatePicker
-              expDate={expDate}
-              hasError={expDateHasError}
-              onOpen={expirationDateOpenHandler}
-            />
           </View>
         </ScrollView>
-        <SolidButton title="Next step" onPress={nextStepHandler} />
+        <View
+          style={{
+            alignItems: "center",
+          }}
+        >
+          <TextButton
+            title="plan dates"
+            onPress={PlanDatesHandler}
+            textStyle={{ fontSize: 17 }}
+          />
+        </View>
+        <TextWithDividers
+          style={{
+            marginVertical: 20,
+            marginHorizontal: 10,
+          }}
+        >
+          OR
+        </TextWithDividers>
+
+        <SolidButton title="Create Homework" onPress={createHomeworkHandler} />
         <DateTimePicker
           isVisible={isExpDateOpened}
           mode="date"
@@ -218,6 +243,7 @@ const ExpirationDatePicker: React.FC<{
   expDate: Date | undefined;
   hasError: boolean;
   onOpen: () => void;
+  style: StyleProp<ViewStyle>;
 }> = (props) => {
   const { card, text } = useTheme().colors;
   const cs = useColorScheme();
@@ -225,7 +251,7 @@ const ExpirationDatePicker: React.FC<{
   return (
     <TouchableOpacity
       onPress={props.onOpen}
-      style={[styles.main, { backgroundColor: card }]}
+      style={[styles.main, { backgroundColor: card }, props.style]}
     >
       <RegularText
         style={[
