@@ -3,6 +3,7 @@ import { isPositiveNotZero, throwResponseError } from "../utilities";
 import { prisma } from "../app";
 import moment from "moment";
 import { fetchWeek, findfreeMinutesInDay } from "./week";
+import { Prisma } from "@prisma/client";
 
 export const getAllDays = async (req: Request, res: Response) => {
   const { userId } = req;
@@ -107,9 +108,10 @@ export const createOrUpdateDayCountingPreviousMinutes = async (
   userId: number,
   date: Date | string,
   assignedMinutes: number,
-  res: Response
+  res: Response,
+  trx: Prisma.TransactionClient
 ) => {
-  const existingDay = await prisma.day.findFirst({
+  const existingDay = await trx.day.findFirst({
     where: {
       userId: userId,
       date: moment(date).startOf("day").toDate(),
@@ -122,7 +124,8 @@ export const createOrUpdateDayCountingPreviousMinutes = async (
   if (existingDay) {
     await decrementMinutesToAssignToExistingDay(
       existingDay.id,
-      assignedMinutes
+      assignedMinutes,
+      trx
     );
     return;
   }
@@ -137,7 +140,7 @@ export const createOrUpdateDayCountingPreviousMinutes = async (
     throwResponseError("the minutes are less than 0 somehow", 400, res);
     return;
   }
-  const day = await prisma.day.create({
+  const day = await trx.day.create({
     data: {
       date: moment(date).startOf("day").toDate(),
       freeMins: minutesInDay,
@@ -203,9 +206,10 @@ export const editExistingDay = async (
 
 export const decrementMinutesToAssignToExistingDay = async (
   existingDayId: number,
-  minutesAssigned: number
+  minutesAssigned: number,
+  trx: Prisma.TransactionClient
 ) => {
-  await prisma.day.update({
+  await trx.day.update({
     where: {
       id: existingDayId,
     },

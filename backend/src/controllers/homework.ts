@@ -16,6 +16,62 @@ export const createHomework = async (req: Request, res: Response) => {
   }[];
 
   try {
+    await prisma.$transaction(async (trx) => {
+      const subject = await trx.subject.findUnique({
+        where: {
+          id: +subjectId!,
+        },
+      });
+      if (!subject) {
+        throw "Can't find the subject";
+      }
+
+      for (let i = 0; i < plannedDates.length; i++) {
+        await createOrUpdateDayCountingPreviousMinutes(
+          +userId!,
+          plannedDates[i].date,
+          plannedDates[i].minutes,
+          res,
+          trx
+        );
+      }
+
+      const formattedPlannedDates = plannedDates.map((plannedDate) => {
+        return {
+          minutesAssigned: plannedDate.minutes,
+          date: moment(plannedDate.date).startOf("day").toISOString(),
+        };
+      });
+
+      await trx.homework.create({
+        data: {
+          userId: +userId!,
+          description,
+          duration: duration,
+          timeToComplete: duration,
+          expirationDate: moment(expirationDate).startOf("day").toDate(),
+          name: name,
+          subjectId: subject.id,
+          plannedDates: {
+            createMany: {
+              data: formattedPlannedDates,
+            },
+          },
+        },
+      });
+    });
+    return res.json(true);
+  } catch (err) {
+    console.error(err);
+    return throwResponseError("unable to create homework", 500, res);
+  }
+};
+
+export const createHomeworkWihoutPlan = async (req: Request, res: Response) => {
+  const { userId } = req;
+  const { name, subjectId, description, expirationDate } = req.body;
+
+  try {
     const subject = await prisma.subject.findUnique({
       where: {
         id: +subjectId!,
@@ -29,39 +85,71 @@ export const createHomework = async (req: Request, res: Response) => {
       );
     }
 
-    plannedDates.forEach(async (plannedDate) => {
-      await createOrUpdateDayCountingPreviousMinutes(
-        +userId!,
-        plannedDate.date,
-        plannedDate.minutes,
-        res
-      );
-    });
-
-    const formattedPlannedDates = plannedDates.map((plannedDate) => {
-      return {
-        minutesAssigned: plannedDate.minutes,
-        date: moment(plannedDate.date).startOf("day").toISOString(),
-      };
-    });
-
     const homework = await prisma.homework.create({
       data: {
         userId: +userId!,
         description,
-        duration: duration,
-        timeToComplete: duration,
         expirationDate: moment(expirationDate).startOf("day").toDate(),
         name: name,
         subjectId: subject.id,
-        plannedDates: {
-          createMany: {
-            data: formattedPlannedDates,
-          },
-        },
       },
     });
     return res.json(homework);
+  } catch (err) {
+    console.error(err);
+    return throwResponseError("unable to create homework", 500, res);
+  }
+};
+
+export const planHomework = async (req: Request, res: Response) => {
+  const { userId } = req;
+  const { duration, homeworkId } = req.body;
+  const plannedDates = req.body.plannedDates as {
+    minutes: number;
+    date: string;
+  }[];
+
+  try {
+    await prisma.$transaction(async (trx) => {
+      plannedDates.forEach(async (plannedDate) => {
+        await createOrUpdateDayCountingPreviousMinutes(
+          +userId!,
+          plannedDate.date,
+          plannedDate.minutes,
+          res,
+          trx
+        );
+      });
+
+      const formattedPlannedDates = plannedDates.map((plannedDate) => {
+        return {
+          minutesAssigned: plannedDate.minutes,
+          date: moment(plannedDate.date).startOf("day").toISOString(),
+        };
+      });
+
+      const homework = await trx.homework.updateMany({
+        where: {
+          id: homeworkId,
+          userId: +userId!,
+        },
+        data: {
+          duration: duration,
+          timeToComplete: duration,
+        },
+      });
+      formattedPlannedDates.forEach(async (plannedDate) => {
+        await trx.plannedDate.create({
+          data: {
+            date: plannedDate.date,
+            minutesAssigned: plannedDate.minutesAssigned,
+            homeworkId: homeworkId,
+          },
+        });
+      });
+      return res.json(homework);
+    });
+    throw "Prisma transaction failed";
   } catch (err) {
     console.error(err);
     return throwResponseError("unable to create homework", 500, res);

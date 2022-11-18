@@ -42,8 +42,8 @@ model Homework {
   plannedDates   PlannedDate[]
   subject        Subject       @relation(fields: [subjectId], references: [id])
   subjectId      Int
-  duration       Int
-  timeToComplete Int           
+  duration       Int?
+  timeToComplete Int?
   completed      Boolean       @default(false)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
