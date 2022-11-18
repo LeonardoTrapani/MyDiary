@@ -12,8 +12,7 @@ import KeyboardWrapper from "../components/KeyboardWrapper";
 import { CardView, View } from "../components/Themed";
 import DescriptionInput from "../components/AddHomeworkInput";
 import SolidButton from "../components/SolidButton";
-import NonModalDurationPicker from "../components/NonModalDurationPicker";
-import Accordion from "../components/Accordion";
+import HomeworkDurationContainer from "../components/HomeworkDurationContainer";
 import { RegularText } from "../components/StyledText";
 import { Ionicons } from "@expo/vector-icons";
 import { AddHomeworkStackScreenProps } from "../../types";
@@ -26,8 +25,7 @@ import useInput from "../util/useInput";
 import Colors from "../constants/Colors";
 import MyInput from "../components/MyInput";
 import { SubjectType } from "../util/react-query-hooks";
-import TextButton from "../components/TextButton";
-import TextWithDividers from "../components/TextWithDividers";
+import ModalDurationPicker from "../components/ModalDurationPicker";
 
 const AddHomeworkmodal = ({
   navigation,
@@ -41,6 +39,7 @@ const AddHomeworkmodal = ({
   const [durationHasError, setDurationHasError] = useState(false);
 
   const durationChangeHandler = (date: Date) => {
+    setIsDurationModalOpened(false);
     setDurationDate(date);
   };
 
@@ -100,8 +99,9 @@ const AddHomeworkmodal = ({
 
   const colorScheme = useColorScheme();
   const { errorColor, placeHolderColor } = Colors[colorScheme];
+  const [isDurationModalOpened, setIsDurationModalOpened] = useState(false);
 
-  const PlanDatesHandler = () => {
+  const planDatesHandler = () => {
     validateTitle();
     validateDescription();
 
@@ -186,40 +186,21 @@ const AddHomeworkmodal = ({
               activeSubjectHasError={activeSubjectHasError}
               style={{ marginBottom: 15 }}
             />
-            <Accordion
+            <HomeworkDurationContainer
               title={accordionTitle}
               choosedValue={`${durationDate.getHours()}h ${durationDate.getMinutes()}m`}
               hasError={durationHasError}
               isValueChoosed={duration !== 0}
-            >
-              <NonModalDurationPicker
-                onChangeDuration={durationChangeHandler}
-                value={durationDate}
-              />
-            </Accordion>
+              setOpened={() => {
+                setIsDurationModalOpened(true);
+              }}
+            />
           </View>
         </ScrollView>
-        <View
-          style={{
-            alignItems: "center",
-          }}
-        >
-          <TextButton
-            title="plan dates"
-            onPress={PlanDatesHandler}
-            textStyle={{ fontSize: 17 }}
-          />
-        </View>
-        <TextWithDividers
-          style={{
-            marginVertical: 20,
-            marginHorizontal: 10,
-          }}
-        >
-          OR
-        </TextWithDividers>
-
-        <SolidButton title="Create Homework" onPress={createHomeworkHandler} />
+        <CompleteButtons
+          planDatesHandler={planDatesHandler}
+          createHomeworkHandler={createHomeworkHandler}
+        />
         <DateTimePicker
           isVisible={isExpDateOpened}
           mode="date"
@@ -234,8 +215,39 @@ const AddHomeworkmodal = ({
             setExpDateOpened(false);
           }}
         />
+        <ModalDurationPicker
+          onChangeDuration={durationChangeHandler}
+          value={durationDate}
+          isVisible={isDurationModalOpened}
+          onConfirm={() => {
+            setIsDurationModalOpened(false);
+          }}
+          setClosed={() => {
+            setIsDurationModalOpened(false);
+          }}
+        />
       </View>
     </KeyboardWrapper>
+  );
+};
+
+const CompleteButtons: React.FC<{
+  planDatesHandler: () => void;
+  createHomeworkHandler: () => void;
+}> = (props) => {
+  return (
+    <View style={{ flexDirection: "row" }}>
+      <SolidButton
+        title="Plan"
+        onPress={props.planDatesHandler}
+        style={{ width: "50%" }}
+      />
+      <SolidButton
+        title="Create"
+        onPress={props.createHomeworkHandler}
+        style={{ width: "50%" }}
+      />
+    </View>
   );
 };
 

@@ -1,12 +1,12 @@
 import React from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
-interface NonModalDurationPicerProps {
+interface NonModalDurationPickerProps {
   onChangeDuration: (date: Date) => void;
   value: Date;
 }
 
-const NonModalDurationPicker: React.FC<NonModalDurationPicerProps> = (
+const NonModalDurationPicker: React.FC<NonModalDurationPickerProps> = (
   props
 ) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

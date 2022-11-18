@@ -9,7 +9,6 @@ const App = () => {
 
   const queryClient = new QueryClient();
 
-  console.log("rendering");
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>

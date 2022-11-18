@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   StyleProp,
   StyleSheet,
@@ -12,22 +12,21 @@ import { useTheme } from "@react-navigation/native";
 import Colors from "../constants/Colors";
 import useColorScheme from "../util/useColorScheme";
 
-const Accordion: React.FC<{
+const HomeworkDurationContainer: React.FC<{
   title: string;
-  children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   choosedValue: string;
   isValueChoosed: boolean;
   hasError: boolean;
+  setOpened: () => void;
 }> = (props) => {
-  const [isOpened, setIsOpened] = useState(false);
-
   const pressHandler = () => {
-    setIsOpened((prev) => !prev);
+    props.setOpened();
   };
+
   const cs = useColorScheme();
   const { errorColor, placeHolderColor } = Colors[cs];
-  const { card, text } = useTheme().colors;
+  const { text } = useTheme().colors;
 
   return (
     <View
@@ -46,33 +45,13 @@ const Accordion: React.FC<{
             props.hasError
               ? { color: errorColor }
               : { color: placeHolderColor },
-            !isOpened && props.isValueChoosed ? { color: text } : {},
+            props.isValueChoosed ? { color: text } : {},
           ]}
         >
-          {!isOpened && props.isValueChoosed ? props.choosedValue : props.title}
+          {props.isValueChoosed ? props.choosedValue : props.title}
         </RegularText>
-        <Ionicons
-          name="chevron-down"
-          size={24}
-          color={placeHolderColor}
-          style={{
-            transform: [{ rotate: !isOpened ? "180deg" : "0deg" }],
-          }}
-        />
+        <Ionicons name="time-outline" size={24} color={placeHolderColor} />
       </TouchableOpacity>
-      {isOpened && (
-        <View
-          style={[
-            {
-              backgroundColor: card,
-              borderBottomRightRadius: 8,
-              borderBottomLeftRadius: 8,
-            },
-          ]}
-        >
-          {props.children}
-        </View>
-      )}
     </View>
   );
 };
@@ -96,4 +75,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Accordion;
+export default HomeworkDurationContainer;

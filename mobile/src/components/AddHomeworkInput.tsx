@@ -63,12 +63,11 @@ const DescriptionInput: React.FC<AddHomeworkInputProps> = (props) => {
 
 const styles = StyleSheet.create({
   input: {
-    paddingHorizontal: 14,
-    height: 47,
     fontSize: 17,
+    paddingHorizontal: 14,
   },
   textArea: {
-    height: 150,
+    height: 140,
     paddingTop: 14,
     textAlignVertical: "top",
   },
