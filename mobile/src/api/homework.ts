@@ -2,6 +2,7 @@ import axios, { AxiosError } from "axios";
 import {
   FreeDaysResponse,
   HomeworkInfoType,
+  HomeworkPlanInfoType,
   SelectedDay,
   SingleHomeworkType,
 } from "../../types";
@@ -10,7 +11,7 @@ import { getDataFromAxiosError } from "../util/axiosUtils";
 
 export const fetchFreeDays = async (
   pageNumber: number,
-  homeworkInfo: HomeworkInfoType,
+  homeworkInfo: HomeworkPlanInfoType,
   token: string | null | undefined
 ) => {
   if (!token) {
@@ -32,9 +33,9 @@ export const fetchFreeDays = async (
   return freeDays.data;
 };
 
-export const createHomework = async (
+export const createHomeworkWithPlan = async (
   token: string | null | undefined,
-  homeworkInfo: HomeworkInfoType,
+  homeworkInfo: HomeworkPlanInfoType,
   plannedDates: SelectedDay[]
 ) => {
   if (!token) {
@@ -47,6 +48,29 @@ export const createHomework = async (
       name: homeworkInfo.title,
       expirationDate: new Date(homeworkInfo.expirationDate),
       plannedDates,
+    },
+    {
+      headers: {
+        Authorization: token,
+      },
+    }
+  );
+  return homework;
+};
+
+export const createHomework = async (
+  token: string | null | undefined,
+  homeworkInfo: HomeworkInfoType
+) => {
+  if (!token) {
+    throw "Not authenticated";
+  }
+  const homework = await axios.post(
+    BACKEND_URL + "/homework/createWithoutPlan",
+    {
+      ...homeworkInfo,
+      name: homeworkInfo.title,
+      expirationDate: new Date(homeworkInfo.expirationDate),
     },
     {
       headers: {

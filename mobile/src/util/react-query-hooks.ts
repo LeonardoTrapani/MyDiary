@@ -4,7 +4,7 @@ import {
   AllGrades,
   CalendarDayType,
   FreeDaysResponse,
-  HomeworkInfoType,
+  HomeworkPlanInfoType,
   SingleHomeworkType,
 } from "../../types";
 import {
@@ -64,7 +64,7 @@ export const useSubjects = () => {
   });
 };
 
-export const useFreeDays = (homeworkInfo: HomeworkInfoType) => {
+export const useFreeDays = (homeworkInfo: HomeworkPlanInfoType) => {
   const { data: validToken, isFetched: isValidTokenFetched } = useValidToken();
   const infQuery = useInfiniteQuery<FreeDaysResponse>(
     ["freeDays"],

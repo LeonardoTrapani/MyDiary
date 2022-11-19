@@ -89,7 +89,7 @@ export type AddHomeworkStackParamList = {
   Root: undefined;
   ChooseSubject: undefined;
   AddSubject: undefined;
-  PlannedDates: HomeworkInfoType;
+  PlannedDates: HomeworkPlanInfoType;
   info: undefined;
 };
 
@@ -114,6 +114,14 @@ export interface FreeDayType {
 }
 
 export interface HomeworkInfoType {
+  title: string;
+  description: string;
+  subjectId: number;
+  expirationDate: string;
+  duration?: number;
+}
+
+export interface HomeworkPlanInfoType {
   title: string;
   description: string;
   subjectId: number;

@@ -15,7 +15,7 @@ import SolidButton from "../components/SolidButton";
 import HomeworkDurationContainer from "../components/HomeworkDurationContainer";
 import { RegularText } from "../components/StyledText";
 import { Ionicons } from "@expo/vector-icons";
-import { AddHomeworkStackScreenProps } from "../../types";
+import { AddHomeworkStackScreenProps, HomeworkInfoType } from "../../types";
 import { useTheme } from "@react-navigation/native";
 import { useAtom } from "jotai";
 import { activeSubjectAtom } from "../util/atoms";
@@ -24,12 +24,35 @@ import { addDaysFromToday } from "../util/generalUtils";
 import useInput from "../util/useInput";
 import Colors from "../constants/Colors";
 import MyInput from "../components/MyInput";
-import { SubjectType } from "../util/react-query-hooks";
+import { SubjectType, useValidToken } from "../util/react-query-hooks";
 import ModalDurationPicker from "../components/ModalDurationPicker";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createHomework } from "../api/homework";
 
 const AddHomeworkmodal = ({
   navigation,
 }: AddHomeworkStackScreenProps<"Root">) => {
+  const { data: validToken } = useValidToken();
+
+  const queryClient = useQueryClient();
+  const createHomeworkMutation = useMutation(
+    (homeworkInfo: HomeworkInfoType) => {
+      return createHomework(validToken, {
+        title: homeworkInfo.title,
+        subjectId: homeworkInfo.subjectId,
+        description: homeworkInfo.description,
+        expirationDate: homeworkInfo.expirationDate,
+        duration: homeworkInfo.duration,
+      });
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["calendarDay"]);
+        navigation.getParent()?.goBack();
+      },
+    }
+  );
+
   const [activeSubject] = useAtom(activeSubjectAtom);
 
   const [activeSubjectHasError, setActiveSubjectHasError] = useState(false);
@@ -145,7 +168,32 @@ const AddHomeworkmodal = ({
   };
 
   const createHomeworkHandler = () => {
-    console.warn("TODO: create homework without plannded dates");
+    validateTitle();
+    validateDescription();
+
+    if (!activeSubject) {
+      setActiveSubjectHasError(true);
+    } else {
+      setActiveSubjectHasError(false);
+    }
+
+    if (!expDate) {
+      setExpDateHasError(true);
+    } else {
+      setExpDateHasError(false);
+    }
+    if (!activeSubject || !expDate || titleHasError || descriptionHasError) {
+      Alert.alert("Error", "Please compile the form", [
+        { text: "Ok", style: "default" },
+      ]);
+      return;
+    }
+    createHomeworkMutation.mutate({
+      title: titleValue,
+      subjectId: activeSubject.id,
+      description: descriptionValue,
+      expirationDate: expDate.toString(),
+    });
   };
 
   return (
@@ -240,12 +288,12 @@ const CompleteButtons: React.FC<{
       <SolidButton
         title="Plan"
         onPress={props.planDatesHandler}
-        style={{ width: "50%" }}
+        style={{ width: "48%", marginRight: "2%" }}
       />
       <SolidButton
         title="Create"
         onPress={props.createHomeworkHandler}
-        style={{ width: "50%" }}
+        style={{ width: "48%", marginLeft: "2%" }}
       />
     </View>
   );

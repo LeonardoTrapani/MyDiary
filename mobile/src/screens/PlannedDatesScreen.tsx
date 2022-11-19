@@ -23,7 +23,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import SolidButton from "../components/SolidButton";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createHomework } from "../api/homework";
+import { createHomeworkWithPlan } from "../api/homework";
 import { useGetDataFromAxiosError } from "../util/axiosUtils";
 import { AxiosError } from "axios";
 import ErrorComponent from "../components/ErrorComponent";
@@ -41,7 +41,7 @@ const PlannedDatesScreen = ({
   const queryClient = useQueryClient();
   const createHomeworkMutation = useMutation(
     () => {
-      return createHomework(validToken, route.params, selectedDays);
+      return createHomeworkWithPlan(validToken, route.params, selectedDays);
     },
     {
       onSuccess: () => {
