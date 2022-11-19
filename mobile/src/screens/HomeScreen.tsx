@@ -13,8 +13,8 @@ import {
 import {
   AddHomeworkStackScreenProps,
   CalendarDayType,
-  HomeStackParamList,
-  HomeStackScreenProps,
+  PlannedHomeworkScreenProps,
+  PlannedHomeworkStackParamList,
   RootStackParamList,
 } from "../../types";
 import { BoldText, MediumText, RegularText } from "../components/StyledText";
@@ -34,7 +34,10 @@ import { useAtom } from "jotai";
 import { activeInfoDayAtom } from "../util/atoms";
 import Break from "../components/Break";
 
-const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
+const HomeScreen = ({
+  navigation,
+  route,
+}: PlannedHomeworkScreenProps<"Root">) => {
   const initialDate = moment().startOf("day").toISOString();
   const [currentCalendarDate, setCurrentCalendarDate] = useState(initialDate);
 
@@ -118,24 +121,24 @@ const HomeScreen = ({ navigation, route }: HomeStackScreenProps<"Root">) => {
         freeMinutes={calendarDay?.freeMins}
         minutesToAssign={calendarDay?.minutesToAssign}
       />
-      {isCalendarDayLoading ? (
-        <ActivityIndicator />
-      ) : isError ? (
-        <ErrorComponent text={calendarDayError.message} />
-      ) : (
-        calendarDay && (
-          <>
-            <View style={[styles.homeworkBodyContainer]}>
-              <HomeworkBody
-                calendarDay={calendarDay}
-                freeTime={calendarDay.freeMins}
-                minutesToAssign={calendarDay.minutesToAssign}
-                currentDate={currentCalendarDate}
-              />
-            </View>
-          </>
-        )
-      )}
+      {isCalendarDayLoading
+        ? <ActivityIndicator />
+        : isError
+        ? <ErrorComponent text={calendarDayError.message} />
+        : (
+          calendarDay && (
+            <>
+              <View style={[styles.homeworkBodyContainer]}>
+                <HomeworkBody
+                  calendarDay={calendarDay}
+                  freeTime={calendarDay.freeMins}
+                  minutesToAssign={calendarDay.minutesToAssign}
+                  currentDate={currentCalendarDate}
+                />
+              </View>
+            </>
+          )
+        )}
     </View>
   );
 };
@@ -146,7 +149,11 @@ const MyHomeworkHeader: React.FC<{
   currentCalendarDate: string;
   onPageForward: () => void;
   onPageBackward: () => void;
-  navigation: NativeStackNavigationProp<HomeStackParamList, "Root", undefined>;
+  navigation: NativeStackNavigationProp<
+    PlannedHomeworkStackParamList,
+    "Root",
+    undefined
+  >;
   minutesToAssign: number | undefined;
   freeMinutes: number | undefined;
 }> = (props) => {
@@ -181,7 +188,7 @@ const MyHomeworkHeader: React.FC<{
             onConfirm={(date) => {
               setIsCalendarOpened(false);
               props.onSetCalendarDate(
-                moment(date).startOf("day").toISOString()
+                moment(date).startOf("day").toISOString(),
               );
             }}
             onCancel={() => {
@@ -212,7 +219,7 @@ const HomeworkBody: React.FC<{
         qc.invalidateQueries(["calendarDay"]);
         qc.invalidateQueries(["SingleHomework"]);
       },
-    }
+    },
   );
 
   const uncompleteHomeworkMutation = useMutation(
@@ -224,16 +231,16 @@ const HomeworkBody: React.FC<{
         qc.invalidateQueries(["calendarDay"]);
         qc.invalidateQueries(["SingleHomework"]);
       },
-    }
+    },
   );
   const sortedHomeworkList = useMemo(() => {
     const completedHomework = props.calendarDay?.user.homework.filter(
-      (hmk) => hmk.plannedDates[0].completed === true
+      (hmk) => hmk.plannedDates[0].completed === true,
     );
     const notCompletedHomework = props.calendarDay?.user.homework.filter(
       (hmk) => {
         return hmk.plannedDates[0].completed === false;
-      }
+      },
     );
     return [...(notCompletedHomework || []), ...(completedHomework || [])];
   }, [props.calendarDay?.user.homework]);
@@ -301,10 +308,12 @@ const CalendarDayHomework: React.FC<{
   if (props.homework.plannedDates.length > 1) {
     console.warn(
       "planned dates length is more than 1? ",
-      props.homework.plannedDates
+      props.homework.plannedDates,
     );
   }
-  const navigation = useNavigation<NavigationProp<HomeStackParamList>>();
+  const navigation = useNavigation<
+    NavigationProp<PlannedHomeworkStackParamList>
+  >();
   const completeHandler = () => {
     setIsLoading(true);
     props.onComplete(props.homework.plannedDates[0].id);
@@ -321,40 +330,41 @@ const CalendarDayHomework: React.FC<{
   return (
     <View>
       <View style={styles.calendarDayHomeworkContainer}>
-        {isCompleted ? (
-          <UncompleteTick
-            color={props.homework.subject.color}
-            isLoading={isLoading}
-            onUncomplete={uncompleteHandler}
-          />
-        ) : (
-          <CompleteCircle
-            onComplete={completeHandler}
-            isLoading={isLoading}
-            color={props.homework.subject.color}
-          />
-        )}
+        {isCompleted
+          ? (
+            <UncompleteTick
+              color={props.homework.subject.color}
+              isLoading={isLoading}
+              onUncomplete={uncompleteHandler}
+            />
+          )
+          : (
+            <CompleteCircle
+              onComplete={completeHandler}
+              isLoading={isLoading}
+              color={props.homework.subject.color}
+            />
+          )}
         <TouchableOpacity
           style={{ flex: 1 }}
           onPress={() =>
             navigation.navigate("SingleHomework", {
               homeworkId: props.homework.id,
               title: props.homework.name,
-            })
-          }
+            })}
         >
           <MediumText style={styles.homeworkText}>
             {props.homework.name}
           </MediumText>
-          {!isCompleted ? (
-            <RegularText>
-              {minutesToHoursMinutesFun(
-                props.homework.plannedDates[0].minutesAssigned
-              )}
-            </RegularText>
-          ) : (
-            <></>
-          )}
+          {!isCompleted
+            ? (
+              <RegularText>
+                {minutesToHoursMinutesFun(
+                  props.homework.plannedDates[0].minutesAssigned,
+                )}
+              </RegularText>
+            )
+            : <></>}
         </TouchableOpacity>
       </View>
     </View>
@@ -382,7 +392,8 @@ const UncompleteTick: React.FC<{
           justifyContent: "center",
         },
       ]}
-    ></TouchableOpacity>
+    >
+    </TouchableOpacity>
   );
 };
 
@@ -408,7 +419,8 @@ const CompleteCircle: React.FC<{
           justifyContent: "center",
         },
       ]}
-    ></TouchableOpacity>
+    >
+    </TouchableOpacity>
   );
 };
 const HeaderNavigation: React.FC<{
@@ -458,7 +470,9 @@ const DateChangeFront: React.FC<{ onPress: () => void }> = (props) => {
 export const CalendarDayInfoIcon: React.FC = () => {
   const { primary } = useTheme().colors;
 
-  const navigation = useNavigation<NavigationProp<HomeStackParamList>>();
+  const navigation = useNavigation<
+    NavigationProp<PlannedHomeworkStackParamList>
+  >();
 
   return (
     <TouchableOpacity
@@ -488,7 +502,9 @@ export const AddHomeworkIcon: React.FC = () => {
 
 export const DayInfoModal = ({
   navigation,
-}: AddHomeworkStackScreenProps<"info"> | HomeStackScreenProps<"Info">) => {
+}:
+  | AddHomeworkStackScreenProps<"info">
+  | PlannedHomeworkScreenProps<"Info">) => {
   const { data: validToken } = useValidToken();
 
   const queryClient = useQueryClient();
@@ -502,7 +518,7 @@ export const DayInfoModal = ({
         queryClient.invalidateQueries(["freeDays"]);
         navigation.pop();
       },
-    }
+    },
   );
 
   const [activeInfoDay] = useAtom(activeInfoDayAtom);
@@ -515,15 +531,14 @@ export const DayInfoModal = ({
     setMinutesToAssignDurationPickerVisible,
   ] = useState(false);
 
-  const assignedMinutes =
-    typeof activeInfoDay !== "undefined"
-      ? activeInfoDay.initialFreeTime - activeInfoDay.minutesToAssign
-      : 0;
+  const assignedMinutes = typeof activeInfoDay !== "undefined"
+    ? activeInfoDay.initialFreeTime - activeInfoDay.minutesToAssign
+    : 0;
 
   const freeTimeMinimumTime = assignedMinutes;
 
   const [freeTimeDurationDate, setFreeTimeDurationDate] = useState(
-    moment().startOf("day").toDate()
+    moment().startOf("day").toDate(),
   );
 
   const [minutesToAssignDurationDate, setMinutesToAssignDurationDate] =
@@ -535,13 +550,13 @@ export const DayInfoModal = ({
         moment()
           .startOf("day")
           .add(activeInfoDay.initialFreeTime, "minutes")
-          .toDate()
+          .toDate(),
       );
       setMinutesToAssignDurationDate(
         moment()
           .startOf("day")
           .add(activeInfoDay.minutesToAssign, "minutes")
-          .toDate()
+          .toDate(),
       );
     }
   }, [activeInfoDay]);
@@ -565,14 +580,14 @@ export const DayInfoModal = ({
       </BoldText>
 
       <View style={{ marginVertical: 10 }}>
-        {activeInfoDay.minutesToComplete ? (
-          <InfoRow
-            left="Minutes to complete"
-            right={minutesToHoursMinutesFun(activeInfoDay.minutesToComplete)}
-          />
-        ) : (
-          <></>
-        )}
+        {activeInfoDay.minutesToComplete
+          ? (
+            <InfoRow
+              left="Minutes to complete"
+              right={minutesToHoursMinutesFun(activeInfoDay.minutesToComplete)}
+            />
+          )
+          : <></>}
         <InfoRow
           left="Minutes to assign"
           right={minutesToHoursMinutesFun(activeInfoDay.minutesToAssign)}
@@ -599,8 +614,8 @@ export const DayInfoModal = ({
           setFreeTimeDurationPickerVisible(false);
         }}
         onConfirm={(date) => {
-          const mins =
-            moment(date).get("minutes") + moment(date).get("hours") * 60;
+          const mins = moment(date).get("minutes") +
+            moment(date).get("hours") * 60;
           setFreeTimeDurationDate(date);
           setFreeTimeDurationPickerVisible(false);
           editDayMutation.mutate({
@@ -618,8 +633,7 @@ export const DayInfoModal = ({
           setMinutesToAssignDurationPickerVisible(false);
         }}
         onConfirm={(date) => {
-          const mins =
-            moment(date).get("minutes") +
+          const mins = moment(date).get("minutes") +
             moment(date).get("hours") * 60 +
             assignedMinutes;
           setMinutesToAssignDurationDate(date);
@@ -651,17 +665,19 @@ const InfoRow: React.FC<{
       }}
     >
       <RegularText style={{ fontSize: 17 }}>{props.left}</RegularText>
-      {!props.rightPressable ? (
-        <RegularText style={{ fontSize: 17, color: primary }}>
-          {props.right}
-        </RegularText>
-      ) : (
-        <TouchableOpacity onPress={props.onRightPressed}>
-          <MediumText style={{ fontSize: 17, color: primary }}>
+      {!props.rightPressable
+        ? (
+          <RegularText style={{ fontSize: 17, color: primary }}>
             {props.right}
-          </MediumText>
-        </TouchableOpacity>
-      )}
+          </RegularText>
+        )
+        : (
+          <TouchableOpacity onPress={props.onRightPressed}>
+            <MediumText style={{ fontSize: 17, color: primary }}>
+              {props.right}
+            </MediumText>
+          </TouchableOpacity>
+        )}
     </View>
   );
 };

@@ -10,7 +10,7 @@ import {
   AddGradeStackParamList,
   AddHomeworkStackParamList,
   GradeStackParamList,
-  HomeStackParamList,
+  PlannedHomeworkStackParamList,
   RootStackParamList,
   RootTabParamList,
 } from "../../types";
@@ -239,12 +239,12 @@ const AddHomeworkModalNavigation = () => {
 const BottomTabNavigator = () => {
   return (
     <BottomTab.Navigator
-      initialRouteName="Home"
+      initialRouteName="PlannedHomework"
       screenOptions={{ tabBarShowLabel: false }}
     >
       <BottomTab.Screen
-        name="Home"
-        component={HomeStackNavigation}
+        name="PlannedHomework"
+        component={PlannedHomeworkStackNavigation}
         options={() => ({
           title: "Logo",
           tabBarIcon: ({ color, size }) => {
@@ -291,7 +291,7 @@ const BottomTabNavigator = () => {
   );
 };
 
-const HomeStackNavigation = () => {
+const PlannedHomeworkStackNavigation = () => {
   return (
     <HomeStack.Navigator initialRouteName="Root">
       <HomeStack.Screen
@@ -399,4 +399,4 @@ const AddGradeStackNavigation = () => {
 
 const GradeStack = createNativeStackNavigator<GradeStackParamList>();
 const AddGradeStack = createNativeStackNavigator<AddGradeStackParamList>();
-const HomeStack = createNativeStackNavigator<HomeStackParamList>();
+const HomeStack = createNativeStackNavigator<PlannedHomeworkStackParamList>();

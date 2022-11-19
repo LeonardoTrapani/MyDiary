@@ -7,8 +7,8 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import {
-  HomeStackParamList,
-  HomeStackScreenProps,
+  PlannedHomeworkStackParamList,
+  PlannedHomeworkScreenProps,
   SingleHomeworkType,
 } from "../../types";
 import Break from "../components/Break";
@@ -28,7 +28,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 const SingleHomeworkScreen = ({
   navigation,
   route,
-}: HomeStackScreenProps<"SingleHomework">) => {
+}: PlannedHomeworkScreenProps<"SingleHomework">) => {
   const { homeworkId } = route.params;
 
   const {
@@ -57,7 +57,7 @@ const SingleHomeworkScreen = ({
 const SingleHomewrk: React.FC<{
   singleHomework: SingleHomeworkType | undefined;
   navigation: NativeStackNavigationProp<
-    HomeStackParamList,
+    PlannedHomeworkStackParamList,
     "SingleHomework",
     undefined
   >;
@@ -151,7 +151,7 @@ export const PlannedDate: React.FC<{
     completed: boolean;
   };
   navigation: NativeStackNavigationProp<
-    HomeStackParamList,
+    PlannedHomeworkStackParamList,
     "SingleHomework",
     undefined
   >;
