@@ -5,7 +5,7 @@ import * as React from "react";
 import { ColorSchemeName } from "react-native";
 import { Text } from "react-native";
 import NotFoundScreen, { NoConnectionScreen } from "../screens/NotFoundScreen";
-import TabOneScreen from "../screens/TabOneScreen";
+import HomeScreen from "../screens/HomeScreen";
 import {
   AddGradeStackParamList,
   AddHomeworkStackParamList,
@@ -26,11 +26,11 @@ import {
 } from "../util/react-query-hooks";
 import { MyDarkTheme, MyLightTheme } from "../constants/Colors";
 import CreateWeekScreen from "../screens/CreateWeekScreen";
-import HomeScreen, {
+import PlannedHomeworkScreen, {
   AddHomeworkIcon,
   CalendarDayInfoIcon,
   DayInfoModal,
-} from "../screens/HomeScreen";
+} from "../screens/PlannedHomeworkScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import { Ionicons } from "@expo/vector-icons";
 import AddHomeworkModal from "../screens/AddHomeworkModal";
@@ -243,12 +243,22 @@ const BottomTabNavigator = () => {
       screenOptions={{ tabBarShowLabel: false }}
     >
       <BottomTab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          title: "[ LOGO ]",
+          tabBarIcon: ({ color, size }) => {
+            return <Ionicons name="book" size={size} color={color} />;
+          },
+        }}
+      />
+      <BottomTab.Screen
         name="PlannedHomework"
         component={PlannedHomeworkStackNavigation}
         options={() => ({
           title: "Logo",
           tabBarIcon: ({ color, size }) => {
-            return <Ionicons name="home" size={size} color={color} />;
+            return <Ionicons name="calendar" size={size} color={color} />;
           },
           headerShown: false,
         })}
@@ -265,16 +275,6 @@ const BottomTabNavigator = () => {
             );
           },
         })}
-      />
-      <BottomTab.Screen
-        name="TabThree"
-        component={TabOneScreen}
-        options={{
-          title: "TabThree",
-          tabBarIcon: ({ color, size }) => {
-            return <Ionicons name="beaker" size={size} color={color} />;
-          },
-        }}
       />
       <BottomTab.Screen
         name="Settings"
@@ -296,7 +296,7 @@ const PlannedHomeworkStackNavigation = () => {
     <HomeStack.Navigator initialRouteName="Root">
       <HomeStack.Screen
         name="Root"
-        component={HomeScreen}
+        component={PlannedHomeworkScreen}
         options={{
           title: "LOGO",
           headerRight: AddHomeworkIcon,
