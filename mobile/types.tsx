@@ -137,7 +137,7 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
   NativeStackScreenProps<RootStackParamList, Screen>;
 
 export type RootTabParamList = {
-  Home: undefined;
+  Home: NativeStackScreenProps<HomeScreenStackParamList> | undefined;
   PlannedHomework:
     | NativeStackScreenProps<PlannedHomeworkStackParamList>
     | undefined;
@@ -153,6 +153,14 @@ export type PlannedHomeworkStackParamList = {
   SingleHomework: { homeworkId: number; title: string };
   Root: undefined | { date: string };
   Info: undefined;
+};
+
+export type HomeScreenProps<Screen extends keyof HomeScreenStackParamList> =
+  NativeStackScreenProps<PlannedHomeworkStackParamList, Screen>;
+
+export type HomeScreenStackParamList = {
+  SingleHomework: { homeworkId: number; title: string };
+  Root: undefined | { date: string };
 };
 
 export type GradeStackScreenProps<Screen extends keyof GradeStackParamList> =
