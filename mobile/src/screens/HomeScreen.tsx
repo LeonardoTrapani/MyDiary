@@ -64,14 +64,6 @@ export default function HomeScreen() {
       />
     </View>
   );
-  //<CalendarHomeworkComponent
-  //navigation={navigation}
-  //planned={false}
-  //date={route.params?.date}
-  //queryDueCalendarDayResult={queryDueCalendarDayResult}
-  //currentCalendarDate={currentCalendarDate}
-  //setCurrentCalendarDate={setCurrentCalendarDate}
-  ///>
 }
 
 const HomeHomeworkBody: React.FC<{

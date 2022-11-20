@@ -10,6 +10,7 @@ import {
   AddGradeStackParamList,
   AddHomeworkStackParamList,
   GradeStackParamList,
+  HomeScreenStackParamList as HomeStackParamList,
   PlannedHomeworkStackParamList,
   RootStackParamList,
   RootTabParamList,
@@ -244,12 +245,13 @@ const BottomTabNavigator = () => {
     >
       <BottomTab.Screen
         name="Home"
-        component={HomeScreen}
+        component={HomeStackNavigation}
         options={{
           title: "[ LOGO ]",
           tabBarIcon: ({ color, size }) => {
             return <Ionicons name="book" size={size} color={color} />;
           },
+          headerShown: false,
         }}
       />
       <BottomTab.Screen
@@ -291,16 +293,15 @@ const BottomTabNavigator = () => {
   );
 };
 
-const PlannedHomeworkStackNavigation = () => {
+const HomeStackNavigation = () => {
   return (
     <HomeStack.Navigator initialRouteName="Root">
       <HomeStack.Screen
         name="Root"
-        component={PlannedHomeworkScreen}
+        component={HomeScreen}
         options={{
           title: "LOGO",
           headerRight: AddHomeworkIcon,
-          headerLeft: CalendarDayInfoIcon,
         }}
       />
       <HomeStack.Screen
@@ -311,7 +312,31 @@ const PlannedHomeworkStackNavigation = () => {
           headerBackTitleVisible: false,
         })}
       />
-      <HomeStack.Screen
+    </HomeStack.Navigator>
+  );
+};
+
+const PlannedHomeworkStackNavigation = () => {
+  return (
+    <PlannedHomeworkSack.Navigator initialRouteName="Root">
+      <PlannedHomeworkSack.Screen
+        name="Root"
+        component={PlannedHomeworkScreen}
+        options={{
+          title: "LOGO",
+          headerRight: AddHomeworkIcon,
+          headerLeft: CalendarDayInfoIcon,
+        }}
+      />
+      <PlannedHomeworkSack.Screen
+        name="SingleHomework"
+        component={SingleHomeworkScreen}
+        options={({ route }) => ({
+          title: route.params.title,
+          headerBackTitleVisible: false,
+        })}
+      />
+      <PlannedHomeworkSack.Screen
         name="Info"
         component={DayInfoModal}
         options={{
@@ -319,7 +344,7 @@ const PlannedHomeworkStackNavigation = () => {
           headerShown: false,
         }}
       />
-    </HomeStack.Navigator>
+    </PlannedHomeworkSack.Navigator>
   );
 };
 
@@ -399,4 +424,6 @@ const AddGradeStackNavigation = () => {
 
 const GradeStack = createNativeStackNavigator<GradeStackParamList>();
 const AddGradeStack = createNativeStackNavigator<AddGradeStackParamList>();
-const HomeStack = createNativeStackNavigator<PlannedHomeworkStackParamList>();
+const PlannedHomeworkSack =
+  createNativeStackNavigator<PlannedHomeworkStackParamList>();
+const HomeStack = createNativeStackNavigator<HomeStackParamList>();
