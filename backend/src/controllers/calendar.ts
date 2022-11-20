@@ -234,27 +234,36 @@ export const getDueCalendarDay = async (req: Request, res: Response) => {
   const { date: requestDate } = req.params;
   const date = moment(requestDate).startOf("day");
 
-  const homework = await prisma.homework.findMany({
-    where: {
-      expirationDate: date.toDate(),
-      userId: +!userId,
-    },
-    select: {
-      userId: true,
-      subject: {
-        select: {
-          color: true,
-          name: true,
-        },
+  try {
+    const homework = await prisma.homework.findMany({
+      where: {
+        userId: +userId!,
+        expirationDate: date.toDate(),
       },
-      expirationDate: true,
-      completed: true,
-      description: true,
-      duration: true,
-    },
-  });
-  if (homework) {
-    res.json({ homeworkList: homework, date: requestDate });
-    return;
+      select: {
+        name: true,
+        userId: true,
+        subject: {
+          select: {
+            color: true,
+            name: true,
+          },
+        },
+        expirationDate: true,
+        completed: true,
+        description: true,
+        duration: true,
+      },
+    });
+    console.log(homework);
+    if (homework) {
+      res.json({ homeworkList: homework, date: requestDate });
+      return;
+    } else {
+      throw "no homework";
+    }
+  } catch (err) {
+    console.log(err);
+    throwResponseError("Couldn't find the day", 400, res);
   }
 };
