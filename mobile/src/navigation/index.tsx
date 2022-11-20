@@ -27,6 +27,7 @@ import {
 import { MyDarkTheme, MyLightTheme } from "../constants/Colors";
 import CreateWeekScreen from "../screens/CreateWeekScreen";
 import PlannedHomeworkScreen, {
+  AddHomeworkIcon,
   CalendarDayInfoIcon,
   DayInfoModal,
 } from "../screens/PlannedHomeworkScreen";
@@ -48,7 +49,6 @@ import GradeScreen, {
   SingleSubjectGradeScreen,
 } from "../screens/GradeScreen";
 import AddGradeModal from "../screens/AddGradeModal";
-import { AddHomeworkIcon } from "../components/CalendarHomeworkComponent";
 
 export default function Main({
   colorScheme,

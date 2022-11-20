@@ -254,7 +254,7 @@ export const getDueCalendarDay = async (req: Request, res: Response) => {
     },
   });
   if (homework) {
-    res.json(homework);
+    res.json({ homeworkList: homework, date: requestDate });
     return;
   }
 };

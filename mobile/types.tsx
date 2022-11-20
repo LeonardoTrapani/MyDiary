@@ -76,16 +76,19 @@ export type PlannedCalendarDayType = {
 } | null;
 
 export type DueCalendarDayType = {
-  userId: number;
-  completed: boolean;
-  subject: {
-    name: string;
-    color: string;
-  };
-  description: string;
-  expirationDate: Date;
-  duration: number | null;
-}[];
+  homeworkList: {
+    userId: number;
+    completed: boolean;
+    subject: {
+      name: string;
+      color: string;
+    };
+    description: string;
+    expirationDate: Date;
+    duration: number | null;
+  }[];
+  date: string;
+};
 
 export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;

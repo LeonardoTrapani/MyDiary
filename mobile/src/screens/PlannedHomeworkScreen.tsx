@@ -7,15 +7,24 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
-import { TouchableOpacity, View } from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import {
   AddHomeworkStackScreenProps,
+  PlannedCalendarDayType,
   PlannedHomeworkScreenProps,
   PlannedHomeworkStackParamList,
+  RootStackParamList,
 } from "../../types";
 import { editDay } from "../api/day";
-import CalendarHomeworkComponent from "../components/CalendarHomeworkComponent";
+import { completePlannedDate } from "../api/homework";
+import { MyHomeworkHeader } from "../components/CalendarHomeworkComponent";
 import ErrorComponent from "../components/ErrorComponent";
 import MyDurationPicker from "../components/MyDurationPicker";
 import { BoldText, MediumText, RegularText } from "../components/StyledText";
@@ -26,25 +35,327 @@ import {
   useValidToken,
 } from "../util/react-query-hooks";
 
-const HomeScreen = ({
-  navigation,
-  route,
-}: PlannedHomeworkScreenProps<"Root">) => {
-  const initialDate = moment().startOf("day").toISOString();
-  const [currentCalendarDate, setCurrentCalendarDate] = useState(initialDate);
-  const queryPlannedCalendarDayResult = usePlannedCalendarDay(
-    moment(currentCalendarDate)
+const PlannedHomeworkScreen = () =>
+  //{
+  //navigation,
+  //route,
+  //}: PlannedHomeworkScreenProps<"Root">
+  {
+    const initialDate = moment().startOf("day").toISOString();
+    const [currentCalendarDate, setCurrentCalendarDate] = useState(initialDate);
+    const { data, error, isError, isLoading, isFetching } =
+      usePlannedCalendarDay(moment(currentCalendarDate));
+    const parsedError = error as Error | undefined;
+
+    useEffect(() => {
+      if (!data || isFetching) {
+        return;
+      }
+      if (moment(currentCalendarDate).isSame(data.date, "days")) {
+        return;
+      }
+      console.warn("SERVER DATE IS DIFFERENT FROM LOCAL DATE: ", {
+        current: moment(currentCalendarDate).toDate(),
+        server: data.date,
+      });
+      setCurrentCalendarDate(data.date);
+    }, [currentCalendarDate, data, isFetching]);
+
+    const [, setActiveInfoDay] = useAtom(activeInfoDayAtom);
+
+    const [minutesToComplete, setMinutesToComplete] = useState(0);
+
+    useEffect(() => {
+      if (!data) {
+        return;
+      }
+      const locMinsToComplete = data.user.homework.reduce((prev, curr) => {
+        if (curr.plannedDates[0].completed === true) {
+          return prev + 0;
+        }
+        return prev + curr.plannedDates[0].minutesAssigned;
+      }, 0);
+      setMinutesToComplete(locMinsToComplete);
+    }, [data]);
+
+    useEffect(() => {
+      if (!data) {
+        return;
+      }
+      setActiveInfoDay({
+        date: data.date,
+        initialFreeTime: data.freeMins,
+        minutesToAssign: data.minutesToAssign,
+        minutesToComplete: minutesToComplete,
+      });
+    }, [data, minutesToComplete, setActiveInfoDay]);
+
+    return (
+      <View style={{ flex: 1 }}>
+        <MyHomeworkHeader
+          onToday={() => {
+            setCurrentCalendarDate(moment().startOf("day").toISOString());
+          }}
+          onPageForward={() => {
+            setCurrentCalendarDate((prev) => {
+              return moment(prev).startOf("day").add(1, "day").toISOString();
+            });
+          }}
+          onPageBackward={() => {
+            setCurrentCalendarDate((prev) =>
+              moment(prev).startOf("day").subtract(1, "day").toISOString()
+            );
+          }}
+          onSetCalendarDate={(date: string) => setCurrentCalendarDate(date)}
+          currentCalendarDate={currentCalendarDate}
+        />
+        <PlannedHomeworkBody
+          currentDate={currentCalendarDate}
+          data={data}
+          isLoading={isLoading}
+          isError={isError}
+          errorMessage={parsedError?.message}
+          isFetching={isFetching}
+        />
+      </View>
+    );
+  };
+
+export const PlannedHomeworkBody: React.FC<{
+  currentDate: string;
+  isLoading: boolean;
+  data: PlannedCalendarDayType | undefined;
+  errorMessage?: string;
+  isFetching: boolean;
+  isError: boolean;
+}> = (props) => {
+  const { data: validToken } = useValidToken();
+
+  const qc = useQueryClient();
+  const completeHomeworkMutation = useMutation(
+    (data: { id: number }) => {
+      return completePlannedDate(data.id, validToken, true);
+    },
+    {
+      onSuccess: () => {
+        qc.invalidateQueries(["plannedCalendarDay"]);
+        qc.invalidateQueries(["dueCalendarDay"]);
+        qc.invalidateQueries(["SingleHomework"]);
+      },
+    }
   );
 
+  const uncompleteHomeworkMutation = useMutation(
+    (data: { id: number }) => {
+      return completePlannedDate(data.id, validToken, false);
+    },
+    {
+      onSuccess: () => {
+        qc.invalidateQueries(["plannedCalendarDay"]);
+        qc.invalidateQueries(["dueCalendarDay"]);
+        qc.invalidateQueries(["SingleHomework"]);
+      },
+    }
+  );
+  const sortedHomeworkList = useMemo(() => {
+    const completedHomework = props.data?.user.homework.filter(
+      (hmk) => hmk.plannedDates[0].completed === true
+    );
+    const notCompletedHomework = props.data?.user.homework.filter((hmk) => {
+      return hmk.plannedDates[0].completed === false;
+    });
+    return [...(notCompletedHomework || []), ...(completedHomework || [])];
+  }, [props.data?.user.homework]);
+
+  if (!props.data) {
+    return <></>;
+  }
+
+  const completeHandler = (id: number) => {
+    completeHomeworkMutation.mutate({ id });
+  };
+
+  const uncompleteHandler = (id: number) => {
+    uncompleteHomeworkMutation.mutate({ id });
+  };
+
   return (
-    <CalendarHomeworkComponent
-      navigation={navigation}
-      date={route.params?.date}
-      planned={false}
-      queryPlannedCalendarDayResult={queryPlannedCalendarDayResult}
-      currentCalendarDate={currentCalendarDate}
-      setCurrentCalendarDate={setCurrentCalendarDate}
-    />
+    <View style={{ flex: 1 }}>
+      {props.isLoading ? (
+        <ActivityIndicator />
+      ) : props.isError ? (
+        <ErrorComponent text={props.errorMessage || ""} />
+      ) : (
+        <FlatList
+          data={sortedHomeworkList}
+          ItemSeparatorComponent={() => (
+            <View style={{ marginBottom: 6, marginLeft: 40 }}></View>
+          )}
+          renderItem={({ item, index }) => (
+            <CalendarDayHomework
+              homework={item}
+              i={index}
+              onComplete={completeHandler}
+              onUncomplete={uncompleteHandler}
+            />
+          )}
+        />
+      )}
+    </View>
+  );
+};
+
+const CalendarDayHomework: React.FC<{
+  homework: {
+    completed: boolean;
+    id: number;
+    name: string;
+    subject: {
+      id: number;
+      name: string;
+      color: string;
+    };
+    plannedDates: {
+      date: string;
+      id: number;
+      completed: boolean;
+      minutesAssigned: number;
+    }[];
+    description: string;
+    expirationDate: string;
+    duration: number;
+  };
+  i: number;
+  onComplete: (id: number) => void;
+  onUncomplete: (id: number) => void;
+}> = (props) => {
+  if (props.homework.plannedDates.length > 1) {
+    console.warn(
+      "planned dates length is more than 1? ",
+      props.homework.plannedDates
+    );
+  }
+  const navigation =
+    useNavigation<NavigationProp<PlannedHomeworkStackParamList>>();
+  const completeHandler = () => {
+    setIsLoading(true);
+    props.onComplete(props.homework.plannedDates[0].id);
+  };
+
+  const uncompleteHandler = () => {
+    setIsLoading(true);
+    props.onUncomplete(props.homework.plannedDates[0].id);
+  };
+
+  const isCompleted = props.homework.plannedDates[0].completed;
+
+  const [isLoading, setIsLoading] = useState(false);
+  return (
+    <View>
+      <View style={styles.calendarDayHomeworkContainer}>
+        {isCompleted ? (
+          <UncompleteTick
+            color={props.homework.subject.color}
+            isLoading={isLoading}
+            onUncomplete={uncompleteHandler}
+          />
+        ) : (
+          <CompleteCircle
+            onComplete={completeHandler}
+            isLoading={isLoading}
+            color={props.homework.subject.color}
+          />
+        )}
+        <TouchableOpacity
+          style={{ flex: 1 }}
+          onPress={() =>
+            navigation.navigate("SingleHomework", {
+              homeworkId: props.homework.id,
+              title: props.homework.name,
+            })
+          }
+        >
+          <MediumText style={styles.homeworkText}>
+            {props.homework.name}
+          </MediumText>
+          {!isCompleted ? (
+            <RegularText>
+              {minutesToHoursMinutesFun(
+                props.homework.plannedDates[0].minutesAssigned
+              )}
+            </RegularText>
+          ) : (
+            <></>
+          )}
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+const UncompleteTick: React.FC<{
+  onUncomplete: () => void;
+  color: string;
+  isLoading: boolean;
+}> = (props) => {
+  return (
+    <TouchableOpacity
+      onPress={props.onUncomplete}
+      style={[
+        {
+          alignSelf: "center",
+          marginHorizontal: 10,
+          height: 22,
+          aspectRatio: 1,
+          borderRadius: 1000,
+          backgroundColor: "#888",
+          borderColor: "#888",
+          alignItems: "center",
+          justifyContent: "center",
+        },
+      ]}
+    ></TouchableOpacity>
+  );
+};
+
+const CompleteCircle: React.FC<{
+  onComplete: () => void;
+  color: string;
+  isLoading: boolean;
+}> = (props) => {
+  return (
+    <TouchableOpacity
+      onPress={props.onComplete}
+      style={[
+        {
+          alignSelf: "center",
+          marginHorizontal: 10,
+          height: 22,
+          aspectRatio: 1,
+          borderRadius: 1000,
+          //borderColor: props.color,
+          borderColor: "#888",
+          borderWidth: 1.4,
+          alignItems: "center",
+          justifyContent: "center",
+        },
+      ]}
+    ></TouchableOpacity>
+  );
+};
+
+export const AddHomeworkIcon: React.FC = () => {
+  const { primary } = useTheme().colors;
+
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate("AddHomework");
+      }}
+    >
+      <Ionicons name="add" color={primary} size={28} />
+    </TouchableOpacity>
   );
 };
 
@@ -248,4 +559,71 @@ export const CalendarDayInfoIcon: React.FC = () => {
   );
 };
 
-export default HomeScreen;
+export default PlannedHomeworkScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  dateChangeButton: {
+    height: 32,
+    marginVertical: 10,
+    borderRadius: 10000,
+    alignSelf: "flex-start",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  dateChangeDateText: {
+    textAlign: "center",
+    fontSize: 16,
+  },
+  dateChangeContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  homeworkBodyContainer: {
+    flex: 1,
+  },
+  homeworkText: {
+    fontSize: 15,
+  },
+  headerContainer: {
+    padding: 10,
+    paddingTop: 0,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  navigationContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  headerText: {
+    width: 50,
+  },
+  subheaderRight: {
+    marginRight: 10,
+  },
+  headerleft: {
+    marginLeft: 10,
+  },
+  bigDate: {
+    fontSize: 28,
+    letterSpacing: -0.8,
+  },
+  calendarDayHomeworkContainer: {
+    flexDirection: "row",
+    paddingBottom: 5,
+  },
+  homeworkListSectionHeader: {
+    marginBottom: 5,
+    paddingHorizontal: 10,
+    paddingBottom: 3,
+  },
+
+  homeworkListSectionHeaderText: {
+    fontSize: 17,
+    opacity: 0.8,
+  },
+});
