@@ -145,7 +145,7 @@ const isCalendarDayDisabled = (
   return false;
 };
 
-export const getSingleCalendarDay = async (req: Request, res: Response) => {
+export const getPlannedCalendarDay = async (req: Request, res: Response) => {
   const { userId } = req;
   const { date: requestDate } = req.params;
   const date = moment(requestDate).startOf("day");
@@ -227,4 +227,34 @@ export const getSingleCalendarDay = async (req: Request, res: Response) => {
       homework: [],
     },
   });
+};
+
+export const getDueCalendarDay = async (req: Request, res: Response) => {
+  const { userId } = req;
+  const { date: requestDate } = req.params;
+  const date = moment(requestDate).startOf("day");
+
+  const homework = await prisma.homework.findMany({
+    where: {
+      expirationDate: date.toDate(),
+      userId: +!userId,
+    },
+    select: {
+      userId: true,
+      subject: {
+        select: {
+          color: true,
+          name: true,
+        },
+      },
+      expirationDate: true,
+      completed: true,
+      description: true,
+      duration: true,
+    },
+  });
+  if (homework) {
+    res.json(homework);
+    return;
+  }
 };

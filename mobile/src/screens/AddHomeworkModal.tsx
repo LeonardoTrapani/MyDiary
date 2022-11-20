@@ -47,7 +47,8 @@ const AddHomeworkmodal = ({
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(["calendarDay"]);
+        queryClient.invalidateQueries(["plannedCalendarDay"]);
+        queryClient.invalidateQueries(["dueCalendarDay"]);
         navigation.getParent()?.goBack();
       },
     }

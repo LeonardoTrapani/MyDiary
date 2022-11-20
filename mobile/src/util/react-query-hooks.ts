@@ -2,10 +2,11 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Moment } from "moment";
 import {
   AllGrades,
-  CalendarDayType,
+  PlannedCalendarDayType,
   FreeDaysResponse,
   HomeworkPlanInfoType,
   SingleHomeworkType,
+  DueCalendarDayType,
 } from "../../types";
 import {
   getIsWeekCreatedWithToken,
@@ -13,7 +14,7 @@ import {
   validateToken,
   validConnection,
 } from "../api/auth";
-import { getDayCalendar } from "../api/calendar";
+import { getDueCalendarDay, getPlannedCalnedarDay } from "../api/calendar";
 import { getAllGrades } from "../api/grade";
 import { fetchFreeDays, getSingleHomework } from "../api/homework";
 import { getSubjects } from "../api/subject";
@@ -79,11 +80,23 @@ export const useFreeDays = (homeworkInfo: HomeworkPlanInfoType) => {
   return infQuery;
 };
 
-export const useCalendarDay = (date: Moment) => {
+export const usePlannedCalendarDay = (date: Moment) => {
   const { data: validToken, isFetched: isValidTokenFetched } = useValidToken();
-  return useQuery<CalendarDayType>(
-    ["calendarDay", date],
-    () => getDayCalendar(date, validToken),
+  return useQuery<PlannedCalendarDayType>(
+    ["plannedCalendarDay", date],
+    () => getPlannedCalnedarDay(date, validToken),
+    {
+      enabled: isValidTokenFetched,
+      keepPreviousData: true,
+    }
+  );
+};
+
+export const useDueCalendarDay = (date: Moment) => {
+  const { data: validToken, isFetched: isValidTokenFetched } = useValidToken();
+  return useQuery<DueCalendarDayType>(
+    ["dueCalendarDay", date],
+    () => getDueCalendarDay(date, validToken),
     {
       enabled: isValidTokenFetched,
       keepPreviousData: true,

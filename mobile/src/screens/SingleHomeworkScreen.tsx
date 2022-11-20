@@ -170,7 +170,8 @@ export const PlannedDate: React.FC<{
     {
       onSuccess: () => {
         queryClient.invalidateQueries(["singleHomework"]);
-        queryClient.invalidateQueries(["calendarDay"]);
+        queryClient.invalidateQueries(["plannedCalendarDay"]);
+        queryClient.invalidateQueries(["dueCalendarDay"]);
       },
     }
   );

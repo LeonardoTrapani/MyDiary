@@ -384,3 +384,63 @@ export const getSingleHomework = async (req: Request, res: Response) => {
   res.json(singleHomework);
   return;
 };
+
+export const completeHomework = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  await prisma.homework.update({
+    where: {
+      id: +id,
+    },
+    data: {
+      completed: true,
+      timeToComplete: 0,
+      plannedDates: {
+        updateMany: {
+          where: {
+            completed: false,
+          },
+          data: { completed: true },
+        },
+      },
+    },
+  });
+  res.json("success");
+  return;
+};
+
+export const uncompleteHomework = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  await prisma.$transaction(async (trx) => {
+    const previousHomework = await trx.homework.findUnique({
+      where: { id: +id },
+    });
+
+    if (!previousHomework) {
+      throwResponseError("homework doesnt exist", 400, res);
+      return;
+    }
+
+    await trx.homework.update({
+      where: {
+        id: +id,
+      },
+      data: {
+        completed: false,
+        timeToComplete: previousHomework.duration,
+        plannedDates: {
+          //TODO: porto in transaction
+          updateMany: {
+            where: {
+              completed: true,
+            },
+            data: { completed: false },
+          },
+        },
+      },
+    });
+  });
+  res.json("success");
+  return;
+};

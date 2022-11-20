@@ -1,11 +1,13 @@
 import { Router } from "express";
 import {
   calculateFreeDays,
+  completeHomework,
   createHomework,
   createHomeworkWihoutPlan,
   getAllHomework,
   getSingleHomework,
   planHomework,
+  uncompleteHomework,
 } from "../controllers/homework";
 import {
   isAuthenticated,
@@ -154,4 +156,19 @@ router.get(
   getSingleHomework
 );
 
+router.post(
+  "/complete/:id",
+  [param("id", "please enter a valid homework id").isNumeric()],
+  validateExpressValidation,
+  isAuthenticated,
+  completeHomework
+);
+
+router.post(
+  "/uncomplete/:id",
+  [param("id", "please enter a valid homework id").isNumeric()],
+  validateExpressValidation,
+  isAuthenticated,
+  uncompleteHomework
+);
 export default router;

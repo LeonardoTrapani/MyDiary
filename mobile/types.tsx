@@ -47,7 +47,7 @@ export type AllGrades = {
   }[];
 };
 
-export type CalendarDayType = {
+export type PlannedCalendarDayType = {
   date: string;
   user: {
     homework: {
@@ -74,6 +74,18 @@ export type CalendarDayType = {
   freeMins: number;
   minutesToAssign: number;
 } | null;
+
+export type DueCalendarDayType = {
+  userId: number;
+  completed: boolean;
+  subject: {
+    name: string;
+    color: string;
+  };
+  description: string;
+  expirationDate: Date;
+  duration: number | null;
+}[];
 
 export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
