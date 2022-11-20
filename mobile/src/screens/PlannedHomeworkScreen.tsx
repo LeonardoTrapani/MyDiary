@@ -32,7 +32,7 @@ const HomeScreen = ({
 }: PlannedHomeworkScreenProps<"Root">) => {
   const initialDate = moment().startOf("day").toISOString();
   const [currentCalendarDate, setCurrentCalendarDate] = useState(initialDate);
-  const querPlannedCalendarDayResult = usePlannedCalendarDay(
+  const queryPlannedCalendarDayResult = usePlannedCalendarDay(
     moment(currentCalendarDate)
   );
 
@@ -41,7 +41,7 @@ const HomeScreen = ({
       navigation={navigation}
       date={route.params?.date}
       planned={false}
-      queryPlannedCalendarDayResult={querPlannedCalendarDayResult}
+      queryPlannedCalendarDayResult={queryPlannedCalendarDayResult}
       currentCalendarDate={currentCalendarDate}
       setCurrentCalendarDate={setCurrentCalendarDate}
     />
