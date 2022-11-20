@@ -3,11 +3,23 @@ import { MyHomeworkHeader } from "../components/CalendarHomeworkComponent";
 //import { HomeScreenProps } from "../../types";
 import { useDueCalendarDay, useValidToken } from "../util/react-query-hooks";
 import moment from "moment";
-import { ActivityIndicator, FlatList, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { completeHomework } from "../api/homework";
 import ErrorComponent from "../components/ErrorComponent";
-import { DueCalendarDayType } from "../../types";
+import {
+  DueCalendarDayType,
+  DueHomeworkType,
+  HomeStackParamList,
+} from "../../types";
+import { MediumText, RegularText } from "../components/StyledText";
+import { CompleteCircle, UncompleteCircle } from "./PlannedHomeworkScreen";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 
 export default function HomeScreen() {
   //{
@@ -135,9 +147,68 @@ const HomeHomeworkBody: React.FC<{
           ItemSeparatorComponent={() => (
             <View style={{ marginBottom: 6, marginLeft: 40 }}></View>
           )}
-          renderItem={({ item, index }) => <View></View>}
+          renderItem={({ item, index }) => (
+            <DueHomeworkComponent
+              homework={item}
+              completeHandler={completeHandler}
+              i={index}
+              isLoading={props.isLoading}
+              uncompleteHandler={uncompleteHandler}
+            />
+          )}
         />
       )}
+    </View>
+  );
+};
+
+const DueHomeworkComponent: React.FC<{
+  homework: DueHomeworkType;
+  isLoading: boolean;
+  uncompleteHandler: (i: number) => void;
+  completeHandler: (i: number) => void;
+  i: number;
+}> = (props) => {
+  const navigation = useNavigation<NavigationProp<HomeStackParamList>>();
+  const isCompleted = props.homework.completed;
+  return (
+    <View>
+      <View
+        style={{
+          flexDirection: "row",
+          paddingBottom: 5,
+        }}
+      >
+        {isCompleted ? (
+          <UncompleteCircle
+            isLoading={props.isLoading}
+            onUncomplete={() => props.uncompleteHandler(props.i)}
+          />
+        ) : (
+          <CompleteCircle
+            onComplete={() => props.completeHandler(props.i)}
+            isLoading={props.isLoading}
+          />
+        )}
+        <TouchableOpacity
+          style={{ flex: 1 }}
+          onPress={() =>
+            navigation.navigate("SingleHomework", {
+              homeworkId: props.homework.id,
+              title: props.homework.name,
+            })
+          }
+        >
+          <MediumText style={{ fontSize: 15 }}>
+            {props.homework.name}
+          </MediumText>
+          {!isCompleted ? (
+            <RegularText>{props.homework.description}</RegularText>
+          ) : (
+            <></>
+          )}
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

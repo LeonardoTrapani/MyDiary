@@ -10,7 +10,7 @@ import {
   AddGradeStackParamList,
   AddHomeworkStackParamList,
   GradeStackParamList,
-  HomeScreenStackParamList as HomeStackParamList,
+  HomeStackParamList as HomeStackParamList,
   PlannedHomeworkStackParamList,
   RootStackParamList,
   RootTabParamList,

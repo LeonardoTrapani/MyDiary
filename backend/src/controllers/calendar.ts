@@ -243,6 +243,7 @@ export const getDueCalendarDay = async (req: Request, res: Response) => {
       select: {
         name: true,
         userId: true,
+        id: true,
         subject: {
           select: {
             color: true,
@@ -255,7 +256,6 @@ export const getDueCalendarDay = async (req: Request, res: Response) => {
         duration: true,
       },
     });
-    console.log(homework);
     if (homework) {
       res.json({ homeworkList: homework, date: requestDate });
       return;

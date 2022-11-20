@@ -47,6 +47,20 @@ export type AllGrades = {
   }[];
 };
 
+export type DueHomeworkType = {
+  userId: number;
+  name: string;
+  id: number;
+  completed: boolean;
+  subject: {
+    name: string;
+    color: string;
+  };
+  description: string;
+  expirationDate: Date;
+  duration: number | null;
+};
+
 export type PlannedCalendarDayType = {
   date: string;
   user: {
@@ -79,6 +93,8 @@ export type DueCalendarDayType = {
   homeworkList: {
     userId: number;
     completed: boolean;
+    name: string;
+    id: number;
     subject: {
       name: string;
       color: string;
@@ -131,6 +147,7 @@ export interface FreeDayType {
 export interface HomeworkInfoType {
   title: string;
   description: string;
+  id: number;
   subjectId: number;
   expirationDate: string;
   duration?: number;
@@ -139,6 +156,7 @@ export interface HomeworkInfoType {
 export interface HomeworkPlanInfoType {
   title: string;
   description: string;
+  id: number;
   subjectId: number;
   expirationDate: string;
   duration: number;
@@ -152,7 +170,7 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
   NativeStackScreenProps<RootStackParamList, Screen>;
 
 export type RootTabParamList = {
-  Home: NativeStackScreenProps<HomeScreenStackParamList> | undefined;
+  Home: NativeStackScreenProps<HomeStackParamList> | undefined;
   PlannedHomework:
     | NativeStackScreenProps<PlannedHomeworkStackParamList>
     | undefined;
@@ -170,10 +188,10 @@ export type PlannedHomeworkStackParamList = {
   Info: undefined;
 };
 
-export type HomeScreenProps<Screen extends keyof HomeScreenStackParamList> =
+export type HomeScreenProps<Screen extends keyof HomeStackParamList> =
   NativeStackScreenProps<PlannedHomeworkStackParamList, Screen>;
 
-export type HomeScreenStackParamList = {
+export type HomeStackParamList = {
   SingleHomework: { homeworkId: number; title: string };
   Root: undefined | { date: string };
 };

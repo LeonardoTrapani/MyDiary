@@ -254,17 +254,12 @@ const CalendarDayHomework: React.FC<{
     <View>
       <View style={styles.calendarDayHomeworkContainer}>
         {isCompleted ? (
-          <UncompleteTick
-            color={props.homework.subject.color}
+          <UncompleteCircle
             isLoading={isLoading}
             onUncomplete={uncompleteHandler}
           />
         ) : (
-          <CompleteCircle
-            onComplete={completeHandler}
-            isLoading={isLoading}
-            color={props.homework.subject.color}
-          />
+          <CompleteCircle onComplete={completeHandler} isLoading={isLoading} />
         )}
         <TouchableOpacity
           style={{ flex: 1 }}
@@ -293,9 +288,8 @@ const CalendarDayHomework: React.FC<{
   );
 };
 
-const UncompleteTick: React.FC<{
+export const UncompleteCircle: React.FC<{
   onUncomplete: () => void;
-  color: string;
   isLoading: boolean;
 }> = (props) => {
   return (
@@ -318,9 +312,8 @@ const UncompleteTick: React.FC<{
   );
 };
 
-const CompleteCircle: React.FC<{
+export const CompleteCircle: React.FC<{
   onComplete: () => void;
-  color: string;
   isLoading: boolean;
 }> = (props) => {
   return (
