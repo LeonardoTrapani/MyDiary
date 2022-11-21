@@ -182,11 +182,11 @@ const DueHomeworkComponent: React.FC<{
         {isCompleted ? (
           <UncompleteCircle
             isLoading={props.isLoading}
-            onUncomplete={() => props.uncompleteHandler(props.i)}
+            onUncomplete={() => props.uncompleteHandler(props.homework.id)}
           />
         ) : (
           <CompleteCircle
-            onComplete={() => props.completeHandler(props.i)}
+            onComplete={() => props.completeHandler(props.homework.id)}
             isLoading={props.isLoading}
           />
         )}

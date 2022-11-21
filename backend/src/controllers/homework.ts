@@ -388,22 +388,27 @@ export const getSingleHomework = async (req: Request, res: Response) => {
 export const completeHomework = async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  await prisma.homework.update({
-    where: {
-      id: +id,
-    },
-    data: {
-      completed: true,
-      timeToComplete: 0,
-      plannedDates: {
-        updateMany: {
-          where: {
-            completed: false,
-          },
-          data: { completed: true },
+  await prisma.$transaction(async (trx) => {
+    console.log(id);
+    await trx.homework.update({
+      where: {
+        id: +id,
+      },
+      data: {
+        completed: true,
+        timeToComplete: 0,
+      },
+    });
+    await trx.plannedDate.updateMany({
+      where: {
+        homework: {
+          id: +id!,
         },
       },
-    },
+      data: {
+        completed: true,
+      },
+    });
   });
   res.json("success");
   return;
@@ -429,18 +434,21 @@ export const uncompleteHomework = async (req: Request, res: Response) => {
       data: {
         completed: false,
         timeToComplete: previousHomework.duration,
-        plannedDates: {
-          //TODO: porto in transaction
-          updateMany: {
-            where: {
-              completed: true,
-            },
-            data: { completed: false },
-          },
+      },
+    });
+
+    await trx.plannedDate.updateMany({
+      where: {
+        homework: {
+          id: +id!,
         },
+      },
+      data: {
+        completed: false,
       },
     });
   });
+
   res.json("success");
   return;
 };
