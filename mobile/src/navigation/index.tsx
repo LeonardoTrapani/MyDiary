@@ -247,7 +247,6 @@ const BottomTabNavigator = () => {
         name="Home"
         component={HomeStackNavigation}
         options={{
-          title: "[ LOGO ]",
           tabBarIcon: ({ color, size }) => {
             return <Ionicons name="book" size={size} color={color} />;
           },
@@ -258,7 +257,6 @@ const BottomTabNavigator = () => {
         name="PlannedHomework"
         component={PlannedHomeworkStackNavigation}
         options={() => ({
-          title: "Logo",
           tabBarIcon: ({ color, size }) => {
             return <Ionicons name="calendar" size={size} color={color} />;
           },
@@ -300,7 +298,7 @@ const HomeStackNavigation = () => {
         name="Root"
         component={HomeScreen}
         options={{
-          title: "LOGO",
+          title: "Homework",
           headerRight: AddHomeworkIcon,
         }}
       />
@@ -323,7 +321,7 @@ const PlannedHomeworkStackNavigation = () => {
         name="Root"
         component={PlannedHomeworkScreen}
         options={{
-          title: "LOGO",
+          title: "Plans",
           headerRight: AddHomeworkIcon,
           headerLeft: CalendarDayInfoIcon,
         }}
