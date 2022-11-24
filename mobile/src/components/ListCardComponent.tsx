@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { TouchableOpacity } from "react-native";
+import { StyleProp, TouchableOpacity, ViewStyle } from "react-native";
 import { CardView } from "./Themed";
 
 const ListCardComponent: React.FC<{
@@ -8,6 +8,7 @@ const ListCardComponent: React.FC<{
   rightArrow?: boolean;
   children: React.ReactNode;
   onPress?: (i: number) => void;
+  style?: StyleProp<ViewStyle>;
 }> = (props) => {
   return (
     <TouchableOpacity
@@ -19,15 +20,18 @@ const ListCardComponent: React.FC<{
       }}
     >
       <CardView
-        style={{
-          padding: 9,
-          borderWidth: 0.8,
-          borderTopWidth: props.index === 0 ? 0.8 : 0,
-          borderColor: "#bbb",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
+        style={[
+          {
+            padding: 9,
+            borderWidth: 0.8,
+            borderTopWidth: props.index === 0 ? 0.8 : 0,
+            borderColor: "#bbb",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          },
+          props.style,
+        ]}
       >
         {props.children}
         {props.rightArrow ? (
