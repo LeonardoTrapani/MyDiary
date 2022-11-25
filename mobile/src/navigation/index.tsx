@@ -310,14 +310,24 @@ const HomeStackNavigation = () => {
           headerBackTitleVisible: false,
         })}
       />
+      <HomeStack.Screen
+        name="PlannedDates"
+        component={PlannedDatesScreen}
+        options={() => ({
+          title: "Plan",
+          presentation: "card",
+          headerRight: PlannedDatesInfoIcon,
+          headerShadowVisible: false,
+        })}
+      />
     </HomeStack.Navigator>
   );
 };
 
 const PlannedHomeworkStackNavigation = () => {
   return (
-    <PlannedHomeworkSack.Navigator initialRouteName="Root">
-      <PlannedHomeworkSack.Screen
+    <PlannedHomeworkStack.Navigator initialRouteName="Root">
+      <PlannedHomeworkStack.Screen
         name="Root"
         component={PlannedHomeworkScreen}
         options={{
@@ -326,7 +336,7 @@ const PlannedHomeworkStackNavigation = () => {
           headerLeft: CalendarDayInfoIcon,
         }}
       />
-      <PlannedHomeworkSack.Screen
+      <PlannedHomeworkStack.Screen
         name="SingleHomework"
         component={SingleHomeworkScreen}
         options={({ route }) => ({
@@ -334,7 +344,7 @@ const PlannedHomeworkStackNavigation = () => {
           headerBackTitleVisible: false,
         })}
       />
-      <PlannedHomeworkSack.Screen
+      <PlannedHomeworkStack.Screen
         name="Info"
         component={DayInfoModal}
         options={{
@@ -342,7 +352,17 @@ const PlannedHomeworkStackNavigation = () => {
           headerShown: false,
         }}
       />
-    </PlannedHomeworkSack.Navigator>
+      <PlannedHomeworkStack.Screen
+        name="PlannedDates"
+        component={PlannedDatesScreen}
+        options={() => ({
+          title: "Plan",
+          presentation: "card",
+          headerRight: PlannedDatesInfoIcon,
+          headerShadowVisible: false,
+        })}
+      />
+    </PlannedHomeworkStack.Navigator>
   );
 };
 
@@ -422,6 +442,6 @@ const AddGradeStackNavigation = () => {
 
 const GradeStack = createNativeStackNavigator<GradeStackParamList>();
 const AddGradeStack = createNativeStackNavigator<AddGradeStackParamList>();
-const PlannedHomeworkSack =
+const PlannedHomeworkStack =
   createNativeStackNavigator<PlannedHomeworkStackParamList>();
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();

@@ -181,7 +181,15 @@ export type PlannedHomeworkScreenProps<
   Screen extends keyof PlannedHomeworkStackParamList
 > = NativeStackScreenProps<PlannedHomeworkStackParamList, Screen>;
 
-type plannedDatesPropsType = { homeworkPlanInfo: HomeworkPlanInfoType };
+type plannedDatesPropsType = {
+  homeworkPlanInfo: HomeworkPlanInfoType;
+  previousPlannedDates?: {
+    completed: boolean;
+    id: number;
+    date: string;
+    minutesAssigned: number;
+  }[];
+};
 export type PlannedHomeworkStackParamList = {
   SingleHomework: { homeworkId: number; title: string };
   PlannedDates: plannedDatesPropsType;

@@ -1,5 +1,5 @@
 import { useTheme } from "@react-navigation/native";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -35,13 +35,17 @@ const PlannedDatesScreen = ({
   navigation,
 }: AddHomeworkStackScreenProps<"PlannedDates">) => {
   const { isLoading, hasNextPage, fetchNextPage, isFetchingNextPage, data } =
-    useFreeDays(route.params);
+    useFreeDays(route.params.homeworkPlanInfo);
   const { data: validToken } = useValidToken();
 
   const queryClient = useQueryClient();
   const createHomeworkMutation = useMutation(
     () => {
-      return createHomeworkWithPlan(validToken, route.params, selectedDays);
+      return createHomeworkWithPlan(
+        validToken,
+        route.params.homeworkPlanInfo,
+        selectedDays
+      );
     },
     {
       onSuccess: () => {
@@ -56,6 +60,18 @@ const PlannedDatesScreen = ({
   }, [data?.pages]);
 
   const [selectedDays, setSelectedDays] = useState<SelectedDay[]>([]);
+  useEffect(() => {
+    if (route.params.previousPlannedDates) {
+      const localArrayToUpdate: SelectedDay[] = [];
+
+      route.params.previousPlannedDates.forEach((prevPlannedDate) => {
+        localArrayToUpdate.push({
+          date: prevPlannedDate.date,
+          minutes: prevPlannedDate.minutesAssigned,
+        });
+      });
+    }
+  }, [route.params.previousPlannedDates]);
 
   const totalAssignedMinutes = useMemo(() => {
     return selectedDays.reduce((prev, curr) => {
@@ -70,7 +86,7 @@ const PlannedDatesScreen = ({
   };
 
   const createHomeworkHandler = () => {
-    if (route.params.duration - totalAssignedMinutes !== 0) {
+    if (route.params.homeworkPlanInfo.duration - totalAssignedMinutes !== 0) {
       return Alert.alert(
         "Can't create homework",
         "Assign all the time to create the homework",
@@ -124,7 +140,9 @@ const PlannedDatesScreen = ({
   return (
     <>
       <PlannedDatesSecondaryHeader
-        timeToAssign={route.params.duration - totalAssignedMinutes}
+        timeToAssign={
+          route.params.homeworkPlanInfo.duration - totalAssignedMinutes
+        }
         isCreateHomeworkLoading={createHomeworkMutation.isLoading}
         onCreate={createHomeworkHandler}
         hasError={createHomeworkMutation.isError}
@@ -138,11 +156,13 @@ const PlannedDatesScreen = ({
             {!freeDays || freeDays?.length > 0 ? (
               <FreeDayList
                 freeDays={freeDays}
-                totalTimeToAssign={route.params.duration - totalAssignedMinutes}
+                totalTimeToAssign={
+                  route.params.homeworkPlanInfo.duration - totalAssignedMinutes
+                }
                 isFetchingNextPage={isFetchingNextPage}
                 loadMore={loadMore}
                 onChange={assignedMinutesChangeHandler}
-                totalDuration={route.params.duration}
+                totalDuration={route.params.homeworkPlanInfo.duration}
                 onInfo={(i) => {
                   if (!freeDays) return;
                   setActiveInfoDay({

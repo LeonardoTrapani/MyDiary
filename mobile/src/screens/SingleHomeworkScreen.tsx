@@ -82,7 +82,7 @@ const SingleHomewrk: React.FC<{
       name: title,
       subject,
       //completed,
-      //plannedDates,
+      plannedDates,
       expirationDate,
     } = props.singleHomework;
     if (!duration) {
@@ -98,6 +98,7 @@ const SingleHomewrk: React.FC<{
         subjectId: subject.id,
         title,
       },
+      previousPlannedDates: plannedDates,
     });
   };
 
