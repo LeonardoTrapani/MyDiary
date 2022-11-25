@@ -167,6 +167,7 @@ const AddHomeworkmodal = ({
         duration: duration,
         expirationDate: expDate.toString(),
       },
+      isNew: true,
     });
   };
 

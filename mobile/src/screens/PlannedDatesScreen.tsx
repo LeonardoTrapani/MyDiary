@@ -11,7 +11,7 @@ import {
   AddHomeworkStackScreenProps,
   FreeDayType,
   FreeDaysType,
-  SelectedDay,
+  SelectedDay as SelectedDayType,
 } from "../../types";
 import { BoldText, MediumText, RegularText } from "../components/StyledText";
 import { CardView, View } from "../components/Themed";
@@ -51,7 +51,11 @@ const PlannedDatesScreen = ({
       onSuccess: () => {
         queryClient.invalidateQueries(["plannedCalendarDay"]);
         queryClient.invalidateQueries(["dueCalendarDay"]);
-        navigation.getParent()?.goBack();
+        if (route.params.isNew) {
+          navigation.getParent()?.goBack();
+        } else {
+          navigation.goBack();
+        }
       },
     }
   );
@@ -59,10 +63,14 @@ const PlannedDatesScreen = ({
     return data?.pages.map((page) => page.page.freeDays).flat();
   }, [data?.pages]);
 
-  const [selectedDays, setSelectedDays] = useState<SelectedDay[]>([]);
+  const [selectedDays, setSelectedDays] = useState<SelectedDayType[]>([]);
+  const [hasUpdatedSelectedDays, setHasUpdatedSelectedDays] = useState(false);
+
   useEffect(() => {
+    if (hasUpdatedSelectedDays) return;
+    console.log("not updated");
     if (route.params.previousPlannedDates) {
-      const localArrayToUpdate: SelectedDay[] = [];
+      const localArrayToUpdate: SelectedDayType[] = [];
 
       route.params.previousPlannedDates.forEach((prevPlannedDate) => {
         localArrayToUpdate.push({
@@ -70,8 +78,14 @@ const PlannedDatesScreen = ({
           minutes: prevPlannedDate.minutesAssigned,
         });
       });
+      setSelectedDays((prev) => [...prev, ...localArrayToUpdate]);
+      setHasUpdatedSelectedDays(true);
     }
-  }, [route.params.previousPlannedDates]);
+  }, [
+    hasUpdatedSelectedDays,
+    route.params.previousPlannedDates,
+    selectedDays.length,
+  ]);
 
   const totalAssignedMinutes = useMemo(() => {
     return selectedDays.reduce((prev, curr) => {
@@ -106,6 +120,7 @@ const PlannedDatesScreen = ({
       (selDay) => selDay.date === freeDays[i].date
     );
 
+    console.log(minutes, selectedDaysIndex);
     if (minutes === 0 && selectedDaysIndex !== -1) {
       const newSelectedDays = [...selectedDays];
       newSelectedDays.splice(selectedDaysIndex, 1);
@@ -113,6 +128,7 @@ const PlannedDatesScreen = ({
       return;
     }
 
+    if (minutes === 0) return;
     if (selectedDaysIndex === -1) {
       setSelectedDays((prev) => [
         ...prev,
@@ -123,6 +139,7 @@ const PlannedDatesScreen = ({
       ]);
       return;
     }
+
     const newSelectedDays = [...selectedDays];
     newSelectedDays[selectedDaysIndex].minutes = minutes;
     setSelectedDays(newSelectedDays);
@@ -156,6 +173,7 @@ const PlannedDatesScreen = ({
             {!freeDays || freeDays?.length > 0 ? (
               <FreeDayList
                 freeDays={freeDays}
+                selectedDays={selectedDays}
                 totalTimeToAssign={
                   route.params.homeworkPlanInfo.duration - totalAssignedMinutes
                 }
@@ -193,8 +211,10 @@ const FreeDayList: React.FC<{
   totalTimeToAssign: number;
   totalDuration: number;
   onInfo: (i: number) => void;
+  selectedDays: SelectedDayType[];
 }> = ({
   freeDays,
+  selectedDays,
   onChange,
   loadMore,
   totalDuration,
@@ -218,10 +238,12 @@ const FreeDayList: React.FC<{
           ) {
             showLoading = true;
           }
+
           return (
             <>
               <FreeDayComponent
                 freeDay={item}
+                selectedDays={selectedDays}
                 onChange={onChange}
                 totalDuration={totalDuration}
                 i={index}
@@ -250,11 +272,23 @@ const FreeDayComponent: React.FC<{
   totalTimeToAssign: number;
   totalDuration: number;
   onChange: (minutes: number, i: number) => void;
+  selectedDays: SelectedDayType[];
   onInfo: (i: number) => void;
 }> = (props) => {
   const formattedDate = new Date(props.freeDay.date).toDateString();
-  const [assignedMinutes, setAssignedMinutes] = useState(0);
   const { primary } = useTheme().colors;
+
+  const currSelectedDay = useMemo(
+    () =>
+      props.selectedDays.find((selecDay) => {
+        return selecDay.date === props.freeDay.date;
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [props.freeDay.date]
+  );
+  const [assignedMinutes, setAssignedMinutes] = useState<number>(
+    currSelectedDay?.minutes || 0
+  );
   //navigation.setOptions({ title: 'Updated!' })
   return (
     <View style={styles.freeDayContainer}>
