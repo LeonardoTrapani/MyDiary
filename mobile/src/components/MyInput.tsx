@@ -5,7 +5,7 @@ import { StyleSheet } from "react-native";
 import useColorScheme from "../util/useColorScheme";
 import Colors from "../constants/Colors";
 import { View } from "./Themed";
-import { RegularText } from "./StyledText";
+//import { RegularText } from "./StyledText";
 
 interface CustomInputProps extends TextInputProps {
   name: string;
@@ -31,20 +31,20 @@ const MyInput: React.FC<CustomInputProps> = (props) => {
         placeholder={props.name}
         placeholderTextColor={props.hasError ? errorColor : placeHolderColor}
       />
-      {props.hasError && (
-        <RegularText
-          style={{
-            marginTop: 2,
-            marginLeft: 10,
-            color: errorColor,
-          }}
-        >
-          {props.errorMessage}
-        </RegularText>
-      )}
     </View>
   );
 };
+//{props.hasError && (
+//<RegularText
+//style={{
+//marginTop: 2,
+//marginLeft: 10,
+//color: errorColor,
+//}}
+//>
+//{props.errorMessage}
+//</RegularText>
+//)}
 
 const styles = StyleSheet.create({
   input: {

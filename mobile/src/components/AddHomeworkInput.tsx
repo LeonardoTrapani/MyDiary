@@ -48,18 +48,19 @@ const DescriptionInput: React.FC<AddHomeworkInputProps> = (props) => {
           <></>
         )}
       </View>
-      {props.hasError ? (
-        <RegularText
-          style={{ color: errorColor, paddingLeft: 14, paddingTop: 3 }}
-        >
-          {props.errorMessage}
-        </RegularText>
-      ) : (
-        <></>
-      )}
     </View>
   );
 };
+//
+//{props.hasError ? (
+//<RegularText
+//style={{ color: errorColor, paddingLeft: 14, paddingTop: 3 }}
+//>
+//{props.errorMessage}
+//</RegularText>
+//) : (
+//<></>
+//)}
 
 const styles = StyleSheet.create({
   input: {
