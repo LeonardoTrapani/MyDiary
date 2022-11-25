@@ -353,6 +353,7 @@ export const getSingleHomework = async (req: Request, res: Response) => {
     },
     select: {
       completed: true,
+      id: true,
       description: true,
       duration: true,
       expirationDate: true,

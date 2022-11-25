@@ -160,11 +160,13 @@ const AddHomeworkmodal = ({
     }
 
     navigation.navigate("PlannedDates", {
-      title: titleValue,
-      subjectId: activeSubject.id,
-      description: descriptionValue,
-      duration: duration,
-      expirationDate: expDate.toString(),
+      homeworkPlanInfo: {
+        title: titleValue,
+        subjectId: activeSubject.id,
+        description: descriptionValue,
+        duration: duration,
+        expirationDate: expDate.toString(),
+      },
     });
   };
 
