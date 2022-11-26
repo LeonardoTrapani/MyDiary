@@ -390,7 +390,6 @@ export const completeHomework = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   await prisma.$transaction(async (trx) => {
-    console.log(id);
     await trx.homework.update({
       where: {
         id: +id,
