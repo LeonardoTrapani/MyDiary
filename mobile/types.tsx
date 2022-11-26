@@ -189,6 +189,7 @@ type plannedDatesPropsType = {
     date: string;
     minutesAssigned: number;
   }[];
+  homeworkId?: number;
   isNew?: boolean;
 };
 export type PlannedHomeworkStackParamList = {

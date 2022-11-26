@@ -116,8 +116,8 @@ router.post(
       })
       .withMessage("the dates of the planned dates are not valid"),
     body("homeworkId", "please enter a valid homeworkId")
-      .isNumeric()
-      .notEmpty(),
+      .notEmpty()
+      .isNumeric(),
   ],
   isAuthenticated,
   plannedDatesAreValid,

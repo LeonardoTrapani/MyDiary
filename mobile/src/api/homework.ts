@@ -58,6 +58,31 @@ export const createHomeworkWithPlan = async (
   return homework;
 };
 
+export const plan = async (
+  token: string | null | undefined,
+  homeworkId: number,
+  duration: number,
+  plannedDates: SelectedDay[]
+) => {
+  if (!token) {
+    throw "Not authenticated";
+  }
+  const homework = await axios.post(
+    BACKEND_URL + "/homework/plan",
+    {
+      duration: duration,
+      plannedDates,
+      homeworkId: homeworkId,
+    },
+    {
+      headers: {
+        Authorization: token,
+      },
+    }
+  );
+  return homework;
+};
+
 export const createHomework = async (
   token: string | null | undefined,
   homeworkInfo: HomeworkInfoType

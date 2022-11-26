@@ -12,6 +12,7 @@ import {
   FreeDayType,
   FreeDaysType,
   SelectedDay as SelectedDayType,
+  HomeworkPlanInfoType,
 } from "../../types";
 import { BoldText, MediumText, RegularText } from "../components/StyledText";
 import { CardView, View } from "../components/Themed";
@@ -23,7 +24,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import SolidButton from "../components/SolidButton";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createHomeworkWithPlan } from "../api/homework";
+import { createHomeworkWithPlan, plan } from "../api/homework";
 import { useGetDataFromAxiosError } from "../util/axiosUtils";
 import { AxiosError } from "axios";
 import ErrorComponent from "../components/ErrorComponent";
@@ -40,22 +41,45 @@ const PlannedDatesScreen = ({
 
   const queryClient = useQueryClient();
   const createHomeworkMutation = useMutation(
-    () => {
+    (mutationInfo: {
+      homeworkPlanInfo: HomeworkPlanInfoType;
+      selectedDays: SelectedDayType[];
+    }) => {
       return createHomeworkWithPlan(
         validToken,
-        route.params.homeworkPlanInfo,
-        selectedDays
+        mutationInfo.homeworkPlanInfo,
+        mutationInfo.selectedDays
       );
     },
     {
       onSuccess: () => {
         queryClient.invalidateQueries(["plannedCalendarDay"]);
         queryClient.invalidateQueries(["dueCalendarDay"]);
-        if (route.params.isNew) {
-          navigation.getParent()?.goBack();
-        } else {
-          navigation.goBack();
-        }
+        queryClient.invalidateQueries(["singleHomework"]);
+        navigation.getParent()?.goBack();
+      },
+    }
+  );
+
+  const editPlansMutation = useMutation(
+    (mutationInfo: {
+      homeworkId: number;
+      duration: number;
+      selectedDays: SelectedDayType[];
+    }) => {
+      return plan(
+        validToken,
+        mutationInfo.homeworkId,
+        mutationInfo.duration,
+        mutationInfo.selectedDays
+      );
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["plannedCalendarDay"]);
+        queryClient.invalidateQueries(["dueCalendarDay"]);
+        queryClient.invalidateQueries(["singleHomework"]);
+        navigation.popToTop();
       },
     }
   );
@@ -101,14 +125,36 @@ const PlannedDatesScreen = ({
   };
 
   const createHomeworkHandler = () => {
-    if (route.params.homeworkPlanInfo.duration - totalAssignedMinutes !== 0) {
-      return Alert.alert(
-        "Can't create homework",
-        "Assign all the time to create the homework",
-        [{ text: "Ok" }]
-      );
+    if (route.params.isNew) {
+      if (route.params.homeworkPlanInfo.duration - totalAssignedMinutes !== 0) {
+        return Alert.alert(
+          "Can't create homework",
+          "Assign all the time to create the homework",
+          [{ text: "Ok" }]
+        );
+      }
+      createHomeworkMutation.mutate({
+        selectedDays,
+        homeworkPlanInfo: route.params.homeworkPlanInfo,
+      });
+    } else {
+      if (route.params.homeworkPlanInfo.duration - totalAssignedMinutes !== 0) {
+        return Alert.alert(
+          "Can't edit plans",
+          "Assign all the time to edit the plans",
+          [{ text: "Ok" }]
+        );
+      }
+      if (!route.params.homeworkId) {
+        console.warn("HOMEWORK ID DOES NOT EXIST");
+        return;
+      }
+      editPlansMutation.mutate({
+        homeworkId: route.params.homeworkId,
+        duration: route.params.homeworkPlanInfo.duration,
+        selectedDays: selectedDays,
+      });
     }
-    createHomeworkMutation.mutate();
   };
 
   const assignedMinutesChangeHandler = (minutes: number, i: number) => {
@@ -146,7 +192,8 @@ const PlannedDatesScreen = ({
   };
 
   const gax = useGetDataFromAxiosError(
-    createHomeworkMutation.error as AxiosError,
+    (createHomeworkMutation.error as AxiosError) ||
+      (editPlansMutation.error as AxiosError),
     "an error has occurred creating the homework"
   );
 
@@ -160,9 +207,12 @@ const PlannedDatesScreen = ({
         timeToAssign={
           route.params.homeworkPlanInfo.duration - totalAssignedMinutes
         }
-        isCreateHomeworkLoading={createHomeworkMutation.isLoading}
+        isCreateHomeworkLoading={
+          createHomeworkMutation.isLoading || editPlansMutation.isError
+        }
         onCreate={createHomeworkHandler}
-        hasError={createHomeworkMutation.isError}
+        hasError={createHomeworkMutation.isError || editPlansMutation.isError}
+        isNew={route.params.isNew || false}
         error={gax()}
       />
       <View>
@@ -511,6 +561,7 @@ const PlannedDatesSecondaryHeader: React.FC<{
   hasError: boolean;
   error: string | null;
   timeToAssign: number;
+  isNew: boolean;
   isCreateHomeworkLoading: boolean;
 }> = (props) => {
   return (
@@ -524,7 +575,7 @@ const PlannedDatesSecondaryHeader: React.FC<{
       </CardView>
       <SolidButton
         onPress={props.onCreate}
-        title="create homework"
+        title={props.isNew ? "Create Homework" : "Edit Plans"}
         isLoading={props.isCreateHomeworkLoading}
         style={{
           height: 30,

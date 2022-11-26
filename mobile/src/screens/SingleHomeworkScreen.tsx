@@ -98,6 +98,7 @@ const SingleHomewrk: React.FC<{
         subjectId: subject.id,
         title,
       },
+      homeworkId: props.singleHomework.id,
       previousPlannedDates: plannedDates,
     });
   };

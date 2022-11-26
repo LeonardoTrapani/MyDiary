@@ -35,91 +35,87 @@ import {
   useValidToken,
 } from "../util/react-query-hooks";
 
-const PlannedHomeworkScreen = () =>
-  //{
-  //navigation,
-  //route,
-  //}: PlannedHomeworkScreenProps<"Root">
-  {
-    const initialDate = moment().startOf("day").toISOString();
-    const [currentCalendarDate, setCurrentCalendarDate] = useState(initialDate);
-    const { data, error, isError, isLoading, isFetching } =
-      usePlannedCalendarDay(moment(currentCalendarDate));
-    const parsedError = error as Error | undefined;
+const PlannedHomeworkScreen = () => {
+  const initialDate = moment().startOf("day").toISOString();
+  const [currentCalendarDate, setCurrentCalendarDate] = useState(initialDate);
+  const { data, error, isError, isLoading, isFetching } = usePlannedCalendarDay(
+    moment(currentCalendarDate)
+  );
+  const parsedError = error as Error | undefined;
 
-    useEffect(() => {
-      if (!data || isFetching) {
-        return;
+  useEffect(() => {
+    if (!data || isFetching) {
+      return;
+    }
+    if (moment(currentCalendarDate).isSame(data.date, "days")) {
+      return;
+    }
+    console.warn("SERVER DATE IS DIFFERENT FROM LOCAL DATE: ", {
+      current: moment(currentCalendarDate).toDate(),
+      server: data.date,
+    });
+    setCurrentCalendarDate(data.date);
+  }, [currentCalendarDate, data, isFetching]);
+
+  const [, setActiveInfoDay] = useAtom(activeInfoDayAtom);
+
+  const [minutesToComplete, setMinutesToComplete] = useState(0);
+
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+    const locMinsToComplete = data.user.homework.reduce((prev, curr) => {
+      if (curr.plannedDates[0].completed === true) {
+        return prev + 0;
       }
-      if (moment(currentCalendarDate).isSame(data.date, "days")) {
-        return;
-      }
-      console.warn("SERVER DATE IS DIFFERENT FROM LOCAL DATE: ", {
-        current: moment(currentCalendarDate).toDate(),
-        server: data.date,
-      });
-      setCurrentCalendarDate(data.date);
-    }, [currentCalendarDate, data, isFetching]);
+      return prev + curr.plannedDates[0].minutesAssigned;
+    }, 0);
+    setMinutesToComplete(locMinsToComplete);
+  }, [data]);
 
-    const [, setActiveInfoDay] = useAtom(activeInfoDayAtom);
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+    setActiveInfoDay({
+      date: data.date,
+      initialFreeTime: data.freeMins,
+      minutesToAssign: data.minutesToAssign,
+      minutesToComplete: minutesToComplete,
+    });
+  }, [data, minutesToComplete, setActiveInfoDay]);
 
-    const [minutesToComplete, setMinutesToComplete] = useState(0);
-
-    useEffect(() => {
-      if (!data) {
-        return;
-      }
-      const locMinsToComplete = data.user.homework.reduce((prev, curr) => {
-        if (curr.plannedDates[0].completed === true) {
-          return prev + 0;
-        }
-        return prev + curr.plannedDates[0].minutesAssigned;
-      }, 0);
-      setMinutesToComplete(locMinsToComplete);
-    }, [data]);
-
-    useEffect(() => {
-      if (!data) {
-        return;
-      }
-      setActiveInfoDay({
-        date: data.date,
-        initialFreeTime: data.freeMins,
-        minutesToAssign: data.minutesToAssign,
-        minutesToComplete: minutesToComplete,
-      });
-    }, [data, minutesToComplete, setActiveInfoDay]);
-
-    return (
-      <View style={{ flex: 1 }}>
-        <MyHomeworkHeader
-          onToday={() => {
-            setCurrentCalendarDate(moment().startOf("day").toISOString());
-          }}
-          onPageForward={() => {
-            setCurrentCalendarDate((prev) => {
-              return moment(prev).startOf("day").add(1, "day").toISOString();
-            });
-          }}
-          onPageBackward={() => {
-            setCurrentCalendarDate((prev) =>
-              moment(prev).startOf("day").subtract(1, "day").toISOString()
-            );
-          }}
-          onSetCalendarDate={(date: string) => setCurrentCalendarDate(date)}
-          currentCalendarDate={currentCalendarDate}
-        />
-        <PlannedHomeworkBody
-          currentDate={currentCalendarDate}
-          data={data}
-          isLoading={isLoading}
-          isError={isError}
-          errorMessage={parsedError?.message}
-          isFetching={isFetching}
-        />
-      </View>
-    );
-  };
+  return (
+    <View style={{ flex: 1 }}>
+      <MyHomeworkHeader
+        onToday={() => {
+          setCurrentCalendarDate(moment().startOf("day").toISOString());
+        }}
+        onPageForward={() => {
+          setCurrentCalendarDate((prev) => {
+            return moment(prev).startOf("day").add(1, "day").toISOString();
+          });
+        }}
+        onPageBackward={() => {
+          setCurrentCalendarDate((prev) =>
+            moment(prev).startOf("day").subtract(1, "day").toISOString()
+          );
+        }}
+        onSetCalendarDate={(date: string) => setCurrentCalendarDate(date)}
+        currentCalendarDate={currentCalendarDate}
+      />
+      <PlannedHomeworkBody
+        currentDate={currentCalendarDate}
+        data={data}
+        isLoading={isLoading}
+        isError={isError}
+        errorMessage={parsedError?.message}
+        isFetching={isFetching}
+      />
+    </View>
+  );
+};
 
 export const PlannedHomeworkBody: React.FC<{
   currentDate: string;
