@@ -9,10 +9,10 @@ import {
 } from "react-native";
 import {
   AddHomeworkStackScreenProps,
-  FreeDayType,
   FreeDaysType,
-  SelectedDay as SelectedDayType,
+  FreeDayType,
   HomeworkPlanInfoType,
+  SelectedDay as SelectedDayType,
 } from "../../types";
 import { BoldText, MediumText, RegularText } from "../components/StyledText";
 import { CardView, View } from "../components/Themed";
@@ -240,6 +240,7 @@ const PlannedDatesScreen = ({
                   });
                   navigation.navigate("info");
                 }}
+                generalHasUpdated={hasUpdatedSelectedDays}
               />
             ) : (
               <RegularText style={{ fontSize: 17 }}>
@@ -262,12 +263,14 @@ const FreeDayList: React.FC<{
   totalDuration: number;
   onInfo: (i: number) => void;
   selectedDays: SelectedDayType[];
+  generalHasUpdated: boolean;
 }> = ({
   freeDays,
   selectedDays,
   onChange,
   loadMore,
   totalDuration,
+  generalHasUpdated,
   isFetchingNextPage,
   totalTimeToAssign,
   onInfo,
@@ -301,6 +304,7 @@ const FreeDayList: React.FC<{
                 onInfo={(i) => {
                   onInfo(i);
                 }}
+                generalHasUpdated={generalHasUpdated}
               />
               {showLoading && <ActivityIndicator color={text} />}
               {freeDays && index === freeDays?.length - 1 && (
@@ -324,6 +328,7 @@ const FreeDayComponent: React.FC<{
   onChange: (minutes: number, i: number) => void;
   selectedDays: SelectedDayType[];
   onInfo: (i: number) => void;
+  generalHasUpdated: boolean;
 }> = (props) => {
   const formattedDate = new Date(props.freeDay.date).toDateString();
   const { primary } = useTheme().colors;
@@ -331,7 +336,7 @@ const FreeDayComponent: React.FC<{
   const [hasUpdatedSelectedDay, setHasUpdatedSelectedDay] = useState(false);
 
   useEffect(() => {
-    if (hasUpdatedSelectedDay) {
+    if (hasUpdatedSelectedDay || !props.generalHasUpdated) {
       return;
     }
     const currSelectedDay = props.selectedDays.find((selecDay) => {
@@ -341,7 +346,12 @@ const FreeDayComponent: React.FC<{
       setAssignedMinutes(currSelectedDay.minutes);
     }
     setHasUpdatedSelectedDay(true);
-  }, [hasUpdatedSelectedDay, props.freeDay.date, props.selectedDays]);
+  }, [
+    hasUpdatedSelectedDay,
+    props.freeDay.date,
+    props.generalHasUpdated,
+    props.selectedDays,
+  ]);
 
   const [assignedMinutes, setAssignedMinutes] = useState<number>(0);
 
