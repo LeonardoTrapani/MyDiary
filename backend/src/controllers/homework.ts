@@ -111,15 +111,24 @@ export const planHomework = async (req: Request, res: Response) => {
 
   try {
     await prisma.$transaction(async (trx) => {
-      plannedDates.forEach(async (plannedDate) => {
+      console.log("6");
+      await trx.plannedDate.deleteMany({
+        where: {
+          homeworkId,
+        },
+      });
+      console.log("5");
+
+      for (let i = 0; i < plannedDates.length; i++) {
+        console.log("4");
         await createOrUpdateDayCountingPreviousMinutes(
           +userId!,
-          plannedDate.date,
-          plannedDate.minutes,
+          plannedDates[i].date,
+          plannedDates[i].minutes,
           res,
           trx
         );
-      });
+      }
 
       const formattedPlannedDates = plannedDates.map((plannedDate) => {
         return {
@@ -128,7 +137,9 @@ export const planHomework = async (req: Request, res: Response) => {
         };
       });
 
-      const homework = await trx.homework.updateMany({
+      console.log("3");
+
+      await trx.homework.updateMany({
         where: {
           id: homeworkId,
           userId: +userId!,
@@ -138,20 +149,22 @@ export const planHomework = async (req: Request, res: Response) => {
           timeToComplete: duration,
         },
       });
-      formattedPlannedDates.forEach(async (plannedDate) => {
+      console.log("2");
+      for (let i = 0; i < formattedPlannedDates.length; i++) {
+        console.log("1");
         await trx.plannedDate.create({
           data: {
-            date: plannedDate.date,
-            minutesAssigned: plannedDate.minutesAssigned,
+            date: formattedPlannedDates[i].date,
+            minutesAssigned: formattedPlannedDates[i].minutesAssigned,
             homeworkId: homeworkId,
           },
         });
-      });
-      return res.json(homework);
+      }
     });
-    throw "Prisma transaction failed";
+    console.log("0");
+    return res.json("success");
   } catch (err) {
-    console.error(err);
+    console.log("IN THE CATCH !!!!!!!!!!!!!!!!!!!");
     return throwResponseError("unable to create homework", 500, res);
   }
 };
@@ -353,6 +366,7 @@ export const getSingleHomework = async (req: Request, res: Response) => {
     },
     select: {
       completed: true,
+      id: true,
       description: true,
       duration: true,
       expirationDate: true,
@@ -389,7 +403,6 @@ export const completeHomework = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   await prisma.$transaction(async (trx) => {
-    console.log(id);
     await trx.homework.update({
       where: {
         id: +id,

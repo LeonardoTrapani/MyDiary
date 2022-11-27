@@ -24,6 +24,7 @@ import { completePlannedDate } from "../api/homework";
 import Colors from "../constants/Colors";
 import useColorScheme from "../util/useColorScheme";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useTheme } from "@react-navigation/native";
 
 const SingleHomeworkScreen = ({
   navigation,
@@ -67,10 +68,40 @@ const SingleHomewrk: React.FC<{
   >(undefined);
   const cs = useColorScheme();
   const { errorColor } = Colors[cs];
+  const { primary } = useTheme().colors;
 
   if (!props.singleHomework) {
     return <ErrorComponent text="there is not homework" />;
   }
+  const onRedoPlannedDates = () => {
+    if (!props.singleHomework) return;
+
+    const {
+      duration,
+      description,
+      name: title,
+      subject,
+      //completed,
+      plannedDates,
+      expirationDate,
+    } = props.singleHomework;
+    if (!duration) {
+      console.warn("TODO: LET PICK DURATION");
+      return;
+    }
+
+    props.navigation.navigate("PlannedDates", {
+      homeworkPlanInfo: {
+        duration,
+        expirationDate,
+        description,
+        subjectId: subject.id,
+        title,
+      },
+      homeworkId: props.singleHomework.id,
+      previousPlannedDates: plannedDates,
+    });
+  };
 
   return (
     <View style={[styles.container, { flex: 1 }]}>
@@ -112,13 +143,14 @@ const SingleHomewrk: React.FC<{
       <View style={styles.row}>
         <RegularText style={styles.rowText}>Duration:</RegularText>
         <RegularText style={styles.rowText}>
-          {minutesToHoursMinutesFun(props.singleHomework.duration)}
+          {minutesToHoursMinutesFun(props.singleHomework.duration) || "N/A"}
         </RegularText>
       </View>
       <View style={styles.row}>
         <RegularText style={styles.rowText}>Time left to complete:</RegularText>
         <RegularText style={styles.rowText}>
-          {minutesToHoursMinutesFun(props.singleHomework.timeToComplete)}
+          {minutesToHoursMinutesFun(props.singleHomework.timeToComplete) ||
+            "N/A"}
         </RegularText>
       </View>
       <View style={[styles.row, { marginBottom: 0 }]}>
@@ -132,9 +164,33 @@ const SingleHomewrk: React.FC<{
       <View style={styles.breakContainer}>
         <Break />
       </View>
-      <MediumText style={styles.plannedDatesTitle}>Planned Dates</MediumText>
       <FlatList
         data={props.singleHomework.plannedDates}
+        ListHeaderComponent={() => {
+          return (
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <MediumText style={styles.plannedDatesTitle}>
+                Planned Dates
+              </MediumText>
+              <TouchableOpacity onPress={onRedoPlannedDates}>
+                <Ionicons
+                  style={{
+                    marginHorizontal: 20,
+                  }}
+                  name="refresh-circle"
+                  size={32}
+                  color={primary}
+                />
+              </TouchableOpacity>
+            </View>
+          );
+        }}
         renderItem={({ item }) => (
           <PlannedDate plannedDate={item} navigation={props.navigation} />
         )}

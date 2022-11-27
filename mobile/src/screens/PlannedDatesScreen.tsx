@@ -1,5 +1,5 @@
 import { useTheme } from "@react-navigation/native";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -9,9 +9,10 @@ import {
 } from "react-native";
 import {
   AddHomeworkStackScreenProps,
-  FreeDayType,
   FreeDaysType,
-  SelectedDay,
+  FreeDayType,
+  HomeworkPlanInfoType,
+  SelectedDay as SelectedDayType,
 } from "../../types";
 import { BoldText, MediumText, RegularText } from "../components/StyledText";
 import { CardView, View } from "../components/Themed";
@@ -23,7 +24,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import SolidButton from "../components/SolidButton";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createHomeworkWithPlan } from "../api/homework";
+import { createHomeworkWithPlan, plan } from "../api/homework";
 import { useGetDataFromAxiosError } from "../util/axiosUtils";
 import { AxiosError } from "axios";
 import ErrorComponent from "../components/ErrorComponent";
@@ -35,19 +36,50 @@ const PlannedDatesScreen = ({
   navigation,
 }: AddHomeworkStackScreenProps<"PlannedDates">) => {
   const { isLoading, hasNextPage, fetchNextPage, isFetchingNextPage, data } =
-    useFreeDays(route.params);
+    useFreeDays(route.params.homeworkPlanInfo);
   const { data: validToken } = useValidToken();
 
   const queryClient = useQueryClient();
   const createHomeworkMutation = useMutation(
-    () => {
-      return createHomeworkWithPlan(validToken, route.params, selectedDays);
+    (mutationInfo: {
+      homeworkPlanInfo: HomeworkPlanInfoType;
+      selectedDays: SelectedDayType[];
+    }) => {
+      return createHomeworkWithPlan(
+        validToken,
+        mutationInfo.homeworkPlanInfo,
+        mutationInfo.selectedDays
+      );
     },
     {
       onSuccess: () => {
         queryClient.invalidateQueries(["plannedCalendarDay"]);
         queryClient.invalidateQueries(["dueCalendarDay"]);
+        queryClient.invalidateQueries(["singleHomework"]);
         navigation.getParent()?.goBack();
+      },
+    }
+  );
+
+  const editPlansMutation = useMutation(
+    (mutationInfo: {
+      homeworkId: number;
+      duration: number;
+      selectedDays: SelectedDayType[];
+    }) => {
+      return plan(
+        validToken,
+        mutationInfo.homeworkId,
+        mutationInfo.duration,
+        mutationInfo.selectedDays
+      );
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["plannedCalendarDay"]);
+        queryClient.invalidateQueries(["dueCalendarDay"]);
+        queryClient.invalidateQueries(["singleHomework"]);
+        navigation.popToTop();
       },
     }
   );
@@ -55,7 +87,30 @@ const PlannedDatesScreen = ({
     return data?.pages.map((page) => page.page.freeDays).flat();
   }, [data?.pages]);
 
-  const [selectedDays, setSelectedDays] = useState<SelectedDay[]>([]);
+  const [selectedDays, setSelectedDays] = useState<SelectedDayType[]>([]);
+  const [hasUpdatedSelectedDays, setHasUpdatedSelectedDays] = useState(false);
+
+  useEffect(() => {
+    if (hasUpdatedSelectedDays) {
+      return;
+    }
+    if (route.params.previousPlannedDates) {
+      const localArrayToUpdate: SelectedDayType[] = [];
+
+      route.params.previousPlannedDates.forEach((prevPlannedDate) => {
+        localArrayToUpdate.push({
+          date: prevPlannedDate.date,
+          minutes: prevPlannedDate.minutesAssigned,
+        });
+      });
+      setSelectedDays((prev) => [...prev, ...localArrayToUpdate]);
+      setHasUpdatedSelectedDays(true);
+    }
+  }, [
+    hasUpdatedSelectedDays,
+    route.params.previousPlannedDates,
+    selectedDays.length,
+  ]);
 
   const totalAssignedMinutes = useMemo(() => {
     return selectedDays.reduce((prev, curr) => {
@@ -70,14 +125,36 @@ const PlannedDatesScreen = ({
   };
 
   const createHomeworkHandler = () => {
-    if (route.params.duration - totalAssignedMinutes !== 0) {
-      return Alert.alert(
-        "Can't create homework",
-        "Assign all the time to create the homework",
-        [{ text: "Ok" }]
-      );
+    if (route.params.isNew) {
+      if (route.params.homeworkPlanInfo.duration - totalAssignedMinutes !== 0) {
+        return Alert.alert(
+          "Can't create homework",
+          "Assign all the time to create the homework",
+          [{ text: "Ok" }]
+        );
+      }
+      createHomeworkMutation.mutate({
+        selectedDays,
+        homeworkPlanInfo: route.params.homeworkPlanInfo,
+      });
+    } else {
+      if (route.params.homeworkPlanInfo.duration - totalAssignedMinutes !== 0) {
+        return Alert.alert(
+          "Can't edit plans",
+          "Assign all the time to edit the plans",
+          [{ text: "Ok" }]
+        );
+      }
+      if (!route.params.homeworkId) {
+        console.warn("HOMEWORK ID DOES NOT EXIST");
+        return;
+      }
+      editPlansMutation.mutate({
+        homeworkId: route.params.homeworkId,
+        duration: route.params.homeworkPlanInfo.duration,
+        selectedDays: selectedDays,
+      });
     }
-    createHomeworkMutation.mutate();
   };
 
   const assignedMinutesChangeHandler = (minutes: number, i: number) => {
@@ -97,6 +174,7 @@ const PlannedDatesScreen = ({
       return;
     }
 
+    if (minutes === 0) return;
     if (selectedDaysIndex === -1) {
       setSelectedDays((prev) => [
         ...prev,
@@ -107,13 +185,15 @@ const PlannedDatesScreen = ({
       ]);
       return;
     }
+
     const newSelectedDays = [...selectedDays];
     newSelectedDays[selectedDaysIndex].minutes = minutes;
     setSelectedDays(newSelectedDays);
   };
 
   const gax = useGetDataFromAxiosError(
-    createHomeworkMutation.error as AxiosError,
+    (createHomeworkMutation.error as AxiosError) ||
+      (editPlansMutation.error as AxiosError),
     "an error has occurred creating the homework"
   );
 
@@ -124,10 +204,15 @@ const PlannedDatesScreen = ({
   return (
     <>
       <PlannedDatesSecondaryHeader
-        timeToAssign={route.params.duration - totalAssignedMinutes}
-        isCreateHomeworkLoading={createHomeworkMutation.isLoading}
+        timeToAssign={
+          route.params.homeworkPlanInfo.duration - totalAssignedMinutes
+        }
+        isCreateHomeworkLoading={
+          createHomeworkMutation.isLoading || editPlansMutation.isError
+        }
         onCreate={createHomeworkHandler}
-        hasError={createHomeworkMutation.isError}
+        hasError={createHomeworkMutation.isError || editPlansMutation.isError}
+        isNew={route.params.isNew || false}
         error={gax()}
       />
       <View>
@@ -138,11 +223,14 @@ const PlannedDatesScreen = ({
             {!freeDays || freeDays?.length > 0 ? (
               <FreeDayList
                 freeDays={freeDays}
-                totalTimeToAssign={route.params.duration - totalAssignedMinutes}
+                selectedDays={selectedDays}
+                totalTimeToAssign={
+                  route.params.homeworkPlanInfo.duration - totalAssignedMinutes
+                }
                 isFetchingNextPage={isFetchingNextPage}
                 loadMore={loadMore}
                 onChange={assignedMinutesChangeHandler}
-                totalDuration={route.params.duration}
+                totalDuration={route.params.homeworkPlanInfo.duration}
                 onInfo={(i) => {
                   if (!freeDays) return;
                   setActiveInfoDay({
@@ -152,6 +240,7 @@ const PlannedDatesScreen = ({
                   });
                   navigation.navigate("info");
                 }}
+                generalHasUpdated={hasUpdatedSelectedDays}
               />
             ) : (
               <RegularText style={{ fontSize: 17 }}>
@@ -173,11 +262,15 @@ const FreeDayList: React.FC<{
   totalTimeToAssign: number;
   totalDuration: number;
   onInfo: (i: number) => void;
+  selectedDays: SelectedDayType[];
+  generalHasUpdated: boolean;
 }> = ({
   freeDays,
+  selectedDays,
   onChange,
   loadMore,
   totalDuration,
+  generalHasUpdated,
   isFetchingNextPage,
   totalTimeToAssign,
   onInfo,
@@ -198,10 +291,12 @@ const FreeDayList: React.FC<{
           ) {
             showLoading = true;
           }
+
           return (
             <>
               <FreeDayComponent
                 freeDay={item}
+                selectedDays={selectedDays}
                 onChange={onChange}
                 totalDuration={totalDuration}
                 i={index}
@@ -209,6 +304,7 @@ const FreeDayList: React.FC<{
                 onInfo={(i) => {
                   onInfo(i);
                 }}
+                generalHasUpdated={generalHasUpdated}
               />
               {showLoading && <ActivityIndicator color={text} />}
               {freeDays && index === freeDays?.length - 1 && (
@@ -230,11 +326,35 @@ const FreeDayComponent: React.FC<{
   totalTimeToAssign: number;
   totalDuration: number;
   onChange: (minutes: number, i: number) => void;
+  selectedDays: SelectedDayType[];
   onInfo: (i: number) => void;
+  generalHasUpdated: boolean;
 }> = (props) => {
   const formattedDate = new Date(props.freeDay.date).toDateString();
-  const [assignedMinutes, setAssignedMinutes] = useState(0);
   const { primary } = useTheme().colors;
+
+  const [hasUpdatedSelectedDay, setHasUpdatedSelectedDay] = useState(false);
+
+  useEffect(() => {
+    if (hasUpdatedSelectedDay || !props.generalHasUpdated) {
+      return;
+    }
+    const currSelectedDay = props.selectedDays.find((selecDay) => {
+      return selecDay.date === props.freeDay.date;
+    });
+    if (currSelectedDay) {
+      setAssignedMinutes(currSelectedDay.minutes);
+    }
+    setHasUpdatedSelectedDay(true);
+  }, [
+    hasUpdatedSelectedDay,
+    props.freeDay.date,
+    props.generalHasUpdated,
+    props.selectedDays,
+  ]);
+
+  const [assignedMinutes, setAssignedMinutes] = useState<number>(0);
+
   //navigation.setOptions({ title: 'Updated!' })
   return (
     <View style={styles.freeDayContainer}>
@@ -451,6 +571,7 @@ const PlannedDatesSecondaryHeader: React.FC<{
   hasError: boolean;
   error: string | null;
   timeToAssign: number;
+  isNew: boolean;
   isCreateHomeworkLoading: boolean;
 }> = (props) => {
   return (
@@ -464,7 +585,7 @@ const PlannedDatesSecondaryHeader: React.FC<{
       </CardView>
       <SolidButton
         onPress={props.onCreate}
-        title="create homework"
+        title={props.isNew ? "Create Homework" : "Edit Plans"}
         isLoading={props.isCreateHomeworkLoading}
         style={{
           height: 30,

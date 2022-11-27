@@ -11,8 +11,9 @@ import {
 } from "../controllers/homework";
 import {
   isAuthenticated,
-  plannedDatesAreValid,
+  createHomeworkPlannedDatesAreValid,
   validateExpressValidation,
+  planHomeworkPlannedDatesAreValid,
 } from "../middlewares";
 import { isValidDate, minutesAreLessThanDay } from "../utilities";
 import { body, param } from "express-validator";
@@ -62,7 +63,7 @@ router.post(
     body("subjectId", "please enter a subject").isNumeric(),
   ],
   validateExpressValidation,
-  plannedDatesAreValid,
+  createHomeworkPlannedDatesAreValid,
   createHomework
 );
 
@@ -116,11 +117,11 @@ router.post(
       })
       .withMessage("the dates of the planned dates are not valid"),
     body("homeworkId", "please enter a valid homeworkId")
-      .isNumeric()
-      .notEmpty(),
+      .notEmpty()
+      .isNumeric(),
   ],
   isAuthenticated,
-  plannedDatesAreValid,
+  planHomeworkPlannedDatesAreValid,
   planHomework
 );
 

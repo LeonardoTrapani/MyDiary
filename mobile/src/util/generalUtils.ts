@@ -27,9 +27,10 @@ export const addDays = (from: Date, daysToAdd: number) => {
 };
 
 export const minutesToHoursMinutesFun = (
-  minutes: number,
+  minutes: number | null,
   format: number | undefined = 0
 ) => {
+  if (minutes === null) return;
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
   if (format === 0) {
