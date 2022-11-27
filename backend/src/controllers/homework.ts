@@ -119,16 +119,16 @@ export const planHomework = async (req: Request, res: Response) => {
       });
       console.log("5");
 
-      plannedDates.forEach(async (plannedDate) => {
+      for (let i = 0; i < plannedDates.length; i++) {
         console.log("4");
         await createOrUpdateDayCountingPreviousMinutes(
           +userId!,
-          plannedDate.date,
-          plannedDate.minutes,
+          plannedDates[i].date,
+          plannedDates[i].minutes,
           res,
           trx
         );
-      });
+      }
 
       const formattedPlannedDates = plannedDates.map((plannedDate) => {
         return {
@@ -138,6 +138,7 @@ export const planHomework = async (req: Request, res: Response) => {
       });
 
       console.log("3");
+
       await trx.homework.updateMany({
         where: {
           id: homeworkId,
@@ -149,21 +150,21 @@ export const planHomework = async (req: Request, res: Response) => {
         },
       });
       console.log("2");
-      formattedPlannedDates.forEach(async (plannedDate) => {
+      for (let i = 0; i < formattedPlannedDates.length; i++) {
         console.log("1");
         await trx.plannedDate.create({
           data: {
-            date: plannedDate.date,
-            minutesAssigned: plannedDate.minutesAssigned,
+            date: formattedPlannedDates[i].date,
+            minutesAssigned: formattedPlannedDates[i].minutesAssigned,
             homeworkId: homeworkId,
           },
         });
-      });
+      }
     });
     console.log("0");
     return res.json("success");
   } catch (err) {
-    console.log("-1");
+    console.log("IN THE CATCH !!!!!!!!!!!!!!!!!!!");
     return throwResponseError("unable to create homework", 500, res);
   }
 };

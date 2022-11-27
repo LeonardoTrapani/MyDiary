@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
+import { prisma } from "./app";
 import { throwResponseError } from "./utilities";
 
 type JwtPayload =
@@ -49,7 +50,7 @@ export const validateExpressValidation = (
   next();
 };
 
-export const plannedDatesAreValid = (
+export const createHomeworkPlannedDatesAreValid = (
   req: Request,
   res: Response,
   next: NextFunction
@@ -69,13 +70,44 @@ export const plannedDatesAreValid = (
     );
     return;
   }
-  if (totalMinutes < req.body.duration) {
-    throwResponseError(
-      "The duration provided don't complete your duration limit",
-      400,
-      res
-    );
-    return;
-  }
   next();
+};
+
+export const planHomeworkPlannedDatesAreValid = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { userId } = req;
+  const plannedDates = req.body.plannedDates as {
+    date: string;
+    minutes: number;
+  }[];
+  try {
+    const totalMinutes = plannedDates.reduce((prev, curr) => {
+      return prev + curr.minutes;
+    }, 0);
+
+    for (let i = 0; i < plannedDates.length; i++) {
+      const currDay = await prisma.day.findFirst({
+        where: {
+          userId: +userId!,
+          date: plannedDates[i].date,
+        },
+      });
+      if (!currDay) {
+        continue;
+      }
+      if (currDay.minutesToAssign < plannedDates[i].minutes) {
+        console.log(currDay, plannedDates[i]);
+        throw "Minutes are not enough";
+      }
+    }
+    if (totalMinutes > req.body.duration) {
+      throw "The duration provided exceed your duration limit";
+    }
+    next();
+  } catch (err) {
+    throwResponseError(err as string, 400, res);
+  }
 };
