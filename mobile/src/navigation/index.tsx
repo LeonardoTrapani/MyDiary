@@ -320,6 +320,14 @@ const HomeStackNavigation = () => {
           headerShadowVisible: false,
         })}
       />
+      <HomeStack.Screen
+        name="info"
+        component={DayInfoModal}
+        options={{
+          presentation: "modal",
+          headerShown: false,
+        }}
+      />
     </HomeStack.Navigator>
   );
 };

@@ -206,6 +206,7 @@ export type HomeStackParamList = {
   SingleHomework: { homeworkId: number; title: string };
   Root: undefined | { date: string };
   PlannedDates: plannedDatesPropsType;
+  info: undefined;
 };
 
 export type GradeStackScreenProps<Screen extends keyof GradeStackParamList> =
