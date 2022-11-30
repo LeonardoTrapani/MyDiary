@@ -79,6 +79,7 @@ export const planHomeworkPlannedDatesAreValid = async (
   next: NextFunction
 ) => {
   const { userId } = req;
+  const { homeworkId } = req.body;
   const plannedDates = req.body.plannedDates as {
     date: string;
     minutes: number;
@@ -95,12 +96,24 @@ export const planHomeworkPlannedDatesAreValid = async (
           date: plannedDates[i].date,
         },
       });
+      const prevPlannedDate = await prisma.plannedDate.findFirst({
+        where: {
+          date: plannedDates[i].date,
+          homework: {
+            userId: +userId!,
+            id: homeworkId,
+          },
+        },
+      });
       if (!currDay) {
         continue;
       }
-      if (currDay.minutesToAssign < plannedDates[i].minutes) {
+      if (
+        currDay.minutesToAssign + (prevPlannedDate?.minutesAssigned || 0) <
+        plannedDates[i].minutes
+      ) {
         console.log(currDay, plannedDates[i]);
-        throw "Minutes are not enough";
+        throw "The minutes in the days are not enough";
       }
     }
     if (totalMinutes > req.body.duration) {

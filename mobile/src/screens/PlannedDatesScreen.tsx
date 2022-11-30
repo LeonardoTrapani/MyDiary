@@ -243,9 +243,15 @@ const PlannedDatesScreen = ({
                 generalHasUpdated={hasUpdatedSelectedDays}
               />
             ) : (
-              <RegularText style={{ fontSize: 17 }}>
-                No free days found
-              </RegularText>
+              <View
+                style={{
+                  paddingTop: 20,
+                }}
+              >
+                <RegularText style={{ fontSize: 17, textAlign: "center" }}>
+                  No free days found
+                </RegularText>
+              </View>
             )}
           </View>
         )}
