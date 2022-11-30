@@ -1,5 +1,7 @@
+/* eslint-disable react/no-unescaped-entities */
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   ScrollView,
   StyleSheet,
@@ -25,6 +27,8 @@ import Colors from "../constants/Colors";
 import useColorScheme from "../util/useColorScheme";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useTheme } from "@react-navigation/native";
+import moment from "moment";
+import SolidButton from "../components/SolidButton";
 
 const SingleHomeworkScreen = ({
   navigation,
@@ -85,6 +89,16 @@ const SingleHomewrk: React.FC<{
       plannedDates,
       expirationDate,
     } = props.singleHomework;
+
+    if (moment(expirationDate).isBefore(moment())) {
+      Alert.alert(
+        "Oops!",
+        "You can only replan homework that are due after today",
+        [{ text: "Ok", style: "default" }]
+      );
+      return;
+    }
+
     if (!duration) {
       console.warn("TODO: LET PICK DURATION");
       return;
@@ -164,37 +178,47 @@ const SingleHomewrk: React.FC<{
       <View style={styles.breakContainer}>
         <Break />
       </View>
-      <FlatList
-        data={props.singleHomework.plannedDates}
-        ListHeaderComponent={() => {
-          return (
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <MediumText style={styles.plannedDatesTitle}>
-                Planned Dates
-              </MediumText>
-              <TouchableOpacity onPress={onRedoPlannedDates}>
-                <Ionicons
-                  style={{
-                    marginHorizontal: 20,
-                  }}
-                  name="refresh-circle"
-                  size={32}
-                  color={primary}
-                />
-              </TouchableOpacity>
-            </View>
-          );
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
         }}
-        renderItem={({ item }) => (
-          <PlannedDate plannedDate={item} navigation={props.navigation} />
-        )}
-      />
+      >
+        <MediumText style={styles.plannedDatesTitle}>Planned Dates</MediumText>
+        <TouchableOpacity onPress={onRedoPlannedDates}>
+          <Ionicons
+            style={{
+              marginHorizontal: 20,
+            }}
+            name="refresh-circle"
+            size={32}
+            color={primary}
+          />
+        </TouchableOpacity>
+      </View>
+      {!props.singleHomework.plannedDates.length ? (
+        <View
+          style={{
+            padding: 20,
+            flex: 1,
+            justifyContent: "center",
+          }}
+        >
+          <SolidButton
+            title="plan dates"
+            onPress={onRedoPlannedDates}
+            style={{ marginTop: 20, marginHorizontal: "10%", width: "80%" }}
+          />
+        </View>
+      ) : (
+        <FlatList
+          data={props.singleHomework.plannedDates}
+          renderItem={({ item }) => (
+            <PlannedDate plannedDate={item} navigation={props.navigation} />
+          )}
+        />
+      )}
     </View>
   );
 };
