@@ -121,6 +121,7 @@ export type AddHomeworkStackParamList = {
   Root: undefined;
   ChooseSubject: undefined;
   AddSubject: undefined;
+  Duration: plannedDatesPropsType;
   PlannedDates: plannedDatesPropsType;
   info: undefined;
 };
@@ -190,7 +191,7 @@ type plannedDatesPropsType = {
     minutesAssigned: number;
   }[];
   homeworkId?: number;
-  isNew?: boolean;
+  isEditing: boolean;
 };
 export type PlannedHomeworkStackParamList = {
   SingleHomework: { homeworkId: number; title: string };

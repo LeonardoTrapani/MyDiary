@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import {
   Alert,
   ScrollView,
@@ -12,7 +12,6 @@ import KeyboardWrapper from "../components/KeyboardWrapper";
 import { CardView, View } from "../components/Themed";
 import DescriptionInput from "../components/AddHomeworkInput";
 import SolidButton from "../components/SolidButton";
-import HomeworkDurationContainer from "../components/HomeworkDurationContainer";
 import { RegularText } from "../components/StyledText";
 import { Ionicons } from "@expo/vector-icons";
 import { AddHomeworkStackScreenProps, HomeworkInfoType } from "../../types";
@@ -25,7 +24,6 @@ import useInput from "../util/useInput";
 import Colors from "../constants/Colors";
 import MyInput from "../components/MyInput";
 import { SubjectType, useValidToken } from "../util/react-query-hooks";
-import ModalDurationPicker from "../components/ModalDurationPicker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createHomework } from "../api/homework";
 
@@ -57,29 +55,10 @@ const AddHomeworkmodal = ({
   const [activeSubject] = useAtom(activeSubjectAtom);
 
   const [activeSubjectHasError, setActiveSubjectHasError] = useState(false);
-  const [durationDate, setDurationDate] = useState(
-    new Date(new Date().setHours(0, 0, 0, 0))
-  );
-  const [durationHasError, setDurationHasError] = useState(false);
-
-  const durationChangeHandler = (date: Date) => {
-    setIsDurationModalOpened(false);
-    setDurationDate(date);
-  };
 
   const chooseSubjectHandler = () => {
     navigation.push("ChooseSubject");
   };
-
-  const accordionTitle = "duration (h : m)";
-
-  const duration = useMemo(() => {
-    const dur = durationDate.getMinutes() + durationDate.getHours() * 60;
-    if (dur !== 0) {
-      setDurationHasError(false);
-    }
-    return dur;
-  }, [durationDate]);
 
   const [isExpDateOpened, setExpDateOpened] = useState(false);
   const [expDate, setExpDate] = useState<undefined | Date>(undefined);
@@ -123,7 +102,6 @@ const AddHomeworkmodal = ({
 
   const colorScheme = useColorScheme();
   const { errorColor, placeHolderColor } = Colors[colorScheme];
-  const [isDurationModalOpened, setIsDurationModalOpened] = useState(false);
 
   const planDatesHandler = () => {
     validateTitle();
@@ -135,39 +113,27 @@ const AddHomeworkmodal = ({
       setActiveSubjectHasError(false);
     }
 
-    if (duration === 0) {
-      setDurationHasError(true);
-    } else {
-      setDurationHasError(false);
-    }
-
     if (!expDate) {
       setExpDateHasError(true);
     } else {
       setExpDateHasError(false);
     }
-    if (
-      !activeSubject ||
-      duration === 0 ||
-      !expDate ||
-      titleHasError ||
-      descriptionHasError
-    ) {
+    if (!activeSubject || !expDate || titleHasError || descriptionHasError) {
       Alert.alert("Error", "Please compile the form", [
         { text: "Ok", style: "default" },
       ]);
       return;
     }
 
-    navigation.navigate("PlannedDates", {
+    navigation.navigate("Duration", {
       homeworkPlanInfo: {
         title: titleValue,
         subjectId: activeSubject.id,
         description: descriptionValue,
-        duration: duration,
+        duration: 0,
         expirationDate: expDate.toString(),
       },
-      isNew: true,
+      isEditing: false,
     });
   };
 
@@ -238,15 +204,6 @@ const AddHomeworkmodal = ({
               activeSubjectHasError={activeSubjectHasError}
               style={{ marginBottom: 15 }}
             />
-            <HomeworkDurationContainer
-              title={accordionTitle}
-              choosedValue={`${durationDate.getHours()}h ${durationDate.getMinutes()}m`}
-              hasError={durationHasError}
-              isValueChoosed={duration !== 0}
-              setOpened={() => {
-                setIsDurationModalOpened(true);
-              }}
-            />
           </View>
         </ScrollView>
         <CompleteButtons
@@ -265,17 +222,6 @@ const AddHomeworkmodal = ({
           }}
           onCancel={() => {
             setExpDateOpened(false);
-          }}
-        />
-        <ModalDurationPicker
-          onChangeDuration={durationChangeHandler}
-          value={durationDate}
-          isVisible={isDurationModalOpened}
-          onConfirm={() => {
-            setIsDurationModalOpened(false);
-          }}
-          setClosed={() => {
-            setIsDurationModalOpened(false);
           }}
         />
       </View>

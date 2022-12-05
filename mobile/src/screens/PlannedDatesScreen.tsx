@@ -11,8 +11,6 @@ import {
   AddHomeworkStackScreenProps,
   FreeDaysType,
   FreeDayType,
-  HomeScreenProps,
-  HomeStackParamList,
   HomeworkPlanInfoType,
   SelectedDay as SelectedDayType,
 } from "../../types";
@@ -127,7 +125,7 @@ const PlannedDatesScreen = ({
   };
 
   const createHomeworkHandler = () => {
-    if (route.params.isNew) {
+    if (!route.params.isEditing) {
       if (route.params.homeworkPlanInfo.duration - totalAssignedMinutes !== 0) {
         return Alert.alert(
           "Can't create homework",
@@ -214,7 +212,7 @@ const PlannedDatesScreen = ({
         }
         onCreate={createHomeworkHandler}
         hasError={createHomeworkMutation.isError || editPlansMutation.isError}
-        isNew={route.params.isNew || false}
+        isEditing={route.params.isEditing}
         error={gax()}
       />
       <View>
@@ -579,7 +577,7 @@ const PlannedDatesSecondaryHeader: React.FC<{
   hasError: boolean;
   error: string | null;
   timeToAssign: number;
-  isNew: boolean;
+  isEditing: boolean;
   isCreateHomeworkLoading: boolean;
 }> = (props) => {
   return (
@@ -593,7 +591,7 @@ const PlannedDatesSecondaryHeader: React.FC<{
       </CardView>
       <SolidButton
         onPress={props.onCreate}
-        title={props.isNew ? "Create Homework" : "Edit Plans"}
+        title={!props.isEditing ? "Create Homework" : "Edit Plans"}
         isLoading={props.isCreateHomeworkLoading}
         style={{
           height: 30,

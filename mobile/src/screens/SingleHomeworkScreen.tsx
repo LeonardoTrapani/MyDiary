@@ -115,6 +115,7 @@ const SingleHomewrk: React.FC<{
           subjectId: subject.id,
           title,
         },
+        isEditing: true,
         homeworkId: props.singleHomework.id,
         previousPlannedDates: plannedDates,
       });
@@ -129,6 +130,7 @@ const SingleHomewrk: React.FC<{
         subjectId: subject.id,
         title,
       },
+      isEditing: true,
       homeworkId: props.singleHomework.id,
       previousPlannedDates: plannedDates,
     });
@@ -388,6 +390,7 @@ export const DurationScreen = ({
         subjectId,
         title,
       },
+      isEditing: route.params.isEditing,
       homeworkId: route.params.homeworkId,
       previousPlannedDates: route.params.previousPlannedDates,
     });

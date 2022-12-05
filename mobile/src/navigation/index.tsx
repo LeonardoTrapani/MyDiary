@@ -233,6 +233,15 @@ const AddHomeworkModalNavigation = () => {
           headerShown: false,
         }}
       />
+      <AddHomeworkStack.Screen
+        name="Duration"
+        component={DurationScreen}
+        options={({ route }) => ({
+          title: route.params.homeworkPlanInfo.title,
+          presentation: "card",
+          headerBackTitleVisible: false,
+        })}
+      />
     </AddHomeworkStack.Navigator>
   );
 };
