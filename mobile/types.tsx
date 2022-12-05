@@ -195,6 +195,7 @@ type plannedDatesPropsType = {
 export type PlannedHomeworkStackParamList = {
   SingleHomework: { homeworkId: number; title: string };
   PlannedDates: plannedDatesPropsType;
+  Duration: plannedDatesPropsType;
   Root: undefined | { date: string };
   Info: undefined;
 };
@@ -205,6 +206,7 @@ export type HomeScreenProps<Screen extends keyof HomeStackParamList> =
 export type HomeStackParamList = {
   SingleHomework: { homeworkId: number; title: string };
   Root: undefined | { date: string };
+  Duration: plannedDatesPropsType;
   PlannedDates: plannedDatesPropsType;
   info: undefined;
 };

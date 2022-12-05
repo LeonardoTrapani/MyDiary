@@ -11,6 +11,8 @@ import {
   AddHomeworkStackScreenProps,
   FreeDaysType,
   FreeDayType,
+  HomeScreenProps,
+  HomeStackParamList,
   HomeworkPlanInfoType,
   SelectedDay as SelectedDayType,
 } from "../../types";

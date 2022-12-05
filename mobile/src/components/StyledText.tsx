@@ -7,19 +7,19 @@ interface CustomTextProps extends TextProps {
 }
 
 export const RegularText: React.FC<TextProps> = (props) => {
-  return <CustomText {...props} fontFam={"regular"} />;
+  return <CustomText adjustsFontSizeToFit {...props} fontFam={"regular"} />;
 };
 
 export const MediumText: React.FC<TextProps> = (props) => {
-  return <CustomText {...props} fontFam={"medium"} />;
+  return <CustomText adjustsFontSizeToFit {...props} fontFam={"medium"} />;
 };
 
 export const BoldText: React.FC<TextProps> = (props) => {
-  return <CustomText {...props} fontFam={"bold"} />;
+  return <CustomText adjustsFontSizeToFit {...props} fontFam={"bold"} />;
 };
 
 export const ItalicText: React.FC<TextProps> = (props) => {
-  return <CustomText {...props} fontFam={"italic"} />;
+  return <CustomText adjustsFontSizeToFit {...props} fontFam={"italic"} />;
 };
 
 const CustomText: React.FC<CustomTextProps> = (props) => {

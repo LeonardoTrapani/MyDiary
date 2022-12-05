@@ -455,6 +455,7 @@ export const DayInfoModal = ({
           }}
         />
       </View>
+      {editDayMutation.isLoading ? <ActivityIndicator /> : <></>}
 
       <MyDurationPicker
         isVisible={freeTimeDurationPickerVisible}

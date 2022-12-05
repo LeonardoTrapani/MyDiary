@@ -7,28 +7,35 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   PlannedHomeworkStackParamList,
   PlannedHomeworkScreenProps,
   SingleHomeworkType,
+  HomeScreenProps,
 } from "../../types";
 import Break from "../components/Break";
 import ErrorComponent from "../components/ErrorComponent";
-import { ItalicText, MediumText, RegularText } from "../components/StyledText";
+import {
+  BoldText,
+  ItalicText,
+  MediumText,
+  RegularText,
+} from "../components/StyledText";
 import { CardView, View } from "../components/Themed";
 import { minutesToHoursMinutesFun } from "../util/generalUtils";
 import { useSingleHomework, useValidToken } from "../util/react-query-hooks";
 import globalStyles from "../constants/Syles";
 import { Ionicons } from "@expo/vector-icons";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { completePlannedDate } from "../api/homework";
 import Colors from "../constants/Colors";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useColorScheme from "../util/useColorScheme";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useTheme } from "@react-navigation/native";
 import moment from "moment";
 import SolidButton from "../components/SolidButton";
+import NonModalDurationPicker from "../components/NonModalDurationPicker";
 
 const SingleHomeworkScreen = ({
   navigation,
@@ -100,7 +107,17 @@ const SingleHomewrk: React.FC<{
     }
 
     if (!duration) {
-      console.warn("TODO: LET PICK DURATION");
+      props.navigation.navigate("Duration", {
+        homeworkPlanInfo: {
+          duration: 0,
+          expirationDate,
+          description,
+          subjectId: subject.id,
+          title,
+        },
+        homeworkId: props.singleHomework.id,
+        previousPlannedDates: plannedDates,
+      });
       return;
     }
 
@@ -339,6 +356,80 @@ export const CompletedIcon: React.FC = () => {
 };
 
 const DESCRIPTION_MAX_HEIGHT = 123;
+
+export const DurationScreen = ({
+  route,
+  navigation,
+}: HomeScreenProps<"Duration">) => {
+  const [durationDate, setDurationDate] = useState(
+    new Date(new Date().setHours(0, 0, 0, 0))
+  );
+
+  const duration = useMemo(() => {
+    const dur = durationDate.getMinutes() + durationDate.getHours() * 60;
+    return dur;
+  }, [durationDate]);
+
+  const onPlanDatesWithDuration = () => {
+    if (!route.params.homeworkPlanInfo) return;
+
+    const { description, title, subjectId, expirationDate } =
+      route.params.homeworkPlanInfo;
+
+    if (duration === 0) {
+      return;
+    }
+
+    navigation.navigate("PlannedDates", {
+      homeworkPlanInfo: {
+        duration,
+        expirationDate,
+        description,
+        subjectId,
+        title,
+      },
+      homeworkId: route.params.homeworkId,
+      previousPlannedDates: route.params.previousPlannedDates,
+    });
+  };
+
+  const onChangeDuration = (date: Date) => {
+    setDurationDate(date);
+  };
+
+  return (
+    <View
+      style={{
+        flex: 1,
+        padding: 20,
+      }}
+    >
+      <BoldText style={{ fontSize: 30, marginRight: "30%" }}>
+        How much time are you going to need?
+      </BoldText>
+      <View style={{ flex: 1, justifyContent: "center" }}>
+        <CardView
+          style={[
+            {
+              paddingHorizontal: 20,
+              marginVertical: 20,
+              borderRadius: 20,
+            },
+            globalStyles.smallShadow,
+          ]}
+        >
+          <NonModalDurationPicker
+            value={durationDate}
+            onChangeDuration={onChangeDuration}
+          />
+        </CardView>
+      </View>
+      <View>
+        <SolidButton title="CONTINUE" onPress={onPlanDatesWithDuration} />
+      </View>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
