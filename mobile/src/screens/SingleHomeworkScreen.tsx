@@ -1,30 +1,41 @@
+/* eslint-disable react/no-unescaped-entities */
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   PlannedHomeworkStackParamList,
   PlannedHomeworkScreenProps,
   SingleHomeworkType,
+  HomeScreenProps,
 } from "../../types";
 import Break from "../components/Break";
 import ErrorComponent from "../components/ErrorComponent";
-import { ItalicText, MediumText, RegularText } from "../components/StyledText";
+import {
+  BoldText,
+  ItalicText,
+  MediumText,
+  RegularText,
+} from "../components/StyledText";
 import { CardView, View } from "../components/Themed";
 import { minutesToHoursMinutesFun } from "../util/generalUtils";
 import { useSingleHomework, useValidToken } from "../util/react-query-hooks";
 import globalStyles from "../constants/Syles";
 import { Ionicons } from "@expo/vector-icons";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { completePlannedDate } from "../api/homework";
 import Colors from "../constants/Colors";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useColorScheme from "../util/useColorScheme";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useTheme } from "@react-navigation/native";
+import moment from "moment";
+import SolidButton from "../components/SolidButton";
+import NonModalDurationPicker from "../components/NonModalDurationPicker";
 
 const SingleHomeworkScreen = ({
   navigation,
@@ -85,8 +96,29 @@ const SingleHomewrk: React.FC<{
       plannedDates,
       expirationDate,
     } = props.singleHomework;
+
+    if (moment(expirationDate).isBefore(moment())) {
+      Alert.alert(
+        "Oops!",
+        "You can only replan homework that are due after today",
+        [{ text: "Ok", style: "default" }]
+      );
+      return;
+    }
+
     if (!duration) {
-      console.warn("TODO: LET PICK DURATION");
+      props.navigation.navigate("Duration", {
+        homeworkPlanInfo: {
+          duration: 0,
+          expirationDate,
+          description,
+          subjectId: subject.id,
+          title,
+        },
+        isEditing: true,
+        homeworkId: props.singleHomework.id,
+        previousPlannedDates: plannedDates,
+      });
       return;
     }
 
@@ -98,6 +130,7 @@ const SingleHomewrk: React.FC<{
         subjectId: subject.id,
         title,
       },
+      isEditing: true,
       homeworkId: props.singleHomework.id,
       previousPlannedDates: plannedDates,
     });
@@ -164,37 +197,47 @@ const SingleHomewrk: React.FC<{
       <View style={styles.breakContainer}>
         <Break />
       </View>
-      <FlatList
-        data={props.singleHomework.plannedDates}
-        ListHeaderComponent={() => {
-          return (
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <MediumText style={styles.plannedDatesTitle}>
-                Planned Dates
-              </MediumText>
-              <TouchableOpacity onPress={onRedoPlannedDates}>
-                <Ionicons
-                  style={{
-                    marginHorizontal: 20,
-                  }}
-                  name="refresh-circle"
-                  size={32}
-                  color={primary}
-                />
-              </TouchableOpacity>
-            </View>
-          );
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
         }}
-        renderItem={({ item }) => (
-          <PlannedDate plannedDate={item} navigation={props.navigation} />
-        )}
-      />
+      >
+        <MediumText style={styles.plannedDatesTitle}>Planned Dates</MediumText>
+        <TouchableOpacity onPress={onRedoPlannedDates}>
+          <Ionicons
+            style={{
+              marginHorizontal: 20,
+            }}
+            name="refresh-circle"
+            size={32}
+            color={primary}
+          />
+        </TouchableOpacity>
+      </View>
+      {!props.singleHomework.plannedDates.length ? (
+        <View
+          style={{
+            padding: 20,
+            flex: 1,
+            justifyContent: "center",
+          }}
+        >
+          <SolidButton
+            title="plan dates"
+            onPress={onRedoPlannedDates}
+            style={{ marginTop: 20, marginHorizontal: "10%", width: "80%" }}
+          />
+        </View>
+      ) : (
+        <FlatList
+          data={props.singleHomework.plannedDates}
+          renderItem={({ item }) => (
+            <PlannedDate plannedDate={item} navigation={props.navigation} />
+          )}
+        />
+      )}
     </View>
   );
 };
@@ -315,6 +358,81 @@ export const CompletedIcon: React.FC = () => {
 };
 
 const DESCRIPTION_MAX_HEIGHT = 123;
+
+export const DurationScreen = ({
+  route,
+  navigation,
+}: HomeScreenProps<"Duration">) => {
+  const [durationDate, setDurationDate] = useState(
+    new Date(new Date().setHours(0, 0, 0, 0))
+  );
+
+  const duration = useMemo(() => {
+    const dur = durationDate.getMinutes() + durationDate.getHours() * 60;
+    return dur;
+  }, [durationDate]);
+
+  const onPlanDatesWithDuration = () => {
+    if (!route.params.homeworkPlanInfo) return;
+
+    const { description, title, subjectId, expirationDate } =
+      route.params.homeworkPlanInfo;
+
+    if (duration === 0) {
+      return;
+    }
+
+    navigation.navigate("PlannedDates", {
+      homeworkPlanInfo: {
+        duration,
+        expirationDate,
+        description,
+        subjectId,
+        title,
+      },
+      isEditing: route.params.isEditing,
+      homeworkId: route.params.homeworkId,
+      previousPlannedDates: route.params.previousPlannedDates,
+    });
+  };
+
+  const onChangeDuration = (date: Date) => {
+    setDurationDate(date);
+  };
+
+  return (
+    <View
+      style={{
+        flex: 1,
+        padding: 20,
+      }}
+    >
+      <BoldText style={{ fontSize: 30, marginRight: "30%" }}>
+        How much time are you going to need?
+      </BoldText>
+      <View style={{ flex: 1, justifyContent: "center" }}>
+        <CardView
+          style={[
+            {
+              paddingHorizontal: 20,
+              marginVertical: 20,
+              borderRadius: 20,
+            },
+            globalStyles.smallShadow,
+          ]}
+        >
+          <NonModalDurationPicker
+            value={durationDate}
+            onChangeDuration={onChangeDuration}
+          />
+        </CardView>
+      </View>
+      <View>
+        <SolidButton title="CONTINUE" onPress={onPlanDatesWithDuration} />
+      </View>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

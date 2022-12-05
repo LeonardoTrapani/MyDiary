@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   TouchableOpacityProps,
 } from "react-native";
-import { RegularText } from "./StyledText";
+import { MediumText } from "./StyledText";
 
 interface CustomTouchableOpacityProps extends TouchableOpacityProps {
   title: string;
@@ -17,7 +17,7 @@ const TextButton: React.FC<CustomTouchableOpacityProps> = (props) => {
   const { primary } = useTheme().colors;
   return (
     <TouchableOpacity {...props}>
-      <RegularText
+      <MediumText
         style={[
           {
             color: primary,
@@ -28,7 +28,7 @@ const TextButton: React.FC<CustomTouchableOpacityProps> = (props) => {
         ]}
       >
         {props.title}
-      </RegularText>
+      </MediumText>
     </TouchableOpacity>
   );
 };

@@ -23,7 +23,7 @@ const NonModalDurationPicker: React.FC<NonModalDurationPickerProps> = (
       is24Hour={true}
       display="spinner"
       style={{
-        height: 150,
+        height: 220,
       }}
       value={props.value}
       onChange={changeHandler}

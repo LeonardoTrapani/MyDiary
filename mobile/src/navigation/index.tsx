@@ -44,7 +44,9 @@ import { activeSubjectAtom } from "../util/atoms";
 import PlannedDatesScreen, {
   PlannedDatesInfoIcon,
 } from "../screens/PlannedDatesScreen";
-import SingleHomeworkScreen from "../screens/SingleHomeworkScreen";
+import SingleHomeworkScreen, {
+  DurationScreen,
+} from "../screens/SingleHomeworkScreen";
 import GradeScreen, {
   AddGradeIcon,
   SingleSubjectGradeScreen,
@@ -217,13 +219,11 @@ const AddHomeworkModalNavigation = () => {
       <AddHomeworkStack.Screen
         name="PlannedDates"
         component={PlannedDatesScreen}
-        options={{
-          title: "",
+        options={({ route }) => ({
+          title: route.params.homeworkPlanInfo.title,
           presentation: "card",
-          headerRight: PlannedDatesInfoIcon,
           headerShadowVisible: false,
-          headerBackTitle: "homework",
-        }}
+        })}
       />
       <AddHomeworkStack.Screen
         name="info"
@@ -232,6 +232,15 @@ const AddHomeworkModalNavigation = () => {
           presentation: "modal",
           headerShown: false,
         }}
+      />
+      <AddHomeworkStack.Screen
+        name="Duration"
+        component={DurationScreen}
+        options={({ route }) => ({
+          title: route.params.homeworkPlanInfo.title,
+          presentation: "card",
+          headerBackTitleVisible: false,
+        })}
       />
     </AddHomeworkStack.Navigator>
   );
@@ -311,12 +320,20 @@ const HomeStackNavigation = () => {
         })}
       />
       <HomeStack.Screen
+        name="Duration"
+        component={DurationScreen}
+        options={({ route }) => ({
+          title: route.params.homeworkPlanInfo.title,
+          presentation: "card",
+          headerBackTitleVisible: false,
+        })}
+      />
+      <HomeStack.Screen
         name="PlannedDates"
         component={PlannedDatesScreen}
-        options={() => ({
-          title: "Plan",
+        options={({ route }) => ({
+          title: route.params.homeworkPlanInfo.title,
           presentation: "card",
-          headerRight: PlannedDatesInfoIcon,
           headerShadowVisible: false,
         })}
       />
