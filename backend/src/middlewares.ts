@@ -112,7 +112,6 @@ export const planHomeworkPlannedDatesAreValid = async (
         currDay.minutesToAssign + (prevPlannedDate?.minutesAssigned || 0) <
         plannedDates[i].minutes
       ) {
-        console.log(currDay, plannedDates[i]);
         throw "The minutes in the days are not enough";
       }
     }

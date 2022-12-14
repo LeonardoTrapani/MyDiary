@@ -263,7 +263,7 @@ export const getDueCalendarDay = async (req: Request, res: Response) => {
       throw "no homework";
     }
   } catch (err) {
-    console.log(err);
+    console.error(err);
     throwResponseError("Couldn't find the day", 400, res);
   }
 };
