@@ -71,19 +71,13 @@ const PlannedHomeworkScreen = () => {
       }
       return prev + curr.plannedDates[0].minutesAssigned;
     }, 0);
-    setMinutesToComplete(locMinsToComplete);
-  }, [data]);
-
-  useEffect(() => {
-    if (!data) {
-      return;
-    }
     setActiveInfoDay({
       date: data.date,
       initialFreeTime: data.freeMins,
       minutesToAssign: data.minutesToAssign,
       minutesToComplete: minutesToComplete,
     });
+    setMinutesToComplete(locMinsToComplete);
   }, [data, minutesToComplete, setActiveInfoDay]);
 
   return (

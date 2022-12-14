@@ -30,6 +30,7 @@ import { AxiosError } from "axios";
 import ErrorComponent from "../components/ErrorComponent";
 import { useAtom } from "jotai";
 import { activeInfoDayAtom } from "../util/atoms";
+import moment from "moment";
 
 const PlannedDatesScreen = ({
   route,
@@ -98,10 +99,12 @@ const PlannedDatesScreen = ({
       const localArrayToUpdate: SelectedDayType[] = [];
 
       route.params.previousPlannedDates.forEach((prevPlannedDate) => {
-        localArrayToUpdate.push({
-          date: prevPlannedDate.date,
-          minutes: prevPlannedDate.minutesAssigned,
-        });
+        if (moment(prevPlannedDate.date).isSameOrAfter(moment())) {
+          localArrayToUpdate.push({
+            date: prevPlannedDate.date,
+            minutes: prevPlannedDate.minutesAssigned,
+          });
+        }
       });
       setSelectedDays((prev) => [...prev, ...localArrayToUpdate]);
       setHasUpdatedSelectedDays(true);
