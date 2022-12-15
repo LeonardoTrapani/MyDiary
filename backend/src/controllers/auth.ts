@@ -22,6 +22,7 @@ export const signup = async (
 
     const hashedPassword = await bcrypt.hash(password, 12);
     if (await mailAlreadyExists(email)) {
+      console.log("1");
       throwResponseError("This email is already in use", 400, res);
       return;
     }
@@ -44,6 +45,7 @@ export const signup = async (
       username,
     });
   } catch (err) {
+    console.warn(err);
     throwResponseError("Unable to signup", 400, res);
   }
 };

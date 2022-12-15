@@ -10,6 +10,7 @@ export const throwResponseError = (
     message: message,
     statusCode: statusCode,
   };
+  console.warn("you got an error:", response);
   return res.status(response.statusCode).json(response);
 };
 
