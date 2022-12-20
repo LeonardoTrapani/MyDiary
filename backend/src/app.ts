@@ -22,6 +22,10 @@ export const prisma = new PrismaClient();
 applyPrismaMiddlewares(prisma);
 
 //Configuring dotenv package to use env variables form .env
+//Configure the .env variables with:
+//DATABASE_URL
+//PORT
+//JWT_SECRET
 dotenv.config();
 
 const app = express();
