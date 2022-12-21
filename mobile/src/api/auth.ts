@@ -15,18 +15,18 @@ export const validConnection = async () => {
 export const validateToken = async () => {
   const token = await getToken();
   if (token) {
-    const res = await axios.get<boolean>(BACKEND_URL + "/validateToken", {
-      headers: {
-        Authorization: token,
-      },
-    });
-    if (res.data === false) {
-      console.warn(
-        "token was not valid, so deleting (" + res.data,
-        token + ")"
-      );
-      await SecureStore.deleteItemAsync("token");
-    }
+    //await axios.get<boolean>(BACKEND_URL + "/validateToken", {
+    //headers: {
+    //Authorization: token,
+    //},
+    //});
+    //if (res.data === false) {
+    //console.warn(
+    //"token was not valid, so deleting (" + res.data,
+    //token + ")"
+    //);
+    //await SecureStore.deleteItemAsync("token");
+    //}
     return token;
   } else {
     return null;

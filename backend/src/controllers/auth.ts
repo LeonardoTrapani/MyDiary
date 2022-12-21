@@ -97,6 +97,7 @@ export const login = async (
       weekCreated: !!week,
     });
   } catch (err) {
+    console.error(err);
     return throwResponseError("unable to login", 400, res);
   }
 };
