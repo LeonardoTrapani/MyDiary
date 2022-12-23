@@ -1,17 +1,17 @@
-import { useDispatch, useSelector } from 'react-redux';
-import type { TypedUseSelectorHook } from 'react-redux';
-import type { RootState, AppDispatch } from '../store';
+import { useDispatch, useSelector } from "react-redux";
+import type { TypedUseSelectorHook } from "react-redux";
+import type { RootState, AppDispatch } from "../store";
 import React, {
   useEffect,
   useState,
   useRef,
   useMemo,
   useCallback,
-} from 'react';
-import { uiActions } from '../store/ui-slice';
-import { calculateShowBurger } from './utilities';
-import { ActionMeta, SingleValue } from 'react-select';
-import { subjectsActions } from '../store/subjects-slice';
+} from "react";
+import { uiActions } from "../store/ui-slice";
+import { calculateShowBurger } from "./utilities";
+import { ActionMeta, SingleValue } from "react-select";
+import { subjectsActions } from "../store/subjects-slice";
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch: () => AppDispatch = useDispatch;
@@ -37,10 +37,10 @@ export const useInput = (
   }[],
   defaultValue?: string
 ) => {
-  const [value, setValue] = useState(defaultValue || '');
+  const [value, setValue] = useState(defaultValue || "");
   const [isValid, setIsValid] = useState(false);
   const [hasBeenTouched, setHasBeenTouched] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
 
   const isFirstTime = useRef(true);
   useEffect(() => {
@@ -87,9 +87,9 @@ export const useInput = (
   };
 
   const reset = () => {
-    setValue(defaultValue || '');
+    setValue(defaultValue || "");
     isFirstTime.current = true;
-    setErrorMessage('');
+    setErrorMessage("");
     setHasBeenTouched(false);
     setIsValid(false);
   };
@@ -114,7 +114,7 @@ const areAllChecksValid = (
   value: string
 ) => {
   let isValid = true;
-  let errorMessage = '';
+  let errorMessage = "";
   for (let i = 0; i < checksToBeValid.length; i++) {
     if (!checksToBeValid[i].check(value)) {
       errorMessage = checksToBeValid[i].errorMessage;
@@ -157,7 +157,7 @@ export const useFetch = () => {
           options.body = JSON.stringify(options.requestBody);
           options.headers = {
             ...options.headers,
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           };
         }
         const result = await fetch(url, {
@@ -187,12 +187,12 @@ export const useShowBurger = () => {
   useEffect(() => {
     const handleResize = () => {
       const showBurger = calculateShowBurger(window.innerWidth, showBurgerMenu);
-      if (typeof showBurger !== 'undefined') {
+      if (typeof showBurger !== "undefined") {
         dispatch(uiActions.toggleBurgerMenuShown(showBurger));
       }
     };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [dispatch, showBurgerMenu]);
 };
 
@@ -210,13 +210,13 @@ export const useFetchAuthorized = () => {
         finalOptions.headers = {
           ...finalOptions.headers,
           Authorization: token as string,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         };
       } else {
         finalOptions = {
           headers: {
             Authorization: token as string,
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         };
       }
@@ -257,10 +257,10 @@ export const useDropdown = (
     errorMessage: string;
   }[]
 ) => {
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState("");
   const [isValid, setIsValid] = useState(false);
   const [hasBeenTouched, setHasBeenTouched] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
 
   const isFirstTime = useRef(true);
   useEffect(() => {
@@ -290,7 +290,7 @@ export const useDropdown = (
       label: string;
     }>
   ) => {
-    if (actionMeta.action === 'select-option') {
+    if (actionMeta.action === "select-option") {
       if (newValue?.value) {
         setValue(newValue.value);
       }

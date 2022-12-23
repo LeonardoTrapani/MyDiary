@@ -323,7 +323,7 @@ const FreeDayList: React.FC<{
           );
         }}
         onEndReached={loadMore}
-        onEndReachedThreshold={0.3}
+        onEndReachedThreshold={1}
       />
     </>
   );

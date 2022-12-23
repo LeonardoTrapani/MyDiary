@@ -194,10 +194,10 @@ type plannedDatesPropsType = {
   isEditing: boolean;
 };
 export type PlannedHomeworkStackParamList = {
+  Root: undefined | { date: string };
   SingleHomework: { homeworkId: number; title: string };
   PlannedDates: plannedDatesPropsType;
   Duration: plannedDatesPropsType;
-  Root: undefined | { date: string };
   Info: undefined;
 };
 

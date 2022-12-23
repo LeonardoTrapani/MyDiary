@@ -80,25 +80,25 @@ export const useFreeDays = (homeworkInfo: HomeworkPlanInfoType) => {
   return infQuery;
 };
 
-export const usePlannedCalendarDay = (date: Moment) => {
+export const usePlannedCalendarDay = (date: Moment, enabled: boolean) => {
   const { data: validToken, isFetched: isValidTokenFetched } = useValidToken();
   return useQuery<PlannedCalendarDayType>(
     ["plannedCalendarDay", date],
     () => getPlannedCalnedarDay(date, validToken),
     {
-      enabled: isValidTokenFetched,
+      enabled: isValidTokenFetched && enabled,
       keepPreviousData: true,
     }
   );
 };
 
-export const useDueCalendarDay = (date: Moment) => {
+export const useDueCalendarDay = (date: Moment, enabled: boolean) => {
   const { data: validToken, isFetched: isValidTokenFetched } = useValidToken();
   return useQuery<DueCalendarDayType>(
     ["dueCalendarDay", date],
     () => getDueCalendarDay(date, validToken),
     {
-      enabled: isValidTokenFetched,
+      enabled: isValidTokenFetched && enabled,
       keepPreviousData: true,
     }
   );

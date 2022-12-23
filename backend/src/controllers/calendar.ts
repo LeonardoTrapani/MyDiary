@@ -149,6 +149,7 @@ export const getPlannedCalendarDay = async (req: Request, res: Response) => {
   const { userId } = req;
   const { date: requestDate } = req.params;
   const date = moment(requestDate).startOf("day");
+  //console.log("FETCHING PLANNED CALENDAR DATE (", date.toString(), ")");
 
   const day = await prisma.day.findFirst({
     where: {
@@ -233,6 +234,7 @@ export const getDueCalendarDay = async (req: Request, res: Response) => {
   const { userId } = req;
   const { date: requestDate } = req.params;
   const date = moment(requestDate).startOf("day");
+  //console.log("FETCHING DUE CALENDAR DATE (", date.toString(), ")");
 
   try {
     const homework = await prisma.homework.findMany({

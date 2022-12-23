@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { MyHomeworkHeader } from "../components/CalendarHomeworkComponent";
 //import { HomeScreenProps } from "../../types";
-import { useDueCalendarDay, useValidToken } from "../util/react-query-hooks";
-import moment from "moment";
+import { useValidToken } from "../util/react-query-hooks";
 import {
   ActivityIndicator,
   FlatList,
@@ -20,70 +19,39 @@ import {
 import { MediumText, RegularText } from "../components/StyledText";
 import { CompleteCircle, UncompleteCircle } from "./PlannedHomeworkScreen";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
+import useCurrentCalendarDay from "../util/useCurrentCalendarDay";
 
 export default function HomeScreen() {
   //{
   //navigation,
   //route,
   //}: HomeScreenProps<"Root">
-  const initialDate = moment().startOf("day").toISOString();
-  const [currentCalendarDate, setCurrentCalendarDate] = useState(initialDate);
-  const [delayedCalendarDate, setDelayedCalendarDate] = useState(initialDate);
-  const [isLoadingShown, setIsLoadingShown] = useState(false);
-  const { data, error, isError, isFetching } = useDueCalendarDay(
-    moment(delayedCalendarDate)
-  );
-  const parsedError = error as Error | undefined;
 
-  useEffect(() => {
-    if (!data || isFetching) {
-      return;
-    }
-    if (moment(delayedCalendarDate).isSame(data.date, "days")) {
-      return;
-    }
-    console.warn("SERVER DATE IS DIFFERENT FROM LOCAL DATE: ", {
-      current: moment(delayedCalendarDate).toDate(),
-      server: data.date,
-    });
-    setCurrentCalendarDate(data.date);
-  }, [data, delayedCalendarDate, isFetching]);
-
-  useEffect(() => {
-    setIsLoadingShown(true);
-    const timeout = setTimeout(() => {
-      setDelayedCalendarDate(currentCalendarDate);
-      setIsLoadingShown(false);
-    }, 200);
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [currentCalendarDate]);
+  const {
+    isLoadingShown,
+    parsedError,
+    dueQueryResponse,
+    onToday,
+    onPageForward,
+    onPageBackward,
+    onSetCalendarDate,
+    currentCalendarDate,
+  } = useCurrentCalendarDay(200, false);
 
   return (
     <View style={{ flex: 1 }}>
       <MyHomeworkHeader
-        onToday={() => {
-          setCurrentCalendarDate(moment().startOf("day").toISOString());
-        }}
-        onPageForward={() => {
-          setCurrentCalendarDate((prev) => {
-            return moment(prev).startOf("day").add(1, "day").toISOString();
-          });
-        }}
-        onPageBackward={() => {
-          setCurrentCalendarDate((prev) =>
-            moment(prev).startOf("day").subtract(1, "day").toISOString()
-          );
-        }}
-        onSetCalendarDate={(date: string) => setCurrentCalendarDate(date)}
+        onToday={onToday}
+        onPageForward={onPageForward}
+        onPageBackward={onPageBackward}
+        onSetCalendarDate={onSetCalendarDate}
         currentCalendarDate={currentCalendarDate}
       />
       <HomeHomeworkBody
         currentDate={currentCalendarDate}
-        data={data}
-        isError={isError}
-        isLoading={isLoadingShown ? true : isFetching}
+        data={dueQueryResponse.data}
+        isError={dueQueryResponse.isError}
+        isLoading={isLoadingShown ? true : dueQueryResponse.isFetching}
         errorMessage={parsedError?.message}
       />
     </View>
