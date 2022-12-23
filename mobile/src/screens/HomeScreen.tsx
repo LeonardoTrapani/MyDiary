@@ -28,9 +28,10 @@ export default function HomeScreen() {
   //}: HomeScreenProps<"Root">
   const initialDate = moment().startOf("day").toISOString();
   const [currentCalendarDate, setCurrentCalendarDate] = useState(initialDate);
-
-  const { data, error, isError, isLoading, isFetching } = useDueCalendarDay(
-    moment(currentCalendarDate)
+  const [delayedCalendarDate, setDelayedCalendarDate] = useState(initialDate);
+  const [isLoadingShown, setIsLoadingShown] = useState(false);
+  const { data, error, isError, isFetching } = useDueCalendarDay(
+    moment(delayedCalendarDate)
   );
   const parsedError = error as Error | undefined;
 
@@ -38,15 +39,26 @@ export default function HomeScreen() {
     if (!data || isFetching) {
       return;
     }
-    if (moment(currentCalendarDate).isSame(data.date, "days")) {
+    if (moment(delayedCalendarDate).isSame(data.date, "days")) {
       return;
     }
     console.warn("SERVER DATE IS DIFFERENT FROM LOCAL DATE: ", {
-      current: moment(currentCalendarDate).toDate(),
+      current: moment(delayedCalendarDate).toDate(),
       server: data.date,
     });
     setCurrentCalendarDate(data.date);
-  }, [currentCalendarDate, data, isFetching]);
+  }, [data, delayedCalendarDate, isFetching]);
+
+  useEffect(() => {
+    setIsLoadingShown(true);
+    const timeout = setTimeout(() => {
+      setDelayedCalendarDate(currentCalendarDate);
+      setIsLoadingShown(false);
+    }, 200);
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [currentCalendarDate]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -71,7 +83,7 @@ export default function HomeScreen() {
         currentDate={currentCalendarDate}
         data={data}
         isError={isError}
-        isLoading={isLoading}
+        isLoading={isLoadingShown ? true : isFetching}
         errorMessage={parsedError?.message}
       />
     </View>
@@ -136,7 +148,14 @@ const HomeHomeworkBody: React.FC<{
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View
+      style={[
+        { flex: 1 },
+        props.isLoading
+          ? { justifyContent: "center", alignItems: "center" }
+          : {},
+      ]}
+    >
       {props.isLoading ? (
         <ActivityIndicator />
       ) : props.isError ? (
