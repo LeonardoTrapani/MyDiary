@@ -1,5 +1,5 @@
 {
-  "name": "homework-manager",
+  "name": "MyDiary",
   "version": "1.0.0",
   "description": "A web-app to help you schedule your homework",
   "main": "app.js",
@@ -13,14 +13,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/LeonardoTrapani/homework-manager.git"
+    "url": "git+https://github.com/LeonardoTrapani/MyDiary.git"
   },
   "author": "Leonardo Trapani",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/LeonardoTrapani/homework-manager/issues"
+    "url": "https://github.com/LeonardoTrapani/MyDiary/issues"
   },
-  "homepage": "https://github.com/LeonardoTrapani/homework-manager#readme",
+  "homepage": "https://github.com/LeonardoTrapani/MyDiary#readme",
   "devDependencies": {
     "@mermaid-js/mermaid-cli": "^9.1.4",
     "@types/cors": "^2.8.12",
