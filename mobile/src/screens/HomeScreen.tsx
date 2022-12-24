@@ -14,6 +14,7 @@ import ErrorComponent from "../components/ErrorComponent";
 import {
   DueCalendarDayType,
   DueHomeworkType,
+  HomeScreenProps,
   HomeStackParamList,
 } from "../../types";
 import { MediumText, RegularText } from "../components/StyledText";
@@ -21,12 +22,7 @@ import { CompleteCircle, UncompleteCircle } from "./PlannedHomeworkScreen";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import useCurrentCalendarDay from "../util/useCurrentCalendarDay";
 
-export default function HomeScreen() {
-  //{
-  //navigation,
-  //route,
-  //}: HomeScreenProps<"Root">
-
+export default function HomeScreen({ route }: HomeScreenProps<"Root">) {
   const {
     isLoadingShown,
     parsedError,
@@ -36,7 +32,7 @@ export default function HomeScreen() {
     onPageBackward,
     onSetCalendarDate,
     currentCalendarDate,
-  } = useCurrentCalendarDay(200, false);
+  } = useCurrentCalendarDay(200, false, route.params?.date);
 
   return (
     <View style={{ flex: 1 }}>

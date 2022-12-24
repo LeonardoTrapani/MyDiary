@@ -2,8 +2,14 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import { useDueCalendarDay, usePlannedCalendarDay } from "./react-query-hooks";
 
-const useCurrentCalendarDay = (delay: number, isPlans: boolean) => {
-  const initialDate = moment().startOf("day").toISOString();
+const useCurrentCalendarDay = (
+  delay: number,
+  isPlans: boolean,
+  initialDateProp: string | undefined
+) => {
+  const initialDate = initialDateProp
+    ? moment(initialDateProp).startOf("day").toISOString()
+    : moment().startOf("day").toISOString();
   const [currentCalendarDate, setCurrentCalendarDate] = useState(initialDate);
   const [delayedCalendarDate, setDelayedCalendarDate] = useState(initialDate);
   const [isLoadingShown, setIsLoadingShown] = useState(false);

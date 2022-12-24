@@ -33,7 +33,9 @@ import { minutesToHoursMinutesFun } from "../util/generalUtils";
 import { useValidToken } from "../util/react-query-hooks";
 import useCurrentCalendarDay from "../util/useCurrentCalendarDay";
 
-const PlannedHomeworkScreen = () => {
+const PlannedHomeworkScreen = ({
+  route,
+}: PlannedHomeworkScreenProps<"Root">) => {
   const {
     isLoadingShown,
     parsedError,
@@ -43,7 +45,7 @@ const PlannedHomeworkScreen = () => {
     onPageBackward,
     onSetCalendarDate,
     currentCalendarDate,
-  } = useCurrentCalendarDay(200, true);
+  } = useCurrentCalendarDay(200, true, route.params?.date);
 
   return (
     <View style={{ flex: 1 }}>
