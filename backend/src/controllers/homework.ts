@@ -111,6 +111,12 @@ export const planHomework = async (req: Request, res: Response) => {
 
   try {
     await prisma.$transaction(async (trx) => {
+      await trx.homework.update({
+        where: { id: +homeworkId! },
+        data: {
+          completed: false,
+        },
+      });
       await trx.plannedDate.deleteMany({
         where: {
           homeworkId,
