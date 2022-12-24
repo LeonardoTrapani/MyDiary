@@ -20,7 +20,7 @@ import {
 import { MediumText, RegularText } from "../components/StyledText";
 import { CompleteCircle, UncompleteCircle } from "./PlannedHomeworkScreen";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import useCurrentCalendarDay from "../util/useCurrentCalendarDay";
+import useCalendarDay from "../util/useCurrentCalendarDay";
 
 export default function HomeScreen({ route }: HomeScreenProps<"Root">) {
   const {
@@ -32,7 +32,7 @@ export default function HomeScreen({ route }: HomeScreenProps<"Root">) {
     onPageBackward,
     onSetCalendarDate,
     currentCalendarDate,
-  } = useCurrentCalendarDay(200, false, route.params?.date);
+  } = useCalendarDay(200, false, route.params?.date);
 
   return (
     <View style={{ flex: 1 }}>

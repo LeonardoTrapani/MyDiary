@@ -31,7 +31,7 @@ import { BoldText, MediumText, RegularText } from "../components/StyledText";
 import { activeInfoDayAtom } from "../util/atoms";
 import { minutesToHoursMinutesFun } from "../util/generalUtils";
 import { useValidToken } from "../util/react-query-hooks";
-import useCurrentCalendarDay from "../util/useCurrentCalendarDay";
+import useCalendarDay from "../util/useCurrentCalendarDay";
 
 const PlannedHomeworkScreen = ({
   route,
@@ -45,7 +45,7 @@ const PlannedHomeworkScreen = ({
     onPageBackward,
     onSetCalendarDate,
     currentCalendarDate,
-  } = useCurrentCalendarDay(200, true, route.params?.date);
+  } = useCalendarDay(200, true, route.params?.date);
 
   return (
     <View style={{ flex: 1 }}>
