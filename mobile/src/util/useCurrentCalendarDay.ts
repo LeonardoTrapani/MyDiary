@@ -30,19 +30,19 @@ const useCalendarDay = (
 
   const parsedError = queryResponse.error as Error | undefined;
 
-  //useEffect(() => {
-  //if (!queryResponse || !queryResponse.data || queryResponse.isFetching) {
-  //return;
-  //}
-  //if (moment(delayedCalendarDate).isSame(queryResponse.data.date)) {
-  //return;
-  //}
-  //console.warn("SERVER DATE IS DIFFERENT FROM LOCAL DATE: ", {
-  //current: moment(delayedCalendarDate).toDate(),
-  //server: queryResponse.data.date,
-  //});
-  //setCurrentCalendarDate(queryResponse.data.date.toString());
-  //}, [delayedCalendarDate, queryResponse]);
+  useEffect(() => {
+    if (!queryResponse || !queryResponse.data || queryResponse.isFetching) {
+      return;
+    }
+    if (moment(delayedCalendarDate).isSame(queryResponse.data.date)) {
+      return;
+    }
+    console.warn("SERVER DATE IS DIFFERENT FROM LOCAL DATE: ", {
+      current: moment(delayedCalendarDate).toDate(),
+      server: queryResponse.data.date,
+    });
+    setCurrentCalendarDate(queryResponse.data.date.toString());
+  }, [delayedCalendarDate, queryResponse]);
 
   const onToday = () => {
     setCurrentCalendarDate(moment().startOf("day").toISOString());

@@ -5,7 +5,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import Main from "./src/navigation";
 import momentTz from "moment-timezone";
 
-momentTz.tz.setDefault("America/New_York");
+momentTz.tz.setDefault("Etc/UTC");
 
 const App = () => {
   const colorScheme = useColorScheme();
