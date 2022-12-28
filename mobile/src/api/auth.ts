@@ -7,7 +7,7 @@ export const validConnection = async () => {
   try {
     await axios.get(BACKEND_URL + "/");
     return true;
-  } catch {
+  } catch (err) {
     return false;
   }
 };
