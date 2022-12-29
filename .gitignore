@@ -5,3 +5,4 @@ dist/
 prisma/migrations/
 yarn.package-lock
 yarn.lock
+DS_Store
