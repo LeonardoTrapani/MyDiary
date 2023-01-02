@@ -1,10 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "@react-navigation/native";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import { logout } from "../api/auth";
-import { MediumText, RegularText } from "../components/StyledText";
+import { MediumText } from "../components/StyledText";
 import TextButton from "../components/TextButton";
 import { CardView, View } from "../components/Themed";
 
@@ -35,21 +34,21 @@ const SettingsScreen: React.FC = () => {
         />
         <SettingsCard
           onPress={() => {
-            console.log("account");
+            console.log("calendar");
           }}
           name="Week"
           iconName="calendar"
         />
         <SettingsCard
           onPress={() => {
-            console.log("account");
+            console.log("subjects");
           }}
           name="Subjects"
           iconName="flag"
         />
         <SettingsCard
           onPress={() => {
-            console.log("account");
+            console.log("professors");
           }}
           name="Professors"
           iconName="barcode"
@@ -68,18 +67,13 @@ const SettingsCard: React.FC<{
   isFirst?: boolean;
   isLast?: boolean;
 }> = (props) => {
-  const { text } = useTheme().colors;
   return (
-    <TouchableOpacity onPress={props.onPress}>
+    <TouchableOpacity onPress={props.onPress} style={{ marginHorizontal: 15 }}>
       <CardView
         style={[
           {
             flexDirection: "row",
-            justifyContent: "space-between",
-            borderBottomWidth: 0.5,
-            borderBottomColor: "#ddd",
             padding: 12,
-            marginHorizontal: 15,
           },
           props.isFirst
             ? {
@@ -92,25 +86,42 @@ const SettingsCard: React.FC<{
             ? {
                 marginBottom: 15,
                 borderBottomRightRadius: 10,
-                borderBottomWidth: 0,
                 borderBottomLeftRadius: 10,
               }
             : {},
         ]}
       >
-        <CardView style={{ flexDirection: "row" }}>
-          <Ionicons
-            name={props.iconName}
-            size={20}
-            color={text}
-            style={{ opacity: 0.8 }}
-          />
+        <Ionicons
+          name={props.iconName}
+          size={20}
+          color="#444"
+          style={{ opacity: 0.8 }}
+        />
+        <CardView
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            flex: 1,
+          }}
+        >
           <MediumText style={{ fontSize: 18, marginLeft: 10 }}>
             {props.name}
           </MediumText>
+          <Ionicons name="chevron-forward" size={20} color={"#888"} />
         </CardView>
-        <Ionicons name="chevron-forward" size={20} color={"#888"} />
       </CardView>
+      {!props.isLast && (
+        <CardView>
+          <CardView
+            style={{
+              height: 0.7,
+              backgroundColor: "#ddd",
+              flex: 1,
+              marginLeft: 40,
+            }}
+          ></CardView>
+        </CardView>
+      )}
     </TouchableOpacity>
   );
 };
