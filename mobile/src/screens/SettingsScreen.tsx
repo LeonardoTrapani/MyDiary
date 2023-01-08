@@ -1,33 +1,22 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "@react-navigation/native";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import { SettingStackScreenProps } from "../../types";
 import { logout } from "../api/auth";
-import { MediumText } from "../components/StyledText";
+import { MediumText, RegularText } from "../components/StyledText";
 import TextButton from "../components/TextButton";
 import { CardView, View } from "../components/Themed";
 
-const SettingsScreen: React.FC = () => {
-  const queryClient = useQueryClient();
-
-  const logoutMutation = useMutation(
-    () => {
-      return logout();
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["validToken"]);
-      },
-    }
-  );
-
+const SettingsScreen = ({ navigation }: SettingStackScreenProps<"Root">) => {
   return (
     <View style={styles.container}>
       <ScrollView>
         <SettingsCard
           isFirst
           onPress={() => {
-            console.log("account");
+            navigation.navigate("Account");
           }}
           name="Account"
           iconName="person"
@@ -54,7 +43,6 @@ const SettingsScreen: React.FC = () => {
           iconName="barcode"
           isLast
         />
-        <TextButton title="logout" onPress={() => logoutMutation.mutate()} />
       </ScrollView>
     </View>
   );
@@ -67,6 +55,7 @@ const SettingsCard: React.FC<{
   isFirst?: boolean;
   isLast?: boolean;
 }> = (props) => {
+  const { primary } = useTheme().colors;
   return (
     <TouchableOpacity onPress={props.onPress} style={{ marginHorizontal: 15 }}>
       <CardView
@@ -94,7 +83,7 @@ const SettingsCard: React.FC<{
         <Ionicons
           name={props.iconName}
           size={20}
-          color="#444"
+          color={primary}
           style={{ opacity: 0.8 }}
         />
         <CardView
@@ -126,6 +115,26 @@ const SettingsCard: React.FC<{
   );
 };
 
+export const SettingsAccountScreen: React.FC = () => {
+  const queryClient = useQueryClient();
+  const logoutMutation = useMutation(
+    () => {
+      return logout();
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["validToken"]);
+      },
+    }
+  );
+
+  return (
+    <View style={{ padding: 10 }}>
+      <RegularText>Account</RegularText>
+      <TextButton title="logout" onPress={() => logoutMutation.mutate()} />
+    </View>
+  );
+};
 const styles = StyleSheet.create({
   container: {
     flex: 1,

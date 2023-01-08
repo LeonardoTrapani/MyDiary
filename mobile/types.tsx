@@ -234,6 +234,15 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
     NativeStackScreenProps<RootStackParamList>
   >;
 
+export type SettingsStackParamList = {
+  Root: undefined;
+  Account: undefined;
+};
+
+export type SettingStackScreenProps<
+  Screen extends keyof SettingsStackParamList
+> = NativeStackScreenProps<SettingsStackParamList, Screen>;
+
 export type AddGradeStackParamList = {
   Root: undefined;
   ChooseSubject: undefined;

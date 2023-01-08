@@ -14,6 +14,7 @@ import {
   PlannedHomeworkStackParamList,
   RootStackParamList,
   RootTabParamList,
+  SettingsStackParamList,
 } from "../../types";
 import LinkingConfiguration from "./LinkingConfiguration";
 import { LoginScreen } from "../screens/LoginScreen";
@@ -32,7 +33,6 @@ import PlannedHomeworkScreen, {
   CalendarDayInfoIcon,
   DayInfoModal,
 } from "../screens/PlannedHomeworkScreen";
-import SettingsScreen from "../screens/SettingsScreen";
 import { Ionicons } from "@expo/vector-icons";
 import AddHomeworkModal from "../screens/AddHomeworkModal";
 import ChooseSubjectScreen, {
@@ -52,6 +52,9 @@ import GradeScreen, {
   SingleSubjectGradeScreen,
 } from "../screens/GradeScreen";
 import AddGradeModal from "../screens/AddGradeModal";
+import SettingsScreen, {
+  SettingsAccountScreen,
+} from "../screens/SettingsScreen";
 
 export default function Main({
   colorScheme,
@@ -287,8 +290,9 @@ const BottomTabNavigator = () => {
       />
       <BottomTab.Screen
         name="Settings"
-        component={SettingsScreen}
+        component={SettingsStackNavigation}
         options={{
+          headerShown: false,
           title: "Settings",
           tabBarIcon: ({ color, size }) => {
             return <Ionicons name="settings" size={size} color={color} />;
@@ -465,6 +469,29 @@ const AddGradeStackNavigation = () => {
   );
 };
 
+const SettingsStackNavigation = () => (
+  <SettingsStack.Navigator
+    screenOptions={{ headerShown: true }}
+    initialRouteName="Root"
+  >
+    <SettingsStack.Screen
+      name="Root"
+      component={SettingsScreen}
+      options={{
+        headerTitle: "Settings",
+      }}
+    />
+    <SettingsStack.Screen
+      name="Account"
+      component={SettingsAccountScreen}
+      options={{
+        presentation: "card",
+      }}
+    />
+  </SettingsStack.Navigator>
+);
+
+const SettingsStack = createNativeStackNavigator<SettingsStackParamList>();
 const GradeStack = createNativeStackNavigator<GradeStackParamList>();
 const AddGradeStack = createNativeStackNavigator<AddGradeStackParamList>();
 const PlannedHomeworkStack =
