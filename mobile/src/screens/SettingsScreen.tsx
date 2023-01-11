@@ -23,7 +23,7 @@ const SettingsScreen = ({ navigation }: SettingStackScreenProps<"Root">) => {
         />
         <SettingsCard
           onPress={() => {
-            console.log("calendar");
+            navigation.navigate("Week", { editing: true });
           }}
           name="Week"
           iconName="calendar"

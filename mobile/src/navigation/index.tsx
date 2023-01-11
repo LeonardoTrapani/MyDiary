@@ -488,6 +488,11 @@ const SettingsStackNavigation = () => (
         presentation: "card",
       }}
     />
+    <SettingsStack.Screen
+      name="Week"
+      component={CreateWeekScreen}
+      options={{ presentation: "card" }}
+    />
   </SettingsStack.Navigator>
 );
 

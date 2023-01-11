@@ -237,6 +237,18 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
 export type SettingsStackParamList = {
   Root: undefined;
   Account: undefined;
+  Week:
+    | {
+        editing?: boolean;
+        mondayFreeMinutes?: number;
+        tuesdayFreeMinutes?: number;
+        wednesdayFreeMinutes?: number;
+        thursdayFreeMinutes?: number;
+        fridayFreeMinutes?: number;
+        saturdayFreeMinutes?: number;
+        sundayFreeMinutes?: number;
+      }
+    | undefined;
 };
 
 export type SettingStackScreenProps<

@@ -12,8 +12,11 @@ import { Week } from "../util/react-query-hooks";
 import ErrorComponent from "../components/ErrorComponent";
 import { useGetDataFromAxiosError } from "../util/axiosUtils";
 import { AxiosError } from "axios";
+import { RootStackScreenProps, SettingStackScreenProps } from "../../types";
 
-const CreateWeekScreen = () => {
+const CreateWeekScreen = ({
+  route,
+}: SettingStackScreenProps<"Week"> | RootStackScreenProps<"CreateWeek">) => {
   const queryClient = useQueryClient();
 
   const [mondayVal, setMondayVal] = useState(0);
@@ -60,7 +63,7 @@ const CreateWeekScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {!createWeekMutation.isError && (
+      {!createWeekMutation.isError && !route.params?.editing && (
         <BoldText style={styles.title}>
           How much time can you devote to homework each day?
         </BoldText>
