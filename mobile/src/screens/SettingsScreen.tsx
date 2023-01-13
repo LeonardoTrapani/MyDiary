@@ -15,6 +15,7 @@ const SettingsScreen = ({ navigation }: SettingStackScreenProps<"Root">) => {
       <ScrollView>
         <SettingsCard
           isFirst
+          isLast
           onPress={() => {
             navigation.navigate("Account");
           }}
@@ -22,6 +23,7 @@ const SettingsScreen = ({ navigation }: SettingStackScreenProps<"Root">) => {
           iconName="person"
         />
         <SettingsCard
+          isFirst
           onPress={() => {
             navigation.navigate("Week", { editing: true });
           }}
@@ -29,19 +31,12 @@ const SettingsScreen = ({ navigation }: SettingStackScreenProps<"Root">) => {
           iconName="calendar"
         />
         <SettingsCard
+          isLast
           onPress={() => {
             console.log("subjects");
           }}
           name="Subjects"
           iconName="flag"
-        />
-        <SettingsCard
-          onPress={() => {
-            console.log("professors");
-          }}
-          name="Professors"
-          iconName="barcode"
-          isLast
         />
       </ScrollView>
     </View>
