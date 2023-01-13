@@ -33,7 +33,7 @@ const SettingsScreen = ({ navigation }: SettingStackScreenProps<"Root">) => {
         <SettingsCard
           isLast
           onPress={() => {
-            console.log("subjects");
+            navigation.navigate("Subject");
           }}
           name="Subjects"
           iconName="flag"

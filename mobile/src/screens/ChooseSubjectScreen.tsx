@@ -70,7 +70,7 @@ const ChooseSubjectScreen = ({
   );
 };
 
-const SubjectsList: React.FC<{
+export const SubjectsList: React.FC<{
   subjects: SubjectType[];
   onPressSubject: () => void;
 }> = (props) => {
@@ -99,7 +99,7 @@ const SubjectsList: React.FC<{
   );
 };
 
-const SingleSubject: React.FC<{
+export const SingleSubject: React.FC<{
   subject: SubjectType;
   onPressSubject: () => void;
 }> = ({ subject, onPressSubject }) => {
@@ -117,7 +117,7 @@ const SingleSubject: React.FC<{
   );
 };
 
-const Separator: React.FC = () => {
+export const Separator: React.FC = () => {
   return (
     <View
       style={{

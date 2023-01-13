@@ -18,7 +18,6 @@ const CreateWeekScreen = ({
   route,
 }: SettingStackScreenProps<"Week"> | RootStackScreenProps<"CreateWeek">) => {
   const queryClient = useQueryClient();
-
   const [mondayVal, setMondayVal] = useState(0);
   const [tuesdayVal, setTuesdayVal] = useState(0);
   const [wednesDayVal, setWednesDayVal] = useState(0);
@@ -26,6 +25,7 @@ const CreateWeekScreen = ({
   const [fridayVal, setFridayVal] = useState(0);
   const [saturdayal, setSaturdayal] = useState(0);
   const [sundayVal, setSundayVal] = useState(0);
+
   const createWeekMutation = useMutation(
     (weekInfo: Week) => {
       return createWeek(weekInfo);
@@ -137,6 +137,7 @@ const styles = StyleSheet.create({
   durations: {
     flex: 1,
     justifyContent: "space-evenly",
+    maxHeight: 500,
   },
 });
 

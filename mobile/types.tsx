@@ -237,6 +237,7 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
 export type SettingsStackParamList = {
   Root: undefined;
   Account: undefined;
+  Subject: undefined;
   Week:
     | {
         editing?: boolean;

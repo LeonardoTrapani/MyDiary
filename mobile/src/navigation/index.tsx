@@ -55,6 +55,7 @@ import AddGradeModal from "../screens/AddGradeModal";
 import SettingsScreen, {
   SettingsAccountScreen,
 } from "../screens/SettingsScreen";
+import SubjectScreen from "../screens/SubjectScreen";
 
 export default function Main({
   colorScheme,
@@ -480,6 +481,11 @@ const SettingsStackNavigation = () => (
       options={{
         headerTitle: "Settings",
       }}
+    />
+    <SettingsStack.Screen
+      name="Subject"
+      options={{ presentation: "card" }}
+      component={SubjectScreen}
     />
     <SettingsStack.Screen
       name="Account"
