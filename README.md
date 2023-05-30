@@ -1,6 +1,6 @@
 My Diary is a mobile and web app to plan your homework, manage grades and live an organized school life.
 
-###Tech stack
+### Tech stack
 1. React Native
 2. React
 3. Nodejs
